@@ -110,7 +110,7 @@ Basic format:
 ### Fungible assets
 
 - `version: Compact<u32> = 0x00`
-- `id: [u8; 3]` The fungible asset identifier, usually derived from the ticker-tape code (e.g. b"BTC", b"ETH", b"DOT"). See *Appendix: Fungible Asset Types* for a list of known values.
+- `id: [u8; 3]` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Asset Types* for a list of known values.
 - `amount: Compact<u128>` The amount of the asset identified.
 
 ### Non-fungible assets
