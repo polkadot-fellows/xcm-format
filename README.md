@@ -93,11 +93,11 @@ Parameter(s):
 
 ### `TA` Teleport Asset
 
-An `amount` of some fungible asset identified by an opaque datagram `asset_id` have been removed from existence on the *Origin* and should be credited on the *Recipient* into the account identified by a universal `destination` identifier.
+Some fungible `asset`(s) have been removed from existence (and ownership by `source`) on the *Origin* and should be credited on the *Recipient* into the account identified by `destination`.
 
 Parameter(s):
 
-- `asset: MultiAsset` 
+- `asset: MultiAsset` The asset to be teleported.
 - `destination: MultiDest` A universal destination identifier which identifies the account/owner/controller on the *Recipient* to be credited.
 - `source: MultiDest` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
 
@@ -110,13 +110,13 @@ Basic format:
 ### Fungible assets
 
 - `version: Compact<u32> = 0x00`
-- `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. b"BTC", b"ETH", b"DOT"). Empty indicates a default value should be used (defined by the evaluation context), if any.
+- `id: [u8; 3]` The fungible asset identifier, usually derived from the ticker-tape code (e.g. b"BTC", b"ETH", b"DOT"). See *Appendix: Fungible Asset Types* for a list of known values.
 - `amount: Compact<u128>` The amount of the asset identified.
 
 ### Non-fungible assets
 
 - `version: Compact<u32> = 0x01`
-- `class: Vec<u8>` The general non-fungible asset class code. Empty indicates a default value should be used (defined by the evaluation context), if any.
+- `class: [u8; 3]` The general non-fungible asset class code. See Appendix: Non-fungible Asset Types for a list of known values.
 - `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram. Most `class`es will support only a single specific kind of `AssetInstance`, however for ease of formatting and to facilitate future compatibility, it is self-describing.
 
 #### `AssetInstance`
@@ -189,16 +189,19 @@ Exactly equivalent to a Type 3 *Sub-destination* whose `primary` is a Type 4 *Su
 
 ## Examples
 
-`0xff0000000200040c4254430004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d`
+`0xff0000000200044254430004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d`
 
 This indicates to the receiving chain that the account controlled by Substrate's testing Alice key (`subkey inspect //Alice`) should be credited with 1 Satoshi worth of its variant/interpretation of the Bitcoin (`BTC`) token.
 
 ## Appendix: Fungible Asset Types
 
-- `b"DOT"`
-- `b"KSM"`
-- `b"BTC"`
-- `b"ETH"`
+These generally correspond to the popularly used ticker-tape symbols for each currency. In the case where a popular currency has a symbol greater than three characters, then a short form may be noted here and used.
+
+- `b"DOT"` Polkadot (mainnet) tokens.
+- `b"KSM"` Kusama tokens.
+- `b"BTC"` Bitcoin (mainnet) tokens.
+- `b"ETH"` Ethereum (foundation, mainnet) tokens.
+- `b"ETC"` Ethereum (classic, mainnet) tokens.
 
 ## Appendix: Non-Fungible Asset Classes
 
