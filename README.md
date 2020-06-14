@@ -4,15 +4,26 @@ This page details the message format for Polkadot-based message passing between 
 
 ## Background
 
-In Polkadot, three message passing systems use this format: XCMP, HRMP and VMP.
+There are several kinds of consensus systems for which it would be advantageous to facilitate communication. This includes messages between smart-contracts and their environment, messages between sovereign blockchains over bridges, and between shards governed by the same consensus. Unfortunately, each tends to have its own message-passing means and standards, or have no standards at all.
+
+XCM aims to abstract the typical message intentions across these systems and provide a basic framework for forward-compatible, extensible and practical communication datagrams facilitating typical interactions between disparate datasystems within the world of global consensus.
+
+Concepts from the IPFS project, particularly the idea of self-describing formats, are used throughout and two new self-describing formats are introduced for specifying assets (`MultiAsset`) and consensus-message processing locations (`MultiDest`).
+
+Polkadot has three main message passing systems all of which will use this format: XCMP and the two kinds VMP (UMP and DMP).
 
 - **XCMP** *Cross-Chain Message Passing* highly scalable message passing between parachains with minimal work on the side of the Relay-chain.
-- **VMP** *Vertical Message Passing* message passing between the Relay-chain itself and a parachain.
-- **HRMP** *Horizontal Relay-based Message Passing* composite message passing, similar in effect to XCMP (messages between parachains) but implemented using VMP so messages are passed through the Relay-chain using the `RMP` and `PRM` meta-messages.
+- **VMP** *Vertical Message Passing* message passing between the Relay-chain itself and a parachain. This includes:
+  * **UMP** *Upward Message Passing* message passing from a parachain to the Relay-chain.
+  * **DMP** *Downward Message Passing* message passing from the Relay-chain to a parachain.
+
+In addition, a third "composite" message passing system is named as **HRMP** *Horizontal Relay-routed Message Passing*. It is implemented through utilising the two routing meta-messages of XMP (`RMP` and `PRM`) so that parachains may send messages between each other before XCMP is finalised.
+
+In additional to messages between parachain(s) and/or the Relay-chain, XCM is suitable for messages between disparate chains connected through one or more bridge(s) and even for messages between smart-contracts. Using XCM, all of the above may communicate with, or through, each other. e.g. It is entirely conceivable that, using XCM, a smart contract, hosted on a Polkadot parachain, may transfer a non-fungible asset it owns through Polkadot to an Ethereum-mainnet bridge located on another parachain, into an account controlled on the Ethereum mainnet by registering the transfer of ownership on a third, specialised Substrate NFA chain hosted on a Kusama parachain via a Polkadot-Kusama bridge.
 
 ## Definitions
 
-- *Sovereign Account* An account controlled solely and irrevocably by a particular chain.
+- *Sovereign Account* An account controlled solely by a particular UDI.
 - *Origin* The chain, contract or other global, encapsulated, state machine singleton from which a given message has been (directly and immediately) delivered. This is always queryable by the receiving code using the message-passing protocol. Generally specified as a *UDI*
 - *Recipient* The chain, contract or other global, encapsulated, state machine singleton to which a given message has been delivered.
 - *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship between them.
@@ -24,8 +35,8 @@ In Polkadot, three message passing systems use this format: XCMP, HRMP and VMP.
 All data is SCALE encoded. We name the top-level XCM datatype `Xcm`.
 
 - `magic: [u8; 2] = 0xff00`: Prefix identifier.
-- `version: u16 = 0u16`: Version of XCM; only zero supported currently.
-- `type: u16`: Message type.
+- `version: Compact<u32> = 0u32`: Version of XCM; only zero supported currently.
+- `type: Compact<u32>`: Message type.
 - `payload`: Message parameters.
 
 For version 0, message `type` must be one of:
