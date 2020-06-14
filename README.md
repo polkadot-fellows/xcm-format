@@ -181,7 +181,7 @@ A Type 3 with a `subordinate` equal to this Type 4 is, by definition, exactly eq
 
 Exactly equivalent to a Type 3 *Sub-destination* whose `primary` is a Type 4 *Super-destination*.
 
-- `sibling: MultiDest` The destination, interpreted in the context of the the current context's super destination.
+- `sibling: MultiDest` The destination, interpreted in the context of the current context's super destination.
 
 ### Type 6: 20-byte Ethereum Account Key
 
