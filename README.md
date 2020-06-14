@@ -187,6 +187,14 @@ Exactly equivalent to a Type 3 *Sub-destination* whose `primary` is a Type 4 *Su
 
 - `key: [u8; 20]` The account key, as derived from the 20 bytes at the end of the Keccak-256 hash of the SECP256k1/ECDSA public key, or owed by a smart contract at the address.
 
+### Type 7: Opaque Remark
+
+Not a true destination, but a pseudo-destination. Some destinations/contexts support attaching an opaque datagram ("remark") to an operation. In such supported contexts, this attaches a `remark` to the operation. This usually has no meaning to the operation, but rather is a human-readable message to help explain the operation.
+
+Typically used as the `subordinate` field of a Type 3 *Sub-destination*.
+
+- `remark: Vec<u8>` The remark to be recorded with the operation. The actual location remains the current context.
+
 ## Examples
 
 `0xff0000000200044254430004d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d`
