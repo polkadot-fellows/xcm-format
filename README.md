@@ -30,40 +30,39 @@ All data is SCALE encoded. We name the top-level XCM datatype `Xcm`.
 
 For version 0, message `type` must be one of:
 
-- `0u16`: `FFAX`
-- `1u16`: `FFAC`
+- `0u16`: `FAX`
+- `1u16`: `FAC`
 - `2u16`: `FAT`
-- `3u16`: `NAT`
+- `3u16`: `RMP`
+- `4u16`: `PRM`
 
 ## Message Types
 
-### FFAX: Foreign Fungibles Account Transfer
+### FAX: Foreign Asset Transfer
 
-An instructive message commanding the transfer of some amount of funds (measured in the native currency of the *Recipient*) from the (presumed unique or otherwise primary) account owned by the *Origin* to some other destination on the *Recipient*. Typically only used for upward messages. This cannot directly be used for sending funds from one parachain to another since there is no way of giving attribution for the derivate credit.
+An instructive message commanding the transfer of some asset(s) from the (presumed unique or otherwise primary) account owned by the *Origin* to some other destination on the *Recipient*.
 
-An *Amount of Funds*, measured in the *Native Currency* of the *Recipient* should be transfered from the *Sovereign Account* of the *Origin* to the account identified by a universal `destination` identifier within the context of the *Recipient*.
-
-Parameter(s):
-
-- `amount: Compact<u256>` The *Amount of Funds* that should be transfered from the *Sovereign Account* of the *Origin* on the *Recipient*.
-- `asset: Vec<u8>` The fungible asset type (aka currency code) of the asset to be transfered. Known `asset` types are listed in the Appendix Asset Types. Empty `asset` indicates of the native currency of the recipient chain.
-- `destination: DestId` A universal destination identifier which identifies the account/owner/controller on the *Recipient* to be credited. A type 3 (multi-level) ID indicates that an RDC message may be needed.
-- `source: DestId` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
-
-### FFAC: Foreign Fungibles Account Credit
-
-A notification message that the *Origin*, acting as a *Reserve*, has received funds into a client account owned by the *Recipient*. It is instructive only in so much as to dictate to the receiving chain the associated destination to which the recipient chain may attribute the credit. The funds are specified in the native currency of the *Origin*. Typically only used for downward messages.
-
-In other words: An *Amount of Funds*, measured in the *Native Currency* of the *Origin* have been credited to the *Sovereign Account* of the *Recipient* and a sub-account identifier is provided for the *Recipient* to credit within its own context.
+`Asset`s (with defaults governed by the *Recipient*) should be transfered from the *Sovereign Account* of the *Origin* to the account identified by a universal `destination` identifier within the context of the *Recipient*.
 
 Parameter(s):
 
-- `amount: Compact<u256>` The *Amount of Funds* that have been credited to the *Sovereign Account* of the *Recipient* on the *Origin*.
-- `asset: Vec<u8>` The fungible asset type (aka currency code) of the asset to be transfered. Known `asset` types are listed in the Appendix Asset Types. Empty `asset` indicates of the native currency of the recipient chain.
-- `destination: DestId` A universal destination ID which identifies the sub-account to be credited within the context of the *Recipient*.
-- `source: DestId` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
+- `asset: MultiAsset` The asset(s) to be transfered.
+- `destination: MultiDest` A universal destination identifier which identifies the account/owner/controller on the *Recipient* to be credited. A type 3 (multi-level) ID indicates that an FAC message is needed.
+- `source: MultiDest` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
 
-### RMP: Relay Message Parachain
+### FAC: Foreign Asset Credit
+
+A notification message that the *Origin*, acting as a *Reserve*, has received funds into a client account owned by the *Recipient*. It is instructive only in so much as to dictate to the receiving chain the associated destination to which the recipient chain may attribute the credit. The funds are specified in the native currency of the *Origin*.
+
+In other words: `Asset`s (with defaults governed by the *Origin*) have been credited to the *Sovereign Account* of the *Recipient* and a `destination` identifier is provided for the *Recipient* to credit within its own context.
+
+Parameter(s):
+
+- `asset: MultiAsset` The asset(s) to be transfered.
+- `destination: MultiDest` A universal destination ID which identifies the sub-account to be credited within the context of the *Recipient*.
+- `source: MultiDest` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
+
+### `RMP` Relay Message Parachain
 
 An instructive message to indicate that a given message should be relayed to a further *Destination Chain*. The actual message presented to the *Destination Chain* will be of type `Parachain Relayed Message` and properly present the original sender in it.
 
@@ -72,7 +71,7 @@ Parameter(s):
 - `destination: ParaId` The chain index to which this `message` should be relayed within a `PRM`.
 - `message: Xcm` The message to be interpreted by the *Recipient*.
 
-### PRM: Parachain Relay Message
+### `PRM` Parachain Relay Message
 
 A counterpart message to RMP, this is what is sent by the Relayer to the `destination` parachain mentioned in the RMP message. It is instructive only of the fact that an RMP with `message` and a `destination` equal to the *Receiving Parachain* was sent by the `source` parachain of the *Origin Relay-chain*.
 
@@ -81,34 +80,56 @@ Parameter(s):
 - `source: ParaId` The chain index from which this `message` has been relayed from an `RMP`.
 - `message: Xcm` The message to be interpreted by the *Recipient*.
 
-### FAT: Fungible Asset Teleport
+### `FAT` Fungible Asset Teleport
 
 An `amount` of some fungible asset identified by an opaque datagram `asset_id` have been removed from existence on the *Origin* and should be credited on the *Recipient* into the account identified by a universal `destination` identifier.
 
 Parameter(s):
 
-- `amount: Compact<u256>` The *Amount of Funds* that should be transfered from the *Sovereign Account* of the *Origin* on the *Recipient*.
-- `asset: Vec<u8>` The fungible asset type (aka currency code) of the asset to be transfered. Known `asset` types are listed in the Appendix Asset Types. Empty `asset` indicates of the native currency of the recipient chain.
-- `destination: DestId` A universal destination identifier which identifies the account/owner/controller on the *Recipient* to be credited.
-- `source: DestId` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
+- `asset: MultiAsset` 
+- `destination: MultiDest` A universal destination identifier which identifies the account/owner/controller on the *Recipient* to be credited.
+- `source: MultiDest` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
 
-### NAT: Non-fungible Asset Teleport
+## `MultiAsset`: Universal Asset Identifiers
 
-An unique instance of a non-fungible asset identified within its asset `class` by some individual `id` has been removed from existence on the *Origin* and should be created on the *Recipient* and owned the account identified by a universal `destination` identifier.
+Basic format:
 
-Parameter(s):
+- `version: Compact<u32>`: Version/format code; currently two codes are supported `0x00`, and `0x01`.
 
-- `class: Vec<u8>` The class of asset; known classes are listed in the Appendix Classes.
-- `id: Vec<u8>` The specific instance of the asset, within the asset `class`.
-- `destination: DestId` A universal destination identifier which identifies the account/owner/controller on the *Recipient* to be credited.
+### Fungible assets
 
-## `DestId`: Universal Destination Identifiers
+- `version: Compact<u32> = 0x00`
+- `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. b"BTC", b"ETH", b"DOT"). Empty indicates a default value should be used (defined by the evaluation context), if any.
+- `amount: Compact<u128>` The amount of the asset identified.
+
+### Non-fungible assets
+
+- `version: Compact<u32> = 0x01`
+- `class: Vec<u8>` The general non-fungible asset class code. Empty indicates a default value should be used (defined by the evaluation context), if any.
+- `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram.
+
+#### `AssetInstance`
+
+Given by the SCALE `enum` (tagged union) of:
+
+- `Index8 = 0: u8`
+- `Index16 = 1: Compact<u16>`
+- `Index32 = 2: Compact<u32>`
+- `Index64 = 3: Compact<u64>`
+- `Index128 = 4: Compact<u128>`
+- `Array4 = 16: [u32; 4]`
+- `Array8 = 17: [u32; 8]`
+- `Array16 = 18: [u32; 16]`
+- `Array32 = 19: [u32; 32]`
+- `Blob = 255: Vec<u8>`
+
+## `MultiDest`: Universal Destination Identifiers
 
 Destination identifiers are self-describing identifiers that can specify an owner into whose control some cryptographic asset be placed. It aims to be sufficiently abstract in meaning and general in nature that it works across a variety of chain types, including UTXO, account-based and privacy-preserving.
 
-### Basic format
+Basic format:
 
-- `version: u8 = 0x00`: Version code, currently there's only the first version, zero.
+- `version: Compact<u32> = 0x00`: Version code, currently there's only the first version, zero.
 - `type: Compact<u32>`: The type of destination.
 - `payload`: The data payload, format determined by the `type`.
 
@@ -136,8 +157,8 @@ The Polkadot Relay pallet collection includes the idea of a Relay-chain with one
 
 Many destination types, e.g. smart contracts and parachains, can have secondary destinations nested beneath them and interpreted within their context. This allows for that.
 
-- `primary: DestId` The primary destination.
-- `subordinate: DestId` The subordinate destination, interpreted in the context of the primary destination.
+- `primary: MultiDest` The primary destination.
+- `subordinate: MultiDest` The subordinate destination, interpreted in the context of the primary destination.
 
 ### Type 4: Super-destination
 
@@ -149,7 +170,7 @@ A Type 3 with a `subordinate` equal to this Type 4 is, by definition, exactly eq
 
 Exactly equivalent to a Type 3 *Sub-destination* whose `primary` is a Type 4 *Super-destination*.
 
-- `sibling: DestId` The destination, interpreted in the context of the the current context's super destination.
+- `sibling: MultiDest` The destination, interpreted in the context of the the current context's super destination.
 
 ### Type 6: 20-byte Ethereum Account Key
 
