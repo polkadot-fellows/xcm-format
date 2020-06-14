@@ -14,8 +14,8 @@ Polkadot has three main message passing systems all of which will use this forma
 
 - **XCMP** *Cross-Chain Message Passing* highly scalable message passing between parachains with minimal work on the side of the Relay-chain.
 - **VMP** *Vertical Message Passing* message passing between the Relay-chain itself and a parachain. This includes:
-  * **UMP** *Upward Message Passing* message passing from a parachain to the Relay-chain.
-  * **DMP** *Downward Message Passing* message passing from the Relay-chain to a parachain.
+  - **UMP** *Upward Message Passing* message passing from a parachain to the Relay-chain.
+  - **DMP** *Downward Message Passing* message passing from the Relay-chain to a parachain.
 
 In addition, a third "composite" message passing system is named as **HRMP** *Horizontal Relay-routed Message Passing*. It is implemented through utilising the two routing meta-messages of XMP (`RMP` and `PRM`) so that parachains may send messages between each other before XCMP is finalised.
 
@@ -41,15 +41,15 @@ All data is SCALE encoded. We name the top-level XCM datatype `Xcm`.
 
 For version 0, message `type` must be one of:
 
-- `0u16`: `FAX`
-- `1u16`: `FAC`
-- `2u16`: `FAT`
-- `3u16`: `RMP`
-- `4u16`: `PRM`
+- `0u32`: `FAX`
+- `1u32`: `FAC`
+- `2u32`: `TA`
+- `3u32`: `RMP`
+- `4u32`: `PRM`
 
 ## Message Types
 
-### FAX: Foreign Asset Transfer
+### FAX: Foreign/reserve Asset Transfer
 
 An instructive message commanding the transfer of some asset(s) from the (presumed unique or otherwise primary) account owned by the *Origin* to some other destination on the *Recipient*.
 
@@ -61,7 +61,7 @@ Parameter(s):
 - `destination: MultiDest` A universal destination identifier which identifies the account/owner/controller on the *Recipient* to be credited. A type 3 (multi-level) ID indicates that an FAC message is needed.
 - `source: MultiDest` UDI identifing the true source of the transfer, in terms of the `Origin`. Null indicates the `Origin` itself.
 
-### FAC: Foreign Asset Credit
+### FAC: Foreign/reserve Asset Credit
 
 A notification message that the *Origin*, acting as a *Reserve*, has received funds into a client account owned by the *Recipient*. It is instructive only in so much as to dictate to the receiving chain the associated destination to which the recipient chain may attribute the credit. The funds are specified in the native currency of the *Origin*.
 
@@ -91,7 +91,7 @@ Parameter(s):
 - `source: ParaId` The chain index from which this `message` has been relayed from an `RMP`.
 - `message: Xcm` The message to be interpreted by the *Recipient*.
 
-### `FAT` Fungible Asset Teleport
+### `TA` Teleport Asset
 
 An `amount` of some fungible asset identified by an opaque datagram `asset_id` have been removed from existence on the *Origin* and should be credited on the *Recipient* into the account identified by a universal `destination` identifier.
 
@@ -117,7 +117,7 @@ Basic format:
 
 - `version: Compact<u32> = 0x01`
 - `class: Vec<u8>` The general non-fungible asset class code. Empty indicates a default value should be used (defined by the evaluation context), if any.
-- `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram.
+- `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram. Most `class`es will support only a single specific kind of `AssetInstance`, however for ease of formatting and to facilitate future compatibility, it is self-describing.
 
 #### `AssetInstance`
 
