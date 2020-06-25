@@ -8,27 +8,34 @@ There are several kinds of consensus systems for which it would be advantageous 
 
 XCM aims to abstract the typical message intentions across these systems and provide a basic framework for forward-compatible, extensible and practical communication datagrams facilitating typical interactions between disparate datasystems within the world of global consensus.
 
-Concepts from the IPFS project, particularly the idea of self-describing formats, are used throughout and two new self-describing formats are introduced for specifying assets (`MultiAsset`) and consensus-message processing locations (`MultiDest`).
+Concepts from the IPFS project, particularly the idea of self-describing formats, are used throughout and two new self-describing formats are introduced for specifying assets (`MultiAsset`) and consensus-message processing locations (`MultiLocation`).
 
 Polkadot has three main message passing systems all of which will use this format: XCMP and the two kinds VMP (UMP and DMP).
 
-- **XCMP** *Cross-Chain Message Passing* highly scalable message passing between parachains with minimal work on the side of the Relay-chain.
-- **VMP** *Vertical Message Passing* message passing between the Relay-chain itself and a parachain. This includes:
+- **XCMP** *Cross-Chain Message Passing* highly scalable secure message passing between parachains. Message data goes direct between parachains and is O(1) on the side of the Relay-chain.
+- **VMP** *Vertical Message Passing* message passing between the Relay-chain itself and a parachain. Message data in both cases exists on the Relay-chain. This includes:
   - **UMP** *Upward Message Passing* message passing from a parachain to the Relay-chain.
   - **DMP** *Downward Message Passing* message passing from the Relay-chain to a parachain.
 
-In addition, a third "composite" message passing system is named as **HRMP** *Horizontal Relay-routed Message Passing*. It is implemented through utilising the two routing meta-messages of XMP (`RMP` and `PRM`) so that parachains may send messages between each other before XCMP is finalised.
+In addition, a third "composite" message passing system is named as **HRelayMessageParachain** *Horizontal Relay-routed Message Passing*. It is implemented through utilising the two routing meta-messages of XMP (`RelayMessageParachain` and `ParachainRelayMessage`) so that parachains may send messages between each other before XCMP is finalised. This relies on the Relay-chain storing and relaying the messages and as such is not scalable. Parathreads may not receive such messages since queues could grow indefinitely.
 
-In additional to messages between parachain(s) and/or the Relay-chain, XCM is suitable for messages between disparate chains connected through one or more bridge(s) and even for messages between smart-contracts. Using XCM, all of the above may communicate with, or through, each other. e.g. It is entirely conceivable that, using XCM, a smart contract, hosted on a Polkadot parachain, may transfer a non-fungible asset it owns through Polkadot to an Ethereum-mainnet bridge located on another parachain, into an account controlled on the Ethereum mainnet by registering the transfer of ownership on a third, specialised Substrate NFA chain hosted on a Kusama parachain via a Polkadot-Kusama bridge.
+### XCM is for Message Passing between all kinds of Consensus system System
+
+In addition to messages between parachain(s) and/or the Relay-chain, XCM is suitable for messages between disparate chains connected through one or more bridge(s) and even for messages between smart-contracts. Using XCM, all of the above may communicate with, or through, each other.
+
+E.g. It is entirely conceivable that, using XCM, a smart contract, hosted on a Polkadot parachain, may transfer a non-fungible asset it owns through Polkadot to an Ethereum-mainnet bridge located on another parachain, into an account controlled on the Ethereum mainnet by registering the transfer of ownership on a third, specialised Substrate NFA chain hosted on a Kusama parachain via a Polkadot-Kusama bridge.
 
 ## Definitions
 
-- *Sovereign Account* An account controlled solely by a particular `MultiDest` value.
-- *Origin* The chain, contract or other global, encapsulated, state machine singleton from which a given message has been (directly and immediately) delivered. This is always queryable by the receiving code using the message-passing protocol. Generally specified as a `MultiDest`.
-- *Recipient* The chain, contract or other global, encapsulated, state machine singleton to which a given message has been delivered.
+- *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams.
+- *Location* A consensus system, or an addressable account or datastructure that exists therein. Examples include an account on the Relay-chain, an account on a parachain, a parachain, an account managed by a smart-contract in a parachain. Specified by a `MultiLocation`.
+- *Sovereign Account* An account controlled by a particular consensus system, within some other consensus system.
+- *Holding Account* A transient notional "account" in which assets inherent in a message are temporarily held. See e.g. `DEP`.
+- *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve Consensus System is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
+- *Origin* The consensus system from which a given message has been (directly and immediately) delivered. This is always queryable by the receiving code using the message-passing protocol. Specified as a `MultiLocation`.
+- *Recipient* The consensus system to which a given message has been delivered. Specified as a `MultiLocation`.
 - *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship between them.
 - *Transfer* The movement of funds from one controlling authority to another. This is within the same chain or overall asset-ownership environment and at the same abstraction level.
-- `MultiDest` A chain, contract or global, encapsulated, state machine singleton, or an addressable datastructure that exists therein. Examples include an account on the Relay-chain, an account on a parachain, a parachain, an account managed by a smart-contract in a parachain. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams.
 
 ## Basic Top-level Format
 
@@ -41,65 +48,135 @@ All data is SCALE encoded. We name the top-level XCM datatype `Xcm`.
 
 For version 0, message `type` must be one of:
 
-- `0u32`: `FAX`
-- `1u32`: `FAC`
-- `2u32`: `TA`
-- `3u32`: `RMP`
-- `4u32`: `PRM`
+- `0`: `WithdrawAsset`
+- `1`: `ReserveAssetTransfer`
+- `2`: `ReserveAssetCredit`
+- `3`: `TeleportAsset`
+- `32`: `RelayMessageParachain`
+- `33`: `ParachainRelayMessage`
 
-## Message Types
+Within XCM version 0, there is a secondary datatype `Ai` (asset instruction). They piggyback on the versioning of `Xcm` and for version 0 should be enumerated thus:
 
-### FAX: Foreign/reserve Asset Transfer
+- `0`: `DepositAsset`
+- `1`: `ExchangeAsset`
+- `2`: `InitiateReserveTransfer`
+- `3`: `InitiateTeleport`
+
+## `Xcm` Message Types
+
+### `ReserveAssetTransfer`
 
 An instructive message commanding the transfer of some asset(s) from the (presumed unique or otherwise primary) account owned by the *Origin* to some other destination on the *Recipient*.
 
-`Asset`s (with defaults governed by the *Recipient*) should be transfered from the *Sovereign Account* of the *Origin* to the account identified by a universal `destination` identifier within the context of the *Recipient*.
+`asset`s (with defaults governed by the *Recipient*) should be transfered from the *Sovereign Account* of the *Origin* to the *Sovereign Account* of `destination`. An `ReserveAssetCredit` message will be sent to the `destination` and it must be reachable via messaging.
 
 Parameter(s):
 
 - `asset: MultiAsset` The asset(s) to be transfered.
-- `destination: MultiDest` Identifies the account/owner/controller on the *Recipient* to be credited.
-- `source: MultiDest` Identifies the true source of the transfer, in terms of the *Origin*.
+- `destination: MultiDest` The destination for the assets. This must be reachable for a `ReserveAssetCredit` message.
+- `effect: Ai` What should be done with the assets.
 
-### FAC: Foreign/reserve Asset Credit
+### `ReserveAssetCredit`
 
-A notification message that the *Origin*, acting as a *Reserve*, has received funds into a client account owned by the *Recipient*. It is instructive only in so much as to dictate to the receiving chain the associated destination to which the recipient chain may attribute the credit. The funds are specified in the native currency of the *Origin*.
-
-In other words: `Asset`s (with defaults governed by the *Origin*) have been credited to the *Sovereign Account* of the *Recipient* and a `destination` identifier is provided for the *Recipient* to credit within its own context.
+A notification message that the *Origin*, acting as a *Reserve*, has received funds into a *Sovereign* account owned by the *Recipient*. The `asset` should be minted into the *Holding Account* and some `effect` evaluated.
 
 Parameter(s):
 
-- `asset: MultiAsset` The asset(s) to be transfered.
-- `destination: MultiDest` Identifies the sub-account to be credited within the context of the *Recipient*.
-- `source: MultiDest` Identifies the true source of the transfer, in terms of the *Origin*.
+- `asset: MultiAsset` The asset(s) that were transfered.
+- `effect: Ai` What should be done with the assets.
 
-### `RMP` Relay Message Parachain
+### `TeleportAsset`
+
+Some fungible `asset`(s) have been removed from existence (and ownership by `source`) on the *Origin* and should be minted into the holding account on the *Recipient* and some `effect` evaluated.
+
+Parameter(s):
+
+- `asset: MultiAsset` The asset(s) which were debited.
+- `effect: Ai` What should be done with the assets on the receiving chain.
+
+### `WithdrawAsset`
+
+An instructive message commanding the removal of some asset(s) from the *Sovereign Account* owned by the *Origin* and their placement into the *Holding Account* and the evaluation of some `effect`.
+
+Parameter(s):
+
+- `asset: MultiAsset` The asset(s) to be debited.
+- `effect: Ai` What should be done with the assets.
+
+### `RelayMessageParachain`
 
 An instructive message to indicate that a given message should be relayed to a further *Destination Chain*. The actual message presented to the *Destination Chain* will be of type `Parachain Relayed Message` and properly present the original sender in it.
 
 Parameter(s):
 
-- `destination: ParaId` The chain index to which this `message` should be relayed within a `PRM`.
+- `destination: ParaId` The chain index to which this `message` should be relayed within a `ParachainRelayMessage`.
 - `message: Xcm` The message to be interpreted by the *Recipient*.
 
-### `PRM` Parachain Relay Message
+### `ParachainRelayMessage`
 
-A counterpart message to RMP, this is what is sent by the Relayer to the `destination` parachain mentioned in the RMP message. It is instructive only of the fact that an RMP with `message` and a `destination` equal to the *Receiving Parachain* was sent by the `source` parachain of the *Origin Relay-chain*.
+A counterpart message to RelayMessageParachain, this is what is sent by the Relayer to the `destination` parachain mentioned in the RelayMessageParachain message. It is instructive only of the fact that an RelayMessageParachain with `message` and a `destination` equal to the *Receiving Parachain* was sent by the `source` parachain of the *Origin Relay-chain*.
 
 Parameter(s):
 
-- `source: ParaId` The chain index from which this `message` has been relayed from an `RMP`.
+- `source: ParaId` The chain index from which this `message` has been relayed from an `RelayMessageParachain`.
 - `message: Xcm` The message to be interpreted by the *Recipient*.
 
-### `TA` Teleport Asset
+### `Balances`
 
-Some fungible `asset`(s) have been removed from existence (and ownership by `source`) on the *Origin* and should be credited on the *Recipient* into the account identified by `destination`.
+Informational message detailing some balances, interpreted based on the context of the destination and the `query_id`.
+
+- `query_id` The identifier of the query which caused this message to be sent.
+- `assets` The value for use by the destination.
+
+## `AssetInstruction` Instruction Types
+
+### `Each`: Multiple Instructions
+
+Execute all given `instructions` in order.
+
+- `instructions: Vec<Ai>` Instructions to be executed.
+
+### `DepositAsset`
+
+Deposit all assets in the *Holding Account* into a given `destination` account. It cannot require any futher message passing.
+
+- `asset: MultiAsset` Identifies the asset to be transfered.
+- `destination: MultiLocation` Identifies the account/owner/controller to be credited. This should be an account within the *Consensus System* of the context. If this is a *Consensus System*, then it will credit its *Sovereign Account*.
+
+### `ExchangeAsset`
+
+Take `give` assets in the *Holding Account* and attempt to exchange them `for` some other assets.
+
+- `give: MultiAsset` Identifies the maximum assets to be debited from this transaction.
+- `for: MultiAsset` Identifies the minimal assets that should be credited from this transaction.
+
+### `InitiateReserveTransfer`
+
+Burn `asset` from the holding account and send an `ReserveAssetTransfer` message to the Reserve Location for the `asset`.
+
+Parameter(s):
+
+- `asset: MultiAsset` The asset to be debited from the *Holding Account* and transfered in the *Reserve Location*.
+- `destination: MultiLocation` The destination for the asset from the context of the *Reserve Location*. This is specified from the context of the *Reserve Location* and its value must satisfy the resulting `ReserveAssetTransfer` message.
+- `effect: Ai` What should be done with the assets in the final `destination`.
+
+### `InitiateTeleport`
+
+Burn `asset` from the *Holding Account* and send a `TeleportAsset` message to the `destination` to credit them into a *Holding Account* on another *Consensus System* along with some instructions to be `effect`ed.
 
 Parameter(s):
 
 - `asset: MultiAsset` The asset to be teleported.
-- `destination: MultiDest` Identifies the account/owner/controller on the *Recipient* to be credited.
-- `source: MultiDest` Identifies the true source of the transfer, in terms of the *Origin*.
+- `destination: MultiLocation` Identifies the location for sending the `TeleportAsset` message to.
+- `effect: Ai` What should be done with the assets in the final `destination`.
+
+### `QueryHolding`
+
+Initiates a `Balances` message to some `destination` with the given `query_id` for each of the `assets` given.
+
+- `query_id: Compact<u64>` Some identifying index.
+- `destination: MultiLocation` Recipient of the `Balances` message.
+- `assets: Vec<MultiAsset>` Asset(s) to be queried. Use of wildcards (empty/zero/`Undefined` identifiers) should generally be supported.
 
 ## `MultiAsset`: Universal Asset Identifiers
 
@@ -110,31 +187,32 @@ Basic format:
 ### Fungible assets
 
 - `version: Compact<u32> = 0x00`
-- `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Asset Types* for a list of known values.
-- `amount: Compact<u128>` The amount of the asset identified.
+- `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Asset Types* for a list of known values. The empty value may be used to indicate all assets. In this case, `amount` is ignored but should be set to zero by convention. Contexts may or may not support this.
+- `amount: Compact<u128>` The amount of the asset identified. Zero may be used to indicate all of the available asset. Contexts may or may not support this.
 
 ### Non-fungible assets
 
 - `version: Compact<u32> = 0x01`
-- `class: Vec<u8>` The general non-fungible asset class code. See Appendix: Non-fungible Asset Types for a list of known values.
-- `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram. Most `class`es will support only a single specific kind of `AssetInstance`, however for ease of formatting and to facilitate future compatibility, it is self-describing.
+- `class: Vec<u8>` The general non-fungible asset class code. See Appendix: Non-fungible Asset Types for a list of known values. The empty value may be used to indicate all asset classes. In this case, `instance` is ignored but should be set to `Undefined` by convention. Contexts may or may not support this.
+- `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram. Most `class`es will support only a single specific kind of `AssetInstance`, however for ease of formatting and to facilitate future compatibility, it is self-describing. `Undefined` may be used to indicate all available assets of this `class`. Contexts may or may not support this.
 
 #### `AssetInstance`
 
 Given by the SCALE `enum` (tagged union) of:
 
-- `Index8 = 0: u8`
-- `Index16 = 1: Compact<u16>`
-- `Index32 = 2: Compact<u32>`
-- `Index64 = 3: Compact<u64>`
-- `Index128 = 4: Compact<u128>`
+- `Undefined = 0: ()`
+- `Index8 = 1: u8`
+- `Index16 = 2: Compact<u16>`
+- `Index32 = 3: Compact<u32>`
+- `Index64 = 4: Compact<u64>`
+- `Index128 = 5: Compact<u128>`
 - `Array4 = 16: [u32; 4]`
 - `Array8 = 17: [u32; 8]`
 - `Array16 = 18: [u32; 16]`
 - `Array32 = 19: [u32; 32]`
 - `Blob = 255: Vec<u8>`
 
-## `MultiDest`: Universal Destination Identifiers
+## `MultiLocation`: Universal Destination Identifiers
 
 Destination identifiers are self-describing identifiers that can specify an owner into whose control some cryptographic asset be placed. It aims to be sufficiently abstract in meaning and general in nature that it works across a variety of chain types, including UTXO, account-based and privacy-preserving.
 
@@ -156,8 +234,8 @@ The super-consensus system relative to the context in which the value is being e
 
 Many destination types, e.g. smart contracts and parachains, can have secondary destinations nested beneath them and interpreted within their context. This allows for that.
 
-- `primary: MultiDest` The primary destination.
-- `subordinate: MultiDest` The subordinate destination, interpreted in the context of the primary destination.
+- `primary: MultiLocation` The primary destination.
+- `subordinate: MultiLocation` The subordinate destination, interpreted in the context of the primary destination.
 
 A ChildOf, one of whose two `primary`/`subordinate` values is Null is exactly equivalent to the other of the two values.
 
@@ -167,7 +245,7 @@ A ChildOf with a `subordinate` equal to this Type 1 is, by definition, exactly e
 
 Exactly equivalent to a ChildOf whose `primary` is a Parent.
 
-- `sibling: MultiDest` The destination, interpreted in the context of the current context's super destination.
+- `sibling: MultiLocation` The destination, interpreted in the context of the current context's super destination.
 
 ### Type 7: Opaque Remark
 
@@ -204,12 +282,6 @@ The Polkadot Relay pallet collection includes the idea of a Relay-chain with one
 
 - `network: MultiNetwork` The network identifier for the primary network, chain, contract, destination or context on which this account key functions (if any).
 - `key: [u8; 20]` The account key, as derived from the 20 bytes at the end of the Keccak-256 hash of the SECP256k1/ECDSA public key, or owed by a smart contract at the address.
-
-## Examples
-
-`0xff0000000200044254430004d0c43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d`
-
-This indicates to the receiving chain that the account controlled by Substrate's testing Alice key (`subkey inspect //Alice`) should be credited with 1 Satoshi worth of its variant/interpretation of the Bitcoin (`BTC`) token.
 
 ## MultiNetwork
 
@@ -250,3 +322,93 @@ These generally correspond to the popularly used ticker-tape symbols for each cu
 ## Appendix: Non-Fungible Asset Classes
 
 (None yet.)
+
+## Examples
+
+### Foreign account exchange
+
+Attempts to exchange 42 DOT for 21 BTC. Balance is queried to allow `H` to check result.
+
+- `H` Home chain.
+- `X` Exchange chain on which `H` has holdings.
+
+```
+X.WithdrawAsset(
+    42 DOT,
+    Each(
+        ExchangeAsset(*, 21 BTC)
+        QueryHolding(../H)
+        Deposit(../H, *)
+    )
+)
+```
+
+### Transfer via teleport
+
+Two peer chains that trust each other's STF use the teleport functionality to transfer 21 aUSD from Alice on the home chain to Bob on the other.
+
+- `H` Home chain; Alice's account here has been debited by 21 aUSD.
+- `D` Destination chain.
+
+```
+D.TeleportAsset(
+    21 aUSD,
+    Deposit(Bob, *)
+)
+```
+
+No fees are paid (we assume they're managed elsewhere).
+
+### Transfer via reserve
+
+Two peer chains that trust a third (reserve) chain's STF use the transfer functionality to transfer 21 DOT from Alice on the home chain to Bob on the other.
+
+- `H` Home chain; Alice's account here has been debited by 21 DOT.
+- `D` Destination chain.
+- `R` The Relay-chain, acting as a reserve.
+
+```
+R.ReserveAssetTransfer(
+    21 DOT,
+    D,
+    Deposit(Bob, *)
+)
+```
+
+This will result in `R.sovereign(1)` being reduced by 21 DOT (together with the fee) and `R.sovereign(2)` being credited with 21 DOT. A message will be sent by `R`:
+
+```
+D.ReserveAssetCredit(
+    21 DOT,
+    Deposit(Bob, *)
+)
+```
+
+### Exchange attempt of two currencies via separate reserves
+
+Alice is attempting to exchange 42 DOT for 21 BTC, but neither the Home chain nor the Exchange chain trust the other's STF. DOT is held in reserve by the Relay chain of which both are parachains. BTC is held in reserve on the BTC bridge chain, which is also a parachain.
+
+- `H` Home chain; Alice's account here has been debited by 42 DOT.
+- `X` The exchange parachain.
+- `R` The Relay-chain, acting as a reserve for DOT.
+- `B` The Bitcoin bridge parachain, acting as a reserve for BTC.
+
+```
+R.ReserveAssetTransfer(
+    42 DOT,
+    X,
+    Each(
+        ExchangeAsset(*, 21 BTC)
+        InitiateReserveTransfer(
+            * BTC,
+            ../H,
+            DepositAsset(Alice)
+        )
+        InitiateReserveTransfer(
+            * DOT,
+            H,
+            DepositAsset(Alice)
+        )
+    )
+)
+```
