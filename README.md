@@ -226,9 +226,13 @@ Basic format:
 
 Indicates that the context under which the value is being evaluated is itself the target.
 
+Written using a shorthand of `.`.
+
 ### Type 1: Parent
 
 The super-consensus system relative to the context in which the value is being evaluated. Examples would include the Relay-chain if the context was a parachain, or a parachain if the context were a smart-contract hosted by that parachain.
+
+Written using a shorthand of `..`.
 
 ### Type 2: ChildOf
 
@@ -241,11 +245,15 @@ A ChildOf, one of whose two `primary`/`subordinate` values is Null is exactly eq
 
 A ChildOf with a `subordinate` equal to this Type 1 is, by definition, exactly equivalent to its `primary`.
 
+Written using a shorthand of `<primary>/<subordinate>`.
+
 ### Type 3: SiblingOf
 
 Exactly equivalent to a ChildOf whose `primary` is a Parent.
 
 - `sibling: MultiLocation` The destination, interpreted in the context of the current context's super destination.
+
+No specific shorthand, but written by convention as `../<sibling>`.
 
 ### Type 7: Opaque Remark
 
