@@ -76,7 +76,7 @@ Where message `type` must be one of:
 - `32`: `RelayMessageParachain`
 - `33`: `ParachainRelayMessage`
 
-Within XCM version 0, there is a secondary datatype `Ai`, "Asset Instruction", defined as.
+Within XCM version 0, there is a secondary datatype `Ai`, "Asset Instruction", defined as:
 
 - `type: u8`: Instruction type.
 - `payload`: Instruction parameters.
@@ -273,7 +273,7 @@ Many destination types, e.g. smart contracts and parachains, can have secondary 
 
 A ChildOf, one of whose two `primary`/`subordinate` values is Null is exactly equivalent to the other of the two values.
 
-A ChildOf with a `subordinate` equal to this Type 1 is, by definition, exactly equivalent to its `primary`.
+A ChildOf with a `subordinate` equal to `Parend` is, by definition, exactly equivalent to its `primary`.
 
 Written using a shorthand of `<primary>/<subordinate>`.
 
@@ -342,14 +342,14 @@ Indicates that the identifier is relevant only to a specific network, as describ
 
 Valid values for `network_id` include:
 
-- `b"dot"`: Polkadot mainnet; 32-byte account ID corresponds directly to the public key of either the S/R 25519 or the Ed25519 signature schemes, or the Blake2-256 hash of the 33 byte compact ECDSA public key. Several other account mechanisms (see e.g. the `utility`, `multisig` or `proxy` pallets) are also in place for account authentication. Account index corresponds to the index pallet.
-- `b"ksm"`: Kusama mainnet; account ID and index correspond as per Polkadot.
-- `b"eth"`: Ethereum mainnet; 20-byte account ID corresponds to the trimmed Keccak hash of the ECDSA public key, or a contract address.
-- `b"btc"`: Bitcoin mainnet; 20 byte account ID corresponds to a standard Bitcoin address.
+- `b"dot"`: Polkadot mainnet; `AccountId32` corresponds directly to the public key of either the S/R 25519 or the Ed25519 signature schemes, or the Blake2-256 hash of the 33 byte compact ECDSA public key. Several other account mechanisms (see e.g. the `utility`, `multisig` or `proxy` pallets) are also in place for account authentication. `AccountIndex64` corresponds to an entry in the Index pallet.
+- `b"ksm"`: Kusama mainnet; `AccountId32` and `AccountIndex64` correspond as per Polkadot.
+- `b"eth"`: Ethereum mainnet; `AccountKey20` corresponds to the trimmed Keccak hash of the ECDSA public key, or a contract address.
+- `b"btc"`: Bitcoin mainnet; `AccountKey20` corresponds to a standard Bitcoin address.
 
 ## Appendix: Fungible Asset Types
 
-These generally correspond to the popularly used ticker-tape symbols for each currency. In the case where a popular currency has a symbol greater than three characters, then a short form may be noted here and used.
+These generally correspond to the popularly used ticker-tape symbols for each currency.
 
 - `b""` (Reserved as a wildcard.)
 - `b"DOT"` Polkadot (mainnet) tokens.
@@ -414,7 +414,7 @@ R.ReserveAssetTransfer(
 )
 ```
 
-This will result in `R.sovereign(1)` being reduced by 21 DOT (together with the fee) and `R.sovereign(2)` being credited with 21 DOT. A message will be sent by `R`:
+This will result in `R.sovereign(H)` being reduced by 21 DOT (together with the fee) and `R.sovereign(D)` being credited with 21 DOT. A message will be sent by `R`:
 
 ```
 D.ReserveAssetCredit(
