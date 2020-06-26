@@ -19,7 +19,7 @@ Polkadot has three main message passing systems all of which will use this forma
 
 In addition, a third "composite" message passing system is named as **HRelayMessageParachain** *Horizontal Relay-routed Message Passing*. It is implemented through utilising the two routing meta-messages of XMP (`RelayMessageParachain` and `ParachainRelayMessage`) so that parachains may send messages between each other before XCMP is finalised. This relies on the Relay-chain storing and relaying the messages and as such is not scalable. Parathreads may not receive such messages since queues could grow indefinitely.
 
-### XCM is for Message Passing between all kinds of Consensus system System
+### XCM is for Message Passing between all kinds of Consensus System
 
 In addition to messages between parachain(s) and/or the Relay-chain, XCM is suitable for messages between disparate chains connected through one or more bridge(s) and even for messages between smart-contracts. Using XCM, all of the above may communicate with, or through, each other.
 
