@@ -4,7 +4,7 @@ This page details the message format for Polkadot-based message passing between 
 
 ## Background
 
-There are several kinds of consensus systems for which it would be advantageous to facilitate communication. This includes messages between smart-contracts and their environment, messages between sovereign blockchains over bridges, and between shards governed by the same consensus. Unfortunately, each tends to have its own message-passing means and standards, or have no standards at all.
+There are several kinds of *Consensus Systems* for which it would be advantageous to facilitate communication. This includes messages between smart-contracts and their environment, messages between sovereign blockchains over bridges, and between shards governed by the same consensus. Unfortunately, each tends to have its own message-passing means and standards, or have no standards at all.
 
 XCM aims to abstract the typical message intentions across these systems and provide a basic framework for forward-compatible, extensible and practical communication datagrams facilitating typical interactions between disparate datasystems within the world of global consensus.
 
@@ -19,34 +19,55 @@ Polkadot has three main message passing systems all of which will use this forma
 
 In addition, a third "composite" message passing system is named as **HRelayMessageParachain** *Horizontal Relay-routed Message Passing*. It is implemented through utilising the two routing meta-messages of XMP (`RelayMessageParachain` and `ParachainRelayMessage`) so that parachains may send messages between each other before XCMP is finalised. This relies on the Relay-chain storing and relaying the messages and as such is not scalable. Parathreads may not receive such messages since queues could grow indefinitely.
 
-### XCM is for Message Passing between all kinds of Consensus System
+### XCM Communication Model
 
-In addition to messages between parachain(s) and/or the Relay-chain, XCM is suitable for messages between disparate chains connected through one or more bridge(s) and even for messages between smart-contracts. Using XCM, all of the above may communicate with, or through, each other.
+XCM is designed around three 'A's:
+
+- *Asynchronous*: XCM messages in now way assume that the sender will be blocking on its completion.
+- *Absolute*: XCM messages are guaranteed to be delivered and interpreted accurately, in order and in a timely fashion.
+- *Asymmetric*: XCM messages do not have results. Any results must be separately communicated to the sender with an additional message.
+- *Agnostic*: XCM makes no assumptions about the nature of the Consensus System between which messages are being passed.
+
+The fact that XCM gives these *Absolute* guarantees allows it to be practically *Asymmetric* whereas other non-Absloute protocols would find this difficult.
+
+Being *Agnostic* means that XCM is not simply for messages between parachain(s) and/or the Relay-chain, but rather that XCM is suitable for messages between disparate chains connected through one or more bridge(s) and even for messages between smart-contracts. Using XCM, all of the above may communicate with, or through, each other.
 
 E.g. It is entirely conceivable that, using XCM, a smart contract, hosted on a Polkadot parachain, may transfer a non-fungible asset it owns through Polkadot to an Ethereum-mainnet bridge located on another parachain, into an account controlled on the Ethereum mainnet by registering the transfer of ownership on a third, specialised Substrate NFA chain hosted on a Kusama parachain via a Polkadot-Kusama bridge.
 
 ## Definitions
 
-- *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams.
-- *Location* A consensus system, or an addressable account or datastructure that exists therein. Examples include an account on the Relay-chain, an account on a parachain, a parachain, an account managed by a smart-contract in a parachain. Specified by a `MultiLocation`.
-- *Sovereign Account* An account controlled by a particular consensus system, within some other consensus system.
-- *Holding Account* A transient notional "account" in which assets inherent in a message are temporarily held. See e.g. `DEP`.
-- *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve Consensus System is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
-- *Origin* The consensus system from which a given message has been (directly and immediately) delivered. This is always queryable by the receiving code using the message-passing protocol. Specified as a `MultiLocation`.
-- *Recipient* The consensus system to which a given message has been delivered. Specified as a `MultiLocation`.
-- *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship between them.
+- *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams. May be specified by a `MultiLocation` value (though not all such values identify a *Consensus System*). Examples include *The Polkadot Relay chain*, *The XDAI Ethereum PoA chain*, *The Ethereum Tether smart contract*.
+- *Location* A *Consensus System*, or an addressable account or datastructure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
+- *Sovereign Account* An account controlled by a particular *Consensus System*, within some other *Consensus System*. There may be many such accounts or just one. If many, then this assumes and identifies a unique *primary* account.
+- *Holding Account* A transient notional "account" in which assets inherent in a message are temporarily held.
+- *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve *Consensus System* is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
+- *Origin* The *Consensus System* from which a given message has been (directly and immediately) delivered. This is always queryable by the receiving code using the message-passing protocol. Specified as a `MultiLocation`.
+- *Recipient* The *Consensus System* to which a given message has been delivered. Specified as a `MultiLocation`.
+- *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship both of the STF and the validity/finality/availability between them.
 - *Transfer* The movement of funds from one controlling authority to another. This is within the same chain or overall asset-ownership environment and at the same abstraction level.
 
 ## Basic Top-level Format
 
-All data is SCALE encoded. We name the top-level XCM datatype `Xcm`.
+All data is SCALE encoded. We name the top-level XCM datatype `XcmPacket`. Generally, this is defined thus:
+
+- `magic: [u8; 2] = 0xff00`: Prefix identifier.
+- `version: Compact<u32>`: Version of XCM; only zero supported currently.
+- `message: Xcm`: The message; opaque unless version is known and well-defined.
+
+### Xcm Version 0
+
+The first version of Xcm, 0, is defined properly thus:
 
 - `magic: [u8; 2] = 0xff00`: Prefix identifier.
 - `version: Compact<u32> = 0u32`: Version of XCM; only zero supported currently.
-- `type: Compact<u32>`: Message type.
+- `message: Xcm`
+
+The message, which amounts to the "important part" is simply named `Xcm`. It is defined thus:
+
+- `type: u8`: Message type.
 - `payload`: Message parameters.
 
-For version 0, message `type` must be one of:
+Where message `type` must be one of:
 
 - `0`: `WithdrawAsset`
 - `1`: `ReserveAssetTransfer`
@@ -55,7 +76,12 @@ For version 0, message `type` must be one of:
 - `32`: `RelayMessageParachain`
 - `33`: `ParachainRelayMessage`
 
-Within XCM version 0, there is a secondary datatype `Ai` (asset instruction). They piggyback on the versioning of `Xcm` and for version 0 should be enumerated thus:
+Within XCM version 0, there is a secondary datatype `Ai`, "Asset Instruction", defined as.
+
+- `type: u8`: Instruction type.
+- `payload`: Instruction parameters.
+
+It should be enumerated thus:
 
 - `0`: `DepositAsset`
 - `1`: `ExchangeAsset`
@@ -110,7 +136,7 @@ An instructive message to indicate that a given message should be relayed to a f
 Parameter(s):
 
 - `destination: ParaId` The chain index to which this `message` should be relayed within a `ParachainRelayMessage`.
-- `message: Xcm` The message to be interpreted by the *Recipient*.
+- `messages: Vec<Xcm>` The messages to be interpreted by the *Recipient*.
 
 ### `ParachainRelayMessage`
 
@@ -119,7 +145,7 @@ A counterpart message to RelayMessageParachain, this is what is sent by the Rela
 Parameter(s):
 
 - `source: ParaId` The chain index from which this `message` has been relayed from an `RelayMessageParachain`.
-- `message: Xcm` The message to be interpreted by the *Recipient*.
+- `messages: Vec<Xcm>` The messages to be interpreted by the *Recipient*.
 
 ### `Balances`
 
@@ -188,7 +214,7 @@ Basic format:
 
 - `version: Compact<u32> = 0x00`
 - `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Asset Types* for a list of known values. The empty value may be used to indicate all assets. In this case, `amount` is ignored but should be set to zero by convention. Contexts may or may not support this.
-- `amount: Compact<u128>` The amount of the asset identified. Zero may be used to indicate all of the available asset. Contexts may or may not support this.
+- `amount: Compact<u128>` The amount of the asset identified. Zero may be used as a wildcard, to indicate all of the available asset or an unknown amount, determined by context.
 
 ### Non-fungible assets
 
@@ -222,19 +248,19 @@ Basic format:
 - `type: Compact<u32>`: The type of destination.
 - `payload`: The data payload, format determined by the `type`.
 
-### Type 0: Null
+### Type 0: `Null`
 
 Indicates that the context under which the value is being evaluated is itself the target.
 
 Written using a shorthand of `.`.
 
-### Type 1: Parent
+### Type 1: `Parent`
 
-The super-consensus system relative to the context in which the value is being evaluated. Examples would include the Relay-chain if the context was a parachain, or a parachain if the context were a smart-contract hosted by that parachain.
+The super-*Consensus System* relative to the context in which the value is being evaluated. Examples would include the Relay-chain if the context was a parachain, or a parachain if the context were a smart-contract hosted by that parachain.
 
 Written using a shorthand of `..`.
 
-### Type 2: ChildOf
+### Type 2: `ChildOf`
 
 Many destination types, e.g. smart contracts and parachains, can have secondary destinations nested beneath them and interpreted within their context. This allows for that.
 
@@ -247,7 +273,7 @@ A ChildOf with a `subordinate` equal to this Type 1 is, by definition, exactly e
 
 Written using a shorthand of `<primary>/<subordinate>`.
 
-### Type 3: SiblingOf
+### Type 3: `SiblingOf`
 
 Exactly equivalent to a ChildOf whose `primary` is a Parent.
 
@@ -255,22 +281,22 @@ Exactly equivalent to a ChildOf whose `primary` is a Parent.
 
 No specific shorthand, but written by convention as `../<sibling>`.
 
-### Type 7: Opaque Remark
+### Type 7: `OpaqueRemark`
 
 Not a true destination, but a pseudo-destination. Some destinations/contexts support attaching an opaque datagram ("remark") to an operation. In such supported contexts, this attaches a `remark` to the operation. This usually has no meaning to the operation, but rather is a human-readable message to help explain the operation.
 
-Typically used as the `subordinate` field of a Type 3 *Sub-destination*.
+Typically used as the `subordinate` field of a `ChildOf`.
 
 - `remark: Vec<u8>` The remark to be recorded with the operation. The actual location remains the current context.
 
-### Type 8: 32-byte Account ID
+### Type 8: `AccountId32`
 
 This is a generic 32-byte multi-crypto Account ID. If desired, the `network` may be restricted/specified.
 
 - `network: MultiNetwork` The network identifier for the primary network, chain, contract, destination or context on which this account ID functions (if any).
 - `id: [u8; 32]` The 32 byte Account ID.
 
-### Type 9: 64-bit Account Index
+### Type 9: `AccountIndex64`
 
 May be evaluated in the context of any system with a ubiquitous and canonical account indexing system.
 
@@ -279,14 +305,14 @@ An example would be a Substrate Frame chain including the `indices` pallet allow
 - `network: MultiNetwork` The network identifier for the primary network, chain, contract, destination or context on which this account functions (if any).
 - `index: Compact<u64>` The 64-bit account index.
 
-### Type 10: Parachain Primary Account
+### Type 10: `ParachainPrimaryAccount`
 
 The Polkadot Relay pallet collection includes the idea of a Relay-chain with one or more Parachains/threads, each identified by a `ParaId`, a scalar `u32` value. The Relay-chain has associated sovereign accounts controlled by its parachains. This indicates the primary such account.
 
 - `network: MultiNetwork` The network identifier for the Relay-chain on which this ID functions (if any).
 - `index: Compact<u32>` The 32-bit `ParaId`.
 
-### Type 11: 20-byte Account Key
+### Type 11: `AccountKey20`
 
 - `network: MultiNetwork` The network identifier for the primary network, chain, contract, destination or context on which this account key functions (if any).
 - `key: [u8; 20]` The account key, as derived from the 20 bytes at the end of the Keccak-256 hash of the SECP256k1/ECDSA public key, or owed by a smart contract at the address.
@@ -299,7 +325,7 @@ Basic format:
 
 ### Version 0: Wildcard
 
-Indicates that the identifier is potentially relevant in all syntactically legal positions throughout all consensus systems.
+Indicates that the identifier is potentially relevant in all syntactically legal positions throughout all *Consensus Systems*.
 
 - `version: Compact<u32> = 0u32`
 
@@ -321,6 +347,7 @@ Valid values for `network_id` include:
 
 These generally correspond to the popularly used ticker-tape symbols for each currency. In the case where a popular currency has a symbol greater than three characters, then a short form may be noted here and used.
 
+- `b""` (Reserved as a wildcard.)
 - `b"DOT"` Polkadot (mainnet) tokens.
 - `b"KSM"` Kusama tokens.
 - `b"BTC"` Bitcoin (mainnet) tokens.
@@ -329,7 +356,7 @@ These generally correspond to the popularly used ticker-tape symbols for each cu
 
 ## Appendix: Non-Fungible Asset Classes
 
-(None yet.)
+- `b""` (Reserved as a wildcard.)
 
 ## Examples
 
