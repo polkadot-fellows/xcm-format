@@ -346,7 +346,7 @@ X.WithdrawAsset(
     Each(
         ExchangeAsset(*, 21 BTC)
         QueryHolding(../H)
-        Deposit(../H, *)
+        DepositAsset(../H, *)
     )
 )
 ```
@@ -361,7 +361,7 @@ Two peer chains that trust each other's STF use the teleport functionality to tr
 ```
 D.TeleportAsset(
     21 aUSD,
-    Deposit(Bob, *)
+    DepositAsset(Bob, *)
 )
 ```
 
@@ -379,7 +379,7 @@ Two peer chains that trust a third (reserve) chain's STF use the transfer functi
 R.ReserveAssetTransfer(
     21 DOT,
     D,
-    Deposit(Bob, *)
+    DepositAsset(Bob, *)
 )
 ```
 
@@ -388,7 +388,7 @@ This will result in `R.sovereign(1)` being reduced by 21 DOT (together with the 
 ```
 D.ReserveAssetCredit(
     21 DOT,
-    Deposit(Bob, *)
+    DepositAsset(Bob, *)
 )
 ```
 
