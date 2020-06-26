@@ -91,6 +91,7 @@ It should be enumerated thus:
 ## `Xcm` Message Types
 
 ![image](https://user-images.githubusercontent.com/138296/85861827-38ef4f00-b7c1-11ea-8a2d-32cacbcef782.png)
+
 _Basic interaction diagram. Boxes are blockchains, cylinders are accounts, red arrow over an account is a debit, green arrow is a credit. Circled accounts are Holding Accounts. DA is `DepositAsset`, EA is `ExchangeAsset`, RAX is `ReserveAssetTransfer`, RAC is `ReserveAssetCredit`, TA is `TeleportAsset` and WA is `WithdrawAsset`_
 
 ### `ReserveAssetTransfer`
