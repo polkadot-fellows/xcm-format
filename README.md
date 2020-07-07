@@ -21,7 +21,7 @@ In addition, a third "composite" message passing system is named as **HRelayMess
 
 ### XCM Communication Model
 
-XCM is designed around three 'A's:
+XCM is designed around four 'A's:
 
 - *Asynchronous*: XCM messages in now way assume that the sender will be blocking on its completion.
 - *Absolute*: XCM messages are guaranteed to be delivered and interpreted accurately, in order and in a timely fashion.
