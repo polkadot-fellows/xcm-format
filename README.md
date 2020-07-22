@@ -214,16 +214,16 @@ Basic format:
 
 - `version: Compact<u32>`: Version/format code; currently two codes are supported `0x00`, and `0x01`.
 
-### Fungible assets
+### Abstract Fungible assets
 
 - `version: Compact<u32> = 0x00`
-- `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Asset Types* for a list of known values. The empty value may be used to indicate all assets. In this case, `amount` is ignored but should be set to zero by convention. Contexts may or may not support this.
+- `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Abstract Asset Types* for a list of known values. The empty value may be used to indicate all assets. In this case, `amount` is ignored but should be set to zero by convention. Contexts may or may not support this.
 - `amount: Compact<u128>` The amount of the asset identified. Zero may be used as a wildcard, to indicate all of the available asset or an unknown amount, determined by context.
 
-### Non-fungible assets
+### Abstract Non-fungible assets
 
 - `version: Compact<u32> = 0x01`
-- `class: Vec<u8>` The general non-fungible asset class code. See Appendix: Non-fungible Asset Types for a list of known values. The empty value may be used to indicate all asset classes. In this case, `instance` is ignored but should be set to `Undefined` by convention. Contexts may or may not support this.
+- `class: Vec<u8>` The general non-fungible asset class code. See Appendix: Non-fungible Abstract Asset Types for a list of known values. The empty value may be used to indicate all asset classes. In this case, `instance` is ignored but should be set to `Undefined` by convention. Contexts may or may not support this.
 - `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram. Most `class`es will support only a single specific kind of `AssetInstance`, however for ease of formatting and to facilitate future compatibility, it is self-describing. `Undefined` may be used to indicate all available assets of this `class`. Contexts may or may not support this.
 
 #### `AssetInstance`
@@ -241,6 +241,14 @@ Given by the SCALE `enum` (tagged union) of:
 - `Array16 = 18: [u32; 16]`
 - `Array32 = 19: [u32; 32]`
 - `Blob = 255: Vec<u8>`
+
+### Concrete Fungible assets
+
+TODO
+
+### Concrete Non-fungible assets
+
+TODO
 
 ## `MultiLocation`: Universal Destination Identifiers
 
@@ -347,7 +355,7 @@ Valid values for `network_id` include:
 - `b"eth"`: Ethereum mainnet; `AccountKey20` corresponds to the trimmed Keccak hash of the ECDSA public key, or a contract address.
 - `b"btc"`: Bitcoin mainnet; `AccountKey20` corresponds to a standard Bitcoin address.
 
-## Appendix: Fungible Asset Types
+## Appendix: Fungible Abstract Asset Types
 
 These generally correspond to the popularly used ticker-tape symbols for each currency.
 
@@ -358,7 +366,7 @@ These generally correspond to the popularly used ticker-tape symbols for each cu
 - `b"ETH"` Ethereum (foundation, mainnet) tokens.
 - `b"ETC"` Ethereum (classic, mainnet) tokens.
 
-## Appendix: Non-Fungible Asset Classes
+## Appendix: Non-Fungible Abstract Asset Classes
 
 - `b""` (Reserved as a wildcard.)
 
