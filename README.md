@@ -73,8 +73,6 @@ Where message `type` must be one of:
 - `1`: `ReserveAssetTransfer`
 - `2`: `ReserveAssetCredit`
 - `3`: `TeleportAsset`
-- `32`: `RelayMessageParachain`
-- `33`: `ParachainRelayMessage`
 
 Within XCM version 0, there is a secondary datatype `Ai`, "Asset Instruction", defined as:
 
@@ -132,24 +130,6 @@ Parameter(s):
 
 - `asset: MultiAsset` The asset(s) to be debited.
 - `effect: Ai` What should be done with the assets.
-
-### `RelayMessageParachain`
-
-An instructive message to indicate that a given message should be relayed to a further *Destination Chain*. The actual message presented to the *Destination Chain* will be of type `Parachain Relayed Message` and properly present the original sender in it.
-
-Parameter(s):
-
-- `destination: ParaId` The chain index to which this `message` should be relayed within a `ParachainRelayMessage`.
-- `messages: Vec<Xcm>` The messages to be interpreted by the *Recipient*.
-
-### `ParachainRelayMessage`
-
-A counterpart message to RelayMessageParachain, this is what is sent by the Relayer to the `destination` parachain mentioned in the RelayMessageParachain message. It is instructive only of the fact that an RelayMessageParachain with `message` and a `destination` equal to the *Receiving Parachain* was sent by the `source` parachain of the *Origin Relay-chain*.
-
-Parameter(s):
-
-- `source: ParaId` The chain index from which this `message` has been relayed from an `RelayMessageParachain`.
-- `messages: Vec<Xcm>` The messages to be interpreted by the *Recipient*.
 
 ### `Balances`
 
