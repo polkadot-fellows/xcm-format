@@ -23,7 +23,7 @@ In addition, a third "composite" message passing system is named as **HRelayMess
 
 XCM is designed around four 'A's:
 
-- *Asynchronous*: XCM messages in now way assume that the sender will be blocking on its completion.
+- *Asynchronous*: XCM messages in no way assume that the sender will be blocking on its completion.
 - *Absolute*: XCM messages are guaranteed to be delivered and interpreted accurately, in order and in a timely fashion.
 - *Asymmetric*: XCM messages do not have results. Any results must be separately communicated to the sender with an additional message.
 - *Agnostic*: XCM makes no assumptions about the nature of the Consensus System between which messages are being passed.
@@ -224,7 +224,7 @@ Basic format:
 
 - `version: Compact<u32> = 0x01`
 - `class: Vec<u8>` The general non-fungible asset class code. See Appendix: Non-fungible Abstract Asset Types for a list of known values. The empty value may be used to indicate all asset classes. In this case, `instance` is ignored but should be set to `Undefined` by convention. Contexts may or may not support this.
-- `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with with a numeric index or a datagram. Most `class`es will support only a single specific kind of `AssetInstance`, however for ease of formatting and to facilitate future compatibility, it is self-describing. `Undefined` may be used to indicate all available assets of this `class`. Contexts may or may not support this.
+- `instance: AssetInstance` The general non-fungible asset instance within the NFA class. May be identified with a numeric index or a datagram. Most `class`es will support only a single specific kind of `AssetInstance`, however for ease of formatting and to facilitate future compatibility, it is self-describing. `Undefined` may be used to indicate all available assets of this `class`. Contexts may or may not support this.
 
 #### `AssetInstance`
 
