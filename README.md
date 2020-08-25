@@ -216,10 +216,10 @@ Given by the SCALE `enum` (tagged union) of:
 - `Index32 = 3: Compact<u32>`
 - `Index64 = 4: Compact<u64>`
 - `Index128 = 5: Compact<u128>`
-- `Array4 = 6: [u32; 4]`
-- `Array8 = 7: [u32; 8]`
-- `Array16 = 8: [u32; 16]`
-- `Array32 = 9: [u32; 32]`
+- `Array4 = 6: [u8; 4]`
+- `Array8 = 7: [u8; 8]`
+- `Array16 = 8: [u8; 16]`
+- `Array32 = 9: [u8; 32]`
 - `Blob = 10: Vec<u8>`
 
 ### Concrete Fungible assets
