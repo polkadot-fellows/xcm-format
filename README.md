@@ -59,7 +59,7 @@ All data is SCALE encoded. We name the top-level XCM datatype `XcmPacket`. Gener
 The first version of Xcm, 0, is defined properly thus:
 
 - `magic: [u8; 2] = 0xff00`: Prefix identifier.
-- `version: Compact<u32> = 0u32`: Version of XCM; only zero supported currently.
+- `version: u8 = 0u8`: Version of XCM; only zero supported currently. Values of 128 and over are explicitly reserved for potential extension of this datatype in the (hopefully distant) future.
 - `message: Xcm`
 
 The message, which amounts to the "important part" is simply named `Xcm`. It is defined thus:
@@ -192,11 +192,11 @@ Initiates a `Balances` message to some `destination` with the given `query_id` f
 
 Basic format:
 
-- `version: Compact<u32>`: Version/format code; currently two codes are supported `0x00`, and `0x01`.
+- `version: u8`: Version/format code; currently two codes are supported `0x00`, and `0x01`.
 
 ### Abstract Fungible assets
 
-- `version: Compact<u32> = 0x00`
+- `version: u8 = 0x00` The version; zero for now.
 - `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Abstract Asset Types* for a list of known values. The empty value may be used to indicate all assets. In this case, `amount` is ignored but should be set to zero by convention. Contexts may or may not support this.
 - `amount: Compact<u128>` The amount of the asset identified. Zero may be used as a wildcard, to indicate all of the available asset or an unknown amount, determined by context.
 
@@ -236,8 +236,8 @@ Destination identifiers are self-describing identifiers that can specify an owne
 
 Basic format:
 
-- `version: Compact<u32> = 0x00`: Version code, currently there's only the first version, zero.
-- `type: Compact<u32>`: The type of destination.
+- `version: u8 = 0x00`: Version code, currently there's only the first version, zero.
+- `type: u8`: The type of destination.
 - `payload`: The data payload, format determined by the `type`.
 
 ### Type 0: `Null`
@@ -313,19 +313,19 @@ The Polkadot Relay pallet collection includes the idea of a Relay-chain with one
 
 Basic format:
 
-- `version: Compact<u32>`: Version/format code.
+- `version: u8`: Version/format code.
 
 ### Version 0: Wildcard
 
 Indicates that the identifier is potentially relevant in all syntactically legal positions throughout all *Consensus Systems*.
 
-- `version: Compact<u32> = 0u32`
+- `version: u8 = 0u8`
 
 ### Version 1: Networks
 
 Indicates that the identifier is relevant only to a specific network, as described.
 
-- `version: Compact<u32> = 1u32`
+- `version: u8 = 1u8`
 - `network_id: Vec<u8>`
 
 Valid values for `network_id` include:
