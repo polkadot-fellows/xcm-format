@@ -198,7 +198,7 @@ Basic format:
 
 - `version: u8 = 0x00` The version; zero for now.
 - `id: Vec<u8>` The fungible asset identifier, usually derived from the ticker-tape code (e.g. `*b"BTC"`, `*b"ETH"`, `*b"DOT"`). See *Appendix: Fungible Abstract Asset Types* for a list of known values. The empty value may be used to indicate all assets. In this case, `amount` is ignored but should be set to zero by convention. Contexts may or may not support this.
-- `amount: Compact<u128>` The amount of the asset identified. Zero may be used as a wildcard, to indicate all of the available asset or an unknown amount, determined by context.
+- `amount: Compact<_>` The amount of the asset identified. Zero may be used as a wildcard, to indicate all of the available asset or an unknown amount, determined by context. The `_` represents the fact that this is unlimited in size as far as the format is concerned, though implementations may support up to whatever size they choose.
 
 ### Abstract Non-fungible assets
 
