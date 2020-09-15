@@ -75,7 +75,8 @@ Where message `type` must be one of:
 - `3`: `Balances`
 - `4`: `Transact`
 - `5`: `RelayToParachain`
-- `6`: `RelayedFrom`
+- `6`: `RelayToContract`
+- `7`: `RelayedFrom`
 
 Within XCM, there is an internal datatype `Order`, which encodes an operation on the holding account. It is defined as:
 
@@ -145,13 +146,13 @@ Kind: *Instruction*.
 
 Errors:
 
-### `RelayToParachain`
+### `RelayTo`
 
-Relay an inner message (`inner`) to the parachain destination ID `id`.
+Relay an inner message (`inner`) to a locally reachable destination ID `dest`.
 
-The message sent to the parachain will be wrapped into a `RelayedFrom` message, with the `superorigin` being this parachain.
+The message sent to the destination will be wrapped into a `RelayedFrom` message, with the `superorigin` being this parachain.
 
-- `id: u32`: The identity of the parachain to be relayed into.
+- `dest: MultiLocation`: The location of the to be relayed into. This may never contain `Parent`, and it must be immediately reachable from the interpreting context.
 - `inner: VersionedXcm`: The message to be wrapped and relayed.
 
 Safety: No concerns.
@@ -167,12 +168,12 @@ A message (`inner`) was sent to `origin` from `superorigin` with the intention o
 - `superorigin: MultiLocation`: The location of the `inner` message origin, **relative to `origin`**.
 - `inner: VersionedXcm`: The message sent by the super origin.
 
-Safety: `superorigin` must express a sub-consensus only.
+Safety: `superorigin` must express a sub-consensus only; it may *NEVER* contain a `Parent` junction.
 
 Kind: *Trusted Indication*.
 
 Errors:
-	
+
 ## `Order` Types
 
 ### `Null`
@@ -276,18 +277,15 @@ An abstract identifier is represented as a simple variable-size byte string. As 
 
 #### Concrete identifiers
 
-Concrete identifiers are *relative identifiers* that specifically identify a single asset through its location in a consensus system relative to the context interpreting. Use of a `MultiLocation` ensures that similar but non
-fungible variants of the same underlying asset can be properly distinguished, and obviates the need for any kind of central registry.
+Concrete identifiers are *relative identifiers* that specifically identify a single asset through its location in a consensus system relative to the context interpreting. Use of a `MultiLocation` ensures that similar but non-fungible variants of the same underlying asset can be properly distinguished, and obviates the need for any kind of central registry.
 
 The limitation is that the asset identifier cannot be trivially copied between consensus systems and must instead be "re-anchored" whenever being moved to a new consensus system, using the two systems' relative paths.
 
-Throughout XCM, messages are authored such that *when interpreted from the receiver's point of view* they will have the desired meaning/effect. This means that relative paths should always by constructed to be read from the
-point of view of the receiving system, *which may be have a completely different meaning in the authoring system*.
+Throughout XCM, messages are authored such that *when interpreted from the receiver's point of view* they will have the desired meaning/effect. This means that relative paths should always by constructed to be read from the point of view of the receiving system, *which may be have a completely different meaning in the authoring system*.
 
 Concrete identifiers are the generally preferred way of identifying an asset since they are entirely unambiguous.
 
-A concrete identifier is represented by a `MultiLocation`. If a system has an unambiguous primary asset (such as Bitcoin with BTC or Ethereum with ETH), then it will conventionally be identified as the chain itself. Alternative
-and more specific ways of referring to an asset within a system include:
+A concrete identifier is represented by a `MultiLocation`. If a system has an unambiguous primary asset (such as Bitcoin with BTC or Ethereum with ETH), then it will conventionally be identified as the chain itself. Alternative and more specific ways of referring to an asset within a system include:
 
 - `<chain>/PalletInstance(<id>)` for a Frame chain with a single-asset pallet instance (such as an instance of the Balances pallet).
 - `<chain>/PalletInstance(<id>)/GeneralIndex(<index>)` for a Frame chain with an indexed multi-asset pallet instance (such as an instance of the Assets pallet).
@@ -345,9 +343,9 @@ A very-much non-exhaustive list of types of location include:
 - A logical functional component of a chain, e.g. a single instance of a pallet on a Frame-based Substrate chain.
 - An account.
 
-A `MultiLocation` is a *relative identifier*, meaning that it can only be used to define the relative path between two locations, and cannot generally be used to refer to a location universally. It is comprised of a number of *junctions*, each morphing the previous location, either diving down into one of its internal locations, called a *sub-consensus*, or going up into its parent location. Correct `MultiLocation` values must have all `Parent` junctions as a prefix to all *sub-consensus* junctions.
+A `MultiLocation` is a *relative identifier*, meaning that it can only be used to define the relative path between two locations, and cannot generally be used to refer to a location universally. It is comprised of a number of *junctions*, in order, each morphing the previous location, either diving down into one of its internal locations, called a *sub-consensus*, or going up into its parent location. Correct `MultiLocation` values must have all `Parent` junctions as a prefix to all *sub-consensus* junctions.
 
-A `MultiLocation` value with no junctions simply refers to the interpreting consensus system.
+A `MultiLocation` value with no junctions simply refers to the "current" interpreting consensus system.
 
 Note: `MultiLocation`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and filesystems. E.g. a `MultiLocation` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `MultiLocation` of three `Junction`s: `Parent`, `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
 
@@ -361,7 +359,7 @@ A `Junction` is encoded as the tagged union of:
 
 - `AccountId32 = 2 { network: NetworkId, id: [u8; 32] }`: A 32-byte `id`entifier for an account of a specific `network` that is respected as a sovereign endpoint within the context. Generally used when the context is a Substrate-based chain.
 
-- `AccountIndex64 = 3 { network: NetworkId, index: Compact<u64> }`: An 8-byte `index` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is a Frame-based chain and includes e.g. an indices pallet.
+- `AccountIndex64 = 3 { network: NetworkId, index: Compact<u64> }`: An 8-byte `index` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is a Frame-based chain and includes e.g. an indices pallet. The `network` id may be used to restrict or qualify the meaning of the index and may not refer specifically to a *blockchain* network. An example might be a smart contract chain which uses different `network` values to distinguish between account indices and smart contracts indices.
 
 - `AccountKey20 = 4 { network: NetworkId, key: [u8; 20] }`: A 20-byte identifier `key` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is an Ethereum or Bitcoin chain or smart-contract.
 
