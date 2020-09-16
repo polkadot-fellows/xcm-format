@@ -74,9 +74,8 @@ Where message `type` must be one of:
 - `2`: `TeleportAsset`
 - `3`: `Balances`
 - `4`: `Transact`
-- `5`: `RelayToParachain`
-- `6`: `RelayToContract`
-- `7`: `RelayedFrom`
+- `5`: `RelayTo`
+- `6`: `RelayedFrom`
 
 Within XCM, there is an internal datatype `Order`, which encodes an operation on the holding account. It is defined as:
 
@@ -150,7 +149,7 @@ Errors:
 
 Relay an inner message (`inner`) to a locally reachable destination ID `dest`.
 
-The message sent to the destination will be wrapped into a `RelayedFrom` message, with the `superorigin` being this parachain.
+The message sent to the destination will be wrapped into a `RelayedFrom` message, with the `superorigin` being this location.
 
 - `dest: MultiLocation`: The location of the to be relayed into. This may never contain `Parent`, and it must be immediately reachable from the interpreting context.
 - `inner: VersionedXcm`: The message to be wrapped and relayed.
