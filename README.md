@@ -25,7 +25,7 @@ Polkadot has three main message passing systems all of which will use this forma
 
 XCM is designed around four 'A's:
 
-- *Asynchronous*: XCM messages in now way assume that the sender will be blocking on its completion.
+- *Asynchronous*: XCM messages in no way assume that the sender will be blocking on its completion.
 - *Absolute*: XCM messages are guaranteed to be delivered and interpreted accurately, in order and in a timely fashion.
 - *Asymmetric*: XCM messages do not have results. Any results must be separately communicated to the sender with an additional message.
 - *Agnostic*: XCM makes no assumptions about the nature of the Consensus System between which messages are being passed.
