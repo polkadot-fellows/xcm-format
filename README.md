@@ -179,7 +179,7 @@ Sends a claim verified to be from the `source` to the `destination` on the parac
 
 - `source: MultiLocation`
 - `destination: MultiLocation`
-- `timestamp: Compact<u48>`
+- `expiration: Compact<u48>`: Timestamp of the claim expiration
 - `scope: Vec<u8>`
 
 Errors:
