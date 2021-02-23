@@ -30,7 +30,7 @@ XCM is designed around four 'A's:
 - *Asymmetric*: XCM messages do not have results. Any results must be separately communicated to the sender with an additional message.
 - *Agnostic*: XCM makes no assumptions about the nature of the Consensus System between which messages are being passed.
 
-The fact that XCM gives these *Absolute* guarantees allows it to be practically *Asymmetric* whereas other non-Absloute protocols would find this difficult.
+The fact that XCM gives these *Absolute* guarantees allows it to be practically *Asymmetric* whereas other non-Absolute protocols would find this difficult.
 
 Being *Agnostic* means that XCM is not simply for messages between parachain(s) and/or the Relay-chain, but rather that XCM is suitable for messages between disparate chains connected through one or more bridge(s) and even for messages between smart-contracts. Using XCM, all of the above may communicate with, or through, each other.
 
@@ -39,7 +39,7 @@ E.g. It is entirely conceivable that, using XCM, a smart contract, hosted on a P
 ## Definitions
 
 - *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams. May be specified by a `MultiLocation` value (though not all such values identify a *Consensus System*). Examples include *The Polkadot Relay chain*, *The XDAI Ethereum PoA chain*, *The Ethereum Tether smart contract*.
-- *Location* A *Consensus System*, or an addressable account or datastructure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
+- *Location* A *Consensus System*, or an addressable account or data structure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
 - *Sovereign Account* An account controlled by a particular *Consensus System*, within some other *Consensus System*. There may be many such accounts or just one. If many, then this assumes and identifies a unique *primary* account.
 - *Holding Account* A transient notional "account" in which assets inherent in a message are temporarily held.
 - *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve *Consensus System* is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
@@ -109,11 +109,11 @@ Parameter(s):
 
 ### `ReserveAssetDeposit`
 
-A notification message that the *Origin* has received `assets` into a *Sovereign* account controled by the *Recipient*. The `asset` should be minted into the *Holding Account* and some `effect` evaluated on it.
+A notification message that the *Origin* has received `assets` into a *Sovereign* account controlled by the *Recipient*. The `asset` should be minted into the *Holding Account* and some `effect` evaluated on it.
 
 Parameter(s):
 
-- `assets: Vec<MultiAsset>` The asset(s) that were transfered.
+- `assets: Vec<MultiAsset>` The asset(s) that were transferred.
 - `effect: Vec<Order>` What should be done with the assets.
 
 ### `TeleportAsset`
@@ -252,7 +252,7 @@ A no-op in XCM terms, but may be used as an "event hook" on the recipient implem
 
 ## `MultiAsset`: Universal Asset Identifiers
 
-*Note on versioning:* This is the `MultiAsset` as used in XCM version 0. If `MultiAsset` is used outside of an XCM message, then it should be placed inside a versioned container `VersionedMultiAsset`, exactly analagous to how `Xcm` is placed inside `VersionedXcm`.
+*Note on versioning:* This is the `MultiAsset` as used in XCM version 0. If `MultiAsset` is used outside of an XCM message, then it should be placed inside a versioned container `VersionedMultiAsset`, exactly analogous to how `Xcm` is placed inside `VersionedXcm`.
 
 ### Description
 
@@ -324,7 +324,7 @@ Given by the SCALE `enum` (tagged union) of:
 
 ## `MultiLocation`: Universal Destination Identifiers
 
-*Note on versioning:* This is the `MultiLocation` as used in XCM version 0. If `MultiLocation` is used outside of an XCM message, then it should be placed inside a versioned container `VersionedMultiLocation`, exactly analagous to how `Xcm` is placed inside `VersionedXcm`.
+*Note on versioning:* This is the `MultiLocation` as used in XCM version 0. If `MultiLocation` is used outside of an XCM message, then it should be placed inside a versioned container `VersionedMultiLocation`, exactly analogous to how `Xcm` is placed inside `VersionedXcm`.
 
 ### Description
 
@@ -346,7 +346,7 @@ A `MultiLocation` is a *relative identifier*, meaning that it can only be used t
 
 A `MultiLocation` value with no junctions simply refers to the "current" interpreting consensus system.
 
-Note: `MultiLocation`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and filesystems. E.g. a `MultiLocation` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `MultiLocation` of three `Junction`s: `Parent`, `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
+Note: `MultiLocation`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and file systems. E.g. a `MultiLocation` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `MultiLocation` of three `Junction`s: `Parent`, `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
 
 ### Junctions
 
@@ -439,7 +439,7 @@ Two peer chains that trust a third (reserve) chain's STF use the transfer functi
 
 - `H` Home chain.
 - `D` Destination chain.
-- The Relay-chain; this is their common parant and it acts as a reserve.
+- The Relay-chain; this is their common parent and it acts as a reserve.
 
 ```
 Alice.WithdrawAsset {
