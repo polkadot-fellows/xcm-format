@@ -94,7 +94,7 @@ It should be enumerated thus:
 
 ## `Xcm` Message Types
 
-![image](XCM basic interaction diagram.png)
+![image](XCM_basic_interaction_diagram.png)
 
 Basic interaction diagram. Boxes are blockchains, cylinders are accounts, red account color is a debit, green account color is a credit. Shaded grey accounts are Holding Accounts.
 
