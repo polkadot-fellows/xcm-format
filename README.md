@@ -76,6 +76,9 @@ Where message `type` must be one of:
 - `4`: `Transact`
 - `5`: `RelayTo`
 - `6`: `RelayedFrom`
+- `7`: `HrmpNewChannelOpenRequest`
+- `8`: `HrmpChannelAccepted`
+- `9`: `HrmpChannelClosing`
 
 Within XCM, there is an internal datatype `Order`, which encodes an operation on the holding account. It is defined as:
 
@@ -170,6 +173,50 @@ A message (`inner`) was sent to `origin` from `superorigin` with the intention o
 Safety: `superorigin` must express a sub-consensus only; it may *NEVER* contain a `Parent` junction.
 
 Kind: *Trusted Indication*.
+
+Errors:
+
+### `HrmpNewChannelOpenRequest`
+
+A message to notify about a new incoming HRMP channel. This message is meant to be sent by the
+relay-chain to a para.
+
+- `sender: u32 (Compact)`: The sender in the to-be opened channel. Also, the initiator of the channel opening.
+- `max_message_size: u32 (Compact)`: The maximum size of a message proposed by the sender.
+- `max_capacity: u32 (Compact)`: The maximum number of messages that can be queued in the channel.
+
+Safety: The message should originate directly from the relay-chain.
+
+Kind: *System Notification*
+
+### `HrmpChannelAccepted`
+
+A message to notify about that a previously sent open channel request has been accepted by
+the recipient. That means that the channel will be opened during the next relay-chain session
+change. This message is meant to be sent by the relay-chain to a para.
+
+- `recipient: u32 (Compact)`: The recipient in the to-be opened channel.
+
+Safety: The message should originate directly from the relay-chain.
+
+Kind: *System Notification*
+
+Errors:
+
+### `HrmpChannelClosing`
+
+A message to notify that the other party in an open channel decided to close it. In particular,
+`inititator` is going to close the channel opened from `sender` to the `recipient`. The close
+will be enacted at the next relay-chain session change. This message is meant to be sent by
+the relay-chain to a para.
+
+- `initiator: u32 (Compact)`: The initiator of the channel closing.
+- `sender: u32 (Compact)`: The sender in the to-be closed channel.
+- `recipient: u32 (Compact)`: The recipient in the to-be closed channel.
+
+Safety: The message should originate directly from the relay-chain.
+
+Kind: *System Notification*
 
 Errors:
 
