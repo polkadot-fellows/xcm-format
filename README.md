@@ -79,6 +79,9 @@ Where message `type` must be one of:
 - `7`: `HrmpNewChannelOpenRequest`
 - `8`: `HrmpChannelAccepted`
 - `9`: `HrmpChannelClosing`
+- `10`: `HrmpInitOpenChannel`
+- `11`: `HrmpAcceptOpenChannel`
+- `12`: `HrmpCloseChannel`
 
 Within XCM, there is an internal datatype `Order`, which encodes an operation on the holding account. It is defined as:
 
@@ -217,6 +220,48 @@ the relay-chain to a para.
 Safety: The message should originate directly from the relay-chain.
 
 Kind: *System Notification*
+
+Errors:
+
+### `HrmpInitOpenChannel`
+
+Initiate opening a channel from a parachain to a given recipient with given channel
+parameters.
+
+- `recipient: u32 (Compact)`, - The recipient in the to-be opened channel.
+- `proposed_max_capacity: u32 (Compact)` - specifies how many messages can be in the channel at once.
+- `proposed_max_message_size: u32 (Compact)` - specifies the maximum size of any of the messages.
+
+These numbers are a subject to the relay-chain configuration limits.
+
+The channel can be opened only after the recipient confirms it and only on a session
+change.
+
+Safety: The message should originate directly from the para-chain.
+
+### `HrmpAcceptOpenChannel`
+
+Accept a pending open channel request from the given sender.
+
+The channel will be opened only on the next session boundary.
+
+- `sender: u32 (Compact)`: The sender in the to-be opened channel. Also, the initiator of the channel opening.
+
+Safety: The message should originate directly from the para-chain.
+
+Errors:
+
+### `HrmpCloseChannel`
+
+Initiate unilateral closing of a channel. The origin must be either the sender or the
+recipient in the channel being closed.
+
+The closure can only happen on a session change.
+
+- `sender: u32 (Compact)`: The sender in the to-be closed channel.
+- `recipient: u32 (Compact)`: The recipient in the to-be closed channel.
+
+Safety: The message should originate directly from the para-chain.
 
 Errors:
 
