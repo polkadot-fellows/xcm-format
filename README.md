@@ -113,6 +113,8 @@ Parameter(s):
 - `assets: Vec<MultiAsset>` The asset(s) to be withdrawn.
 - `effect: Vec<Order>` What should be done with the assets.
 
+Kind: *Instruction*.
+
 ### `ReserveAssetDeposit`
 
 A notification message that the *Origin* has received `assets` into a *Sovereign* account controled by the *Recipient*. The `asset` should be minted into the *Holding Account* and some `effect` evaluated on it.
@@ -121,6 +123,8 @@ Parameter(s):
 
 - `assets: Vec<MultiAsset>` The asset(s) that were transfered.
 - `effect: Vec<Order>` What should be done with the assets.
+
+Kind: *Instruction*.
 
 ### `TeleportAsset`
 
@@ -131,12 +135,16 @@ Parameter(s):
 - `assets: Vec<MultiAsset>` The asset(s) which were debited.
 - `effect: Vec<Order>` What should be done with the assets.
 
+Kind: *Instruction*.
+
 ### `Balances`
 
 Informational message detailing some balances, interpreted based on the context of the destination and the `query_id`.
 
 - `query_id` The identifier of the query which caused this message to be sent.
 - `assets` The value for use by the destination.
+
+Kind: *Query Responses*.
 
 ### `Transact`
 
@@ -239,6 +247,8 @@ change.
 
 Safety: The message should originate directly from the para-chain.
 
+Kind: *Instruction*.
+
 ### `HrmpAcceptOpenChannel`
 
 Accept a pending open channel request from the given sender.
@@ -248,6 +258,8 @@ The channel will be opened only on the next session boundary.
 - `sender: u32 (Compact)`: The sender in the to-be opened channel. Also, the initiator of the channel opening.
 
 Safety: The message should originate directly from the para-chain.
+
+Kind: *Instruction*.
 
 Errors:
 
@@ -262,6 +274,8 @@ The closure can only happen on a session change.
 - `recipient: u32 (Compact)`: The recipient in the to-be closed channel.
 
 Safety: The message should originate directly from the para-chain.
+
+Kind: *Instruction*.
 
 Errors:
 
