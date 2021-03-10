@@ -245,7 +245,7 @@ These numbers are a subject to the relay-chain configuration limits.
 The channel can be opened only after the recipient confirms it and only on a session
 change.
 
-Safety: The message should originate directly from the para-chain.
+Safety: The message should originate directly from the parachain.
 
 Kind: *Instruction*.
 
@@ -257,7 +257,7 @@ The channel will be opened only on the next session boundary.
 
 - `sender: u32 (Compact)`: The sender in the to-be opened channel. Also, the initiator of the channel opening.
 
-Safety: The message should originate directly from the para-chain.
+Safety: The message should originate directly from the parachain.
 
 Kind: *Instruction*.
 
@@ -273,7 +273,7 @@ The closure can only happen on a session change.
 - `sender: u32 (Compact)`: The sender in the to-be closed channel.
 - `recipient: u32 (Compact)`: The recipient in the to-be closed channel.
 
-Safety: The message should originate directly from the para-chain.
+Safety: The message should originate directly from the parachain.
 
 Kind: *Instruction*.
 
