@@ -186,20 +186,55 @@ Send staking related messages. All the messages should be executed sequentially 
 
 - `messages: Vec<StakingMssage>`
 
-Kin: *Meta*.
+Kind: *Meta*.
 
 Errors:
 
 #### `StakingMessage` Types
 
 ##### `Bond`
+
+- `value: Compact`: The amount of token to bond.
+
+Kind: *Instruction*.
+
 ##### `Unbond`
+
+- `value: Compact`: The amount of token to unbond.
+
+Kind: *Instruction*.
+
 ##### `Rebond`
+
+- `value: Compact`: The amount of token to bond.
+
+Kind: *Instruction*.
+
 ##### `SetPayee`
+
+- `payee: RewardDestination`: The destination account for payment.
+
+TODO: How are we going to define RewardDestination type??
+
+Kind: *Instruction*.
+
 ##### `WithdrawUnbonded`
+
+Kind: *Instruction*.
+
 ##### `Nominate`
+
+- `targets: Vec<MultiLocation>`: Declare the desire to nominate `targets`.
+
+Kind: *Instruction*.
+
 ##### `Chill`
+
+Kind: *Instruction*.
+
 ##### `PayoutStakers`
+
+Kind: *Instruction*.
 
 ## `Order` Types
 
