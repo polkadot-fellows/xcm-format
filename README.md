@@ -76,6 +76,16 @@ Where message `type` must be one of:
 - `4`: `Transact`
 - `5`: `RelayTo`
 - `6`: `RelayedFrom`
+- `7`: `HrmpNewChannelOpenRequest`
+- `8`: `HrmpChannelAccepted`
+- `9`: `HrmpChannelClosing`
+- `10`: `HrmpInitOpenChannel`
+- `11`: `HrmpAcceptOpenChannel`
+- `12`: `HrmpCloseChannel`
+- `13`: `QueryPallet`
+- `14`: `PalletInfo`
+- `15`: `Dispatch`
+- `16`: `DispatchOutcome`
 
 Within XCM, there is an internal datatype `Order`, which encodes an operation on the holding account. It is defined as:
 
@@ -172,6 +182,73 @@ Safety: `superorigin` must express a sub-consensus only; it may *NEVER* contain 
 Kind: *Trusted Indication*.
 
 Errors:
+
+### `QueryPallet`
+
+Query the existence of a particular pallet type.
+
+- `name: Vec<u8>`: The name of the pallet to query.
+- `query_id`: The value to make the returned message identifiable with this query.
+
+Returns: A honestly populated `PalletInfo` to the origin.
+
+Safety: No concerns.
+
+Kind: *Instruction*
+
+Errors:
+
+### `PalletInfo`
+
+Provide information on the existence of a particular pallet type.
+
+- `query_id` The identifier of the query which caused this message to be sent.
+- `pallets: Vec<(u32, (u32, u32, u32))>`: The index/version of each of the pallets whose name matches the name in the according `QueryPallet` message.
+
+Safety: No concerns.
+
+Kind: *Trusted Indication*
+
+Errors:
+
+### `Dispatch`
+
+Dispatch a call into a pallet in the Frame system. This provides a means of ensuring that the pallet continues to exist with a known version.
+
+- `origin_type`: The means of expressing the message origin as a dispatch origin.
+- `name: Vec<u8>`: The name of the pallet to which to dispatch a message.
+- `major_minor: (u32, u32)`: The major and minor version of the pallet. The major version must be equal and the minor version of the pallet must be at least as great.
+- `pallet_index: u32`: The index of the pallet to be called.
+- `call_index: u32`: The index of the dispatchable to be called.
+- `params: Vec<u8>`: The encoded parameters of the dispatchable.
+- `query_id`: The value to make the returned message identifiable with this query.
+
+Returns: `DispatchDone` or `DispatchFail` to origin.
+
+Safety: No concerns.
+
+Kind: *Instruction*
+
+Errors:
+
+### `DispatchOutcome`
+
+Provide information on the outcome of a previous `Dispatch` message.
+
+- `query_id` The identifier of the query which caused this message to be sent.
+- `error: Result<Option<u32>, DispatchError>`: If `Err` then the dispatch was not possible and the error is given. If `Ok`, then the dispatch was made and the inner value expresses the error with which the dispatch resulted: if `None`, then it succeeded.
+
+Safety: No concerns.
+
+Kind: *Trusted Indication*
+
+Errors:
+
+#### `DispatchError`
+
+`u8` enumeration:
+
+- `0x00: Pallet of the correct version not found` 
 
 ## `Order` Types
 
