@@ -76,6 +76,13 @@ Where message `type` must be one of:
 - `4`: `Transact`
 - `5`: `RelayTo`
 - `6`: `RelayedFrom`
+- `7`: `HrmpNewChannelOpenRequest`
+- `8`: `HrmpChannelAccepted`
+- `9`: `HrmpChannelClosing`
+- `10`: `HrmpInitOpenChannel`
+- `11`: `HrmpAcceptOpenChannel`
+- `12`: `HrmpCloseChannel`
+- `13`: `Staking`
 
 Within XCM, there is an internal datatype `Order`, which encodes an operation on the holding account. It is defined as:
 
@@ -172,6 +179,27 @@ Safety: `superorigin` must express a sub-consensus only; it may *NEVER* contain 
 Kind: *Trusted Indication*.
 
 Errors:
+
+### `Staking`
+
+Send staking related messages. All the messages should be executed sequentially and applied atomically.
+
+- `messages: Vec<StakingMssage>`
+
+Kin: *Meta*.
+
+Errors:
+
+#### `StakingMessage` Types
+
+##### `Bond`
+##### `Unbond`
+##### `Rebond`
+##### `SetPayee`
+##### `WithdrawUnbonded`
+##### `Nominate`
+##### `Chill`
+##### `PayoutStakers`
 
 ## `Order` Types
 
