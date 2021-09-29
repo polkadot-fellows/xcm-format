@@ -226,7 +226,7 @@ The instructions, in order, are:
 - When the term _Holding_ is used, it is meant to mean "value of the Holding Register". Thus the phrase "reduce Holding by the asset" is equivalent to "reduce the value of the Holding Register by the asset".
 - Similarly for _Appendix_ (the value of the Appendix Register) and _Error Handler_ (the value of the Error Handler Register).
 - The term _on-chain_ should be taken to mean "within the persistent state of the local consensus system", and should not be considered to limit the current consensus system to one which is specifically a blockchain system.
-- The type `Integer`, `Weight` and `QueryId` should be intended to mean a compact integer as per the SCALE definition.
+- The type `Compact`, `Weight` and `QueryId` should be intended to mean a compact integer as per the SCALE definition.
 
 ### `WithdrawAsset`
 
@@ -337,9 +337,9 @@ Relay-chain to a para.
 
 Operands:
 
-- `sender: Integer`: The sender in the to-be opened channel. Also, the initiator of the channel opening.
-- `max_message_size: Integer`: The maximum size of a message proposed by the sender.
-- `max_capacity: Integer`: The maximum number of messages that can be queued in the channel.
+- `sender: Compact`: The sender in the to-be opened channel. Also, the initiator of the channel opening.
+- `max_message_size: Compact`: The maximum size of a message proposed by the sender.
+- `max_capacity: Compact`: The maximum number of messages that can be queued in the channel.
 
 Safety: The message should originate directly from the Relay-chain.
 
@@ -351,7 +351,7 @@ A message to notify about that a previously sent open channel request has been a
 
 Operands:
 
-- `recipient: Integer`: The recipient parachain which has accepted the previous open-channel request.
+- `recipient: Compact`: The recipient parachain which has accepted the previous open-channel request.
 
 Safety: The message should originate directly from the Relay-chain.
 
@@ -365,9 +365,9 @@ A message to notify that the other party in an open channel decided to close it.
 
 Operands:
 
-- `initiator: Integer`: The parachain index which initiated this close operation.
-- `sender: Integer`: The parachain index of the sender side of the channel being closed.
-- `recipient: Integer`: The parachain index of the receiver side of the channel being closed.
+- `initiator: Compact`: The parachain index which initiated this close operation.
+- `sender: Compact`: The parachain index of the sender side of the channel being closed.
+- `recipient: Compact`: The parachain index of the receiver side of the channel being closed.
 
 Safety: The message should originate directly from the Relay-chain.
 
@@ -421,7 +421,7 @@ Subtract the asset(s) (`assets`) from Holding and deposit on-chain equivalent as
 Operands:
 
 - `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `max_assets: Integer`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
+- `max_assets: Compact`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
 - `beneficiary: MultiLocation`: The new owner for the assets.
 
 Kind: *Instruction*
@@ -437,7 +437,7 @@ Send an onward XCM message to `destination` of `ReserveAssetDeposited` with the 
 Operands:
 
 - `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `max_assets: Integer`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
+- `max_assets: Compact`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
 - `destination: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
 - `xcm: Xcm`: The orders that should follow the `ReserveAssetDeposited` instruction which is sent onwards to `destination`.
 
@@ -579,7 +579,7 @@ Always throws an error of type `Trap`.
 
 Operands:
 
-- `id: Integer`: The value to be used for the parameter of the thrown error.
+- `id: Compact`: The value to be used for the parameter of the thrown error.
 
 Kind: *Instruction*
 
@@ -604,25 +604,25 @@ Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
 
 Kind: *Instruction*
 
-## **6** `MultiAsset`: Universal Asset Identifiers
+## **6** Universal Asset Identifiers
 
-*Note on versioning:* This is the `MultiAsset` as used in XCM version 0. If `MultiAsset` is used outside of an XCM message, then it should be placed inside a versioned container `VersionedMultiAsset`, exactly analagous to how `Xcm` is placed inside `VersionedXcm`.
+*Note on versioning:* This describes the `MultiAsset` as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiAsset` value is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
 
 ### Description
 
-A `MultiAsset` is a single, general identifier for an asset.
+A `MultiAsset` is a general identifier for an asset. It may represent both fungible and non-fungible assets, and in the case of a fungible asset, it represents some defined amount of the asset.
 
-It may represent both fungible and non-fungible assets. A single `MultiAsset` value may only be used to represent a single asset class, so it tends to be used within a `Vec`.
+Since a `MultiAsset` value may only be used to represent a single asset, there is a `MultiAssets` type which represents a set of different assets. Sometimes it is needed to express a pattern over the universe of assets; for this purpose there is `WildMultiAsset`, which allows for "wildcard" matching. Finally, there is often occasion to provide a "selector", which might be a general pattern or a set of concrete assets, and for this there is `MultiAssetFilter`.
 
-There are `MultiAsset` values which imply some sort of wildcard matching; this may or may not be allowed by the interpreting context.
+Fungible assets are identified by a _class_ together with an amount of the asset, the number of units of the asset class that the asset value represents. Non-fungible assets are necessarily unique, so need no _amount_, but this is replaced with an identifier for the asset instance, allowing for multiple unique assets within the same overall class.
 
-Assets classes may be identified in one of two ways: either an abstract identifier or a concrete identifier. A single asset may be referenced from multiple asset identifiers, though will tend to have only a single *preferred* identifier.
+Assets classes may be identified in one of two ways: either an abstract identifier or a concrete identifier. A single asset may be referenced from multiple asset identifiers, though will tend to have only a single *canonical* concrete identifier.
 
 #### Abstract identifiers
 
 Abstract identifiers are absolute identifiers that represent a notional asset which can exist within multiple consensus systems. These tend to be simpler to deal with since their broad meaning is unchanged regardless stay of the consensus system in which it is interpreted.
 
-However, in the attempt to provide uniformity across consensus systems, they may conflate different instantiations of some notional asset (e.g. the reserve asset and a local reserve-backed derivative of it) under the same name, leading to confusion. It also implies that one notional asset is accounted for locally in only one way. This may not be the case, e.g. where there are multiple bridge instances each providing a bridged "BTC" token yet none being fungible between the others.
+However, in the attempt to provide uniformity across consensus systems, they may conflate different instantiations of some notional asset (e.g. the reserve asset and a local reserve-backed derivative of it) under the same name, leading to confusion. It also implies that one notional asset is accounted for locally in only one way. This may not be the case, e.g. where there are multiple bridge instances each providing a bridged "BTC" token yet none being fungible with the others.
 
 Since they are meant to be absolute and universal, a global registry is needed to ensure that name collisions do not occur.
 
@@ -632,7 +632,7 @@ An abstract identifier is represented as a simple variable-size byte string. As 
 
 Concrete identifiers are *relative identifiers* that specifically identify a single asset through its location in a consensus system relative to the context interpreting. Use of a `MultiLocation` ensures that similar but non-fungible variants of the same underlying asset can be properly distinguished, and obviates the need for any kind of central registry.
 
-The limitation is that the asset identifier cannot be trivially copied between consensus systems and must instead be "re-anchored" whenever being moved to a new consensus system, using the two systems' relative paths.
+The limitation is that the asset identifier cannot be trivially copied between consensus systems and must instead be "re-anchored" whenever being moved to a new consensus system, using the two systems' relative paths. This is specifically because `MultiLocation` values are fundamentally relative identifiers.
 
 Throughout XCM, messages are authored such that *when interpreted from the receiver's point of view* they will have the desired meaning/effect. This means that relative paths should always by constructed to be read from the point of view of the receiving system, *which may be have a completely different meaning in the authoring system*.
 
@@ -647,26 +647,53 @@ A concrete identifier is represented by a `MultiLocation`. If a system has an un
 
 ### Format
 
-Given by the SCALE `enum` (tagged union) of:
+A `MultiAsset` value is represented by the SCALE-encoded pair of fields:
 
-- `None = 0`: No assets. Rarely used.
-- `All = 1`: All assets. Typically used for the subset of assets to be used for an `Order`, and in that context means "all assets currently in holding". Sometimes written with the shorthand `*`.
-- `AllFungible = 2`: All fungible assets. Typically used for the subset of assets to be used for an `Order`, and in that context means "all fungible assets currently in holding".
-- `AllNonFungible = 3`: All non-fungible assets. Typically used for the subset of assets to be used for an `Order`, and in that context means "all non-fungible assets currently in holding".
-- `AllAbstractFungible = 4: { id: Vec<u8> }`: All fungible assets of a given abstract asset `id`entifier.
-- `AllAbstractNonFungible = 5: { class: Vec<u8> }`: All non-fungible assets of a given abstract asset `class`.
-- `AllConcreteFungible = 6: { id: MultiLocation }`: All fungible assets of a given concrete asset `id`entifier.
-- `AllConcreteNonFungible = 7: { class: MultiLocation }`: All non-fungible assets of a given concrete asset `class`.
-- `AbstractFungible = 8: { id: Vec<u8>, amount: Compact }`: Some specific `amount` of the fungible asset identified by an abstract `id`.
-- `AbstractNonFungible = 9: { class: Vec<u8>, instance: AssetInstance }`: Some specific `instance` of the non-fungible asset whose `class` is identified abstractly.
-- `ConcreteFungible = 10: { id: MultiLocation, amount: Compact }`: Some specific `amount` of the fungible asset identified by an concrete `id`.
-- `ConcreteNonFungible = 11: { class: MultiLocation, instance: AssetInstance }`: Some specific `instance` of the non-fungible asset whose `class` is identified concretely.
+- `class: AssetId`: The asset class.
+- `fun`: The fungibility of the asset, this is a tagged union with two possible variants:
+  - `Fungible = 0 { amount: Compact }`: In which case this is a fungible asset and the `amount` is expected to follow the `0` byte to identify this variant.
+  - `NonFungible = 1 { instance: AssetInstance }`: In which case this is a non-fungible asset and the `instance` is expected to follow the `1` byte to identify this variant.
+
+If multiple classes need to be expressed in a value, then the `MultiAssets` type should be used. This is encoded exactly as a `Vec<MultiAsset>`, but with some additional requirements:
+
+- All fungible assets must be placed in the encoding before non-fungible assets.
+- Fungible assets must be ordered by class in Standard Ordering (see next).
+- Non-fungible assets must be ordered by class and then by instance in Standard Ordering.
+- There may be only one fungible asset for each fungible asset class.
+- There may be only one non-fungible asset for each non-fungible asset class/instance pair.
+
+(The ordering provides an efficient means of guaranteeing that each asset is indeed unique within the set.)
+
+A `WildMultiAsset` value is represented by the SCALE-encoded tagged union with two variants:
+
+- `All = 0`: Matches for all assets.
+- `AllOf = 1 { class: AssetId, fun: WildFungibility }`: Matches for any assets which match the given `class` and fungibility (`fun`).
+
+A `MultiAssetFilter` value is represented by the SCALE-encoded tagged union with two variants:
+
+- `Definite = 0 { assets: MultiAssets }`: Filters for all assets in `assets`.
+- `Wild = 1 { wildcard: WildMultiAsset }`: Filters for all assets which match `wildcard`.
+
+#### Standard Ordering
+
+XCM Standard Ordering is based on the Rust-language ordering and is defined:
+
+- For SCALE tagged unions, values are ordered primarily by variant index (ascending) and then ordered by the first field of the variant's item, and then successive fields in case all prior fields are equivalent.
+- For SCALE tuples (named or anonymous), values are ordered primarily by the first element/field, and then each successive element/field in the case all prior elements/fields are equivalent.
+- For SCALE vectors (`Vec<...>`), value are ordered in standard lexicographic fashion (primarily by the first item and then each successive item in case of a shared prefix, with an item that is a strict prefix of another appearing first).
+
+#### `AssetId`
+
+A general identifier for an asset class. This is a SCALE-encoded tagged union (`enum` in Rust terms) with two variants:
+
+- `Concrete = 0 { location: MultiLocation }`: A concrete asset-class identifier, given by a `MultiLocation` value.
+- `Abstract = 1 { name: Vec<u8> }`: A abstract asset-class identifier, given by a `Vec<u8>` value.
 
 #### `AssetInstance`
 
-A general identifier for an instance of a non-fungible asset class.
+A general identifier for an instance of a non-fungible asset within its class.
 
-Given by the SCALE `enum` (tagged union) of:
+Given by the SCALE tagged union of:
 
 - `Undefined = 0`: Undefined - used if the NFA class has only one instance.
 - `Index = 1: { index: Compact }`: A compact `index`. Technically this could be greater than u128, but this implementation supports only values up to `2**128 - 1`.
@@ -675,6 +702,13 @@ Given by the SCALE `enum` (tagged union) of:
 - `Array16 = 4: { datum: [u8; 16] }`: A 16-byte fixed-length `datum`.
 - `Array32 = 5: { datum: [u8; 32] }`: A 32-byte fixed-length `datum`.
 - `Blob = 6: { data: Vec<u8> }`: An arbitrary piece of `data`. Use only when necessary.
+
+#### `WildFungibility`
+
+A general identifier for an asset class. This is a SCALE-encoded tagged union (`enum` in Rust terms) with two variants:
+
+- `Fungible = 0`: Matches all fungible assets.
+- `NonFungible = 1`: Matches all non-fungible assets.
 
 ## **7** `MultiLocation`: Universal Destination Identifiers
 
