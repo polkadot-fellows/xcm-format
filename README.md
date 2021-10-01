@@ -73,7 +73,6 @@ When a bulleted list of types---possibly named---is given, it implies a simple c
 
 ## **2** Basic Top-level Format
 
-
 We name the top-level XCM datatype `VersionedXcm`. This is defined thus:
 
 - `version: u8`: Version of XCM.
@@ -785,7 +784,32 @@ Encoded as the tagged union of:
 
 Note: `MultiLocation`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and file systems. E.g. a `MultiLocation` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `MultiLocation` with one parent and two `Junction`s: `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
 
-## **8** `XcmError`: The types of error in XCM
+## **8** The types of error in XCM
+
+Within XCM it is necessary to communicate some problem encountered while executing some message. The type `Error` allows for this to be expressed, and is encoded as the SCALE tagged union of:
+
+- `Overflow = 0`: An arithmetic overflow happened.
+- `Unimplemented = 1`: The instruction is intentionally unsupported.
+- `UntrustedReserveLocation = 2`: Origin Register does not contain a value value for a reserve transfer notification.
+- `UntrustedTeleportLocation = 3`: Origin Register does not contain a value value for a teleport notification.
+- `MultiLocationFull = 4`: `MultiLocation` value too large to descend further.
+- `MultiLocationNotInvertible = 5`: `MultiLocation` value ascend more parents than known ancestors of local location.
+- `BadOrigin = 6`: The Origin Register does not contain a valid value for instruction.
+- `InvalidLocation = 7`: The location parameter is not a valid value for the instruction.
+- `AssetNotFound = 8`: The given asset is not handled.
+- `FailedToTransactAsset = 9`: An asset transaction (like withdraw or deposit) failed (typically due to type conversions).
+- `NotWithdrawable = 10`: An asset cannot be withdrawn, potentially due to lack of ownership, availability or rights.
+- `LocationCannotHold = 11`: An asset cannot be deposited under the ownership of a particular location.
+- `ExceedsMaxMessageSize = 12`: Attempt to send a message greater than the maximum supported by the transport protocol.
+- `DestinationUnsupported = 13`: The given message cannot be translated into a format supported by the destination.
+- `Transport = 14`: Destination is routable, but there is some issue with the transport mechanism.
+- `Unroutable = 15`: Destination is known to be unroutable.
+- `UnknownClaim = 16`: Used by `ClaimAsset` when the given claim could not be recognized/found.
+- `FailedToDecode = 17`: Used by `Transact` when the functor cannot be decoded.
+- `TooMuchWeightRequired = 18`: Used by `Transact` to indicate that the given weight limit could be breached by the functor.
+- `NotHoldingFees = 19`: Used by `BuyExecution` when the Holding Register does not contain payable fees.
+- `TooExpensive = 20`: Used by `BuyExecution` when the fees declared to purchase weight are insufficient.
+- `Trap(u64) = 21`: Used by the `Trap` instruction to force an error intentionally. Its code is included.
 
 ## **9** Example Messages
 
