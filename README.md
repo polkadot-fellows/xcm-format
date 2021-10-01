@@ -286,16 +286,12 @@ Weight: Weight estimation may utilise `max_weight` which may lead to an increase
 
 #### `Response`
 
-The `Response` type represents information content in the `QueryResponse` XCM instruction. It can represent one of several different data types and it therefore represented as the SCALE-encoded tagged union:
+The `Response` type is used to express information content in the `QueryResponse` XCM instruction. It can represent one of several different data types and it therefore encoded as the SCALE-encoded tagged union:
 
 - `Null = 0`: No information.
 - `Assets { assets: MultiAssets } = 1`: Some assets.
 - `ExecutionResult { result: Result<(), (u32, Error)> } = 2`: An error (or not), equivalent to the type of value contained in the Error Register.
-- `Version { version: VersionId } = 3`: An XCM version.
-
-#### `VersionId`
-
-The `VersionId` type represents a specific version of XCM, encoded as a single byte.
+- `Version { version: Compact } = 3`: An XCM version.
 
 ### `TransferAsset`
 
@@ -617,11 +613,9 @@ Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
 
 Kind: *Instruction*
 
-
-
 ## **6** Universal Asset Identifiers
 
-*Note on versioning:* This describes the `MultiAsset` as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiAsset` value is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
+*Note on versioning:* This describes the `MultiAsset` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiAsset` value is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
 
 ### Description
 
@@ -725,15 +719,15 @@ A general identifier for an asset class. This is a SCALE-encoded tagged union (`
 - `Fungible = 0`: Matches all fungible assets.
 - `NonFungible = 1`: Matches all non-fungible assets.
 
-## **7** `MultiLocation`: Universal Destination Identifiers
+## **7** Universal Consensus Location Identifiers
 
-*Note on versioning:* This is the `MultiLocation` as used in XCM version 0. If `MultiLocation` is used outside of an XCM message, then it should be placed inside a versioned container `VersionedMultiLocation`, exactly analagous to how `Xcm` is placed inside `VersionedXcm`.
+This describes the `MultiLocation` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiLocation` value is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiLocation` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
 
-### Description
+### **7.1** Description
 
 A relative path between state-bearing consensus systems.
 
-`MultiLocation` aims to be sufficiently abstract in meaning and general in nature that it is able to identify arbitrary logical "locations" within the world of consensus systems.
+`MultiLocation` aims to be sufficiently abstract in meaning and general in nature that it is able to identify arbitrary logical "locations" within the universe of consensus.
 
 A location in a consensus system is defined as an *isolatable state machine* held within global consensus. The location in question need not have a sophisticated consensus algorithm of its own; a single account within Ethereum, for example, could be considered a location.
 
@@ -745,35 +739,38 @@ A very-much non-exhaustive list of types of location include:
 - A logical functional component of a chain, e.g. a single instance of a pallet on a Frame-based Substrate chain.
 - An account.
 
-A `MultiLocation` is a *relative identifier*, meaning that it can only be used to define the relative path between two locations, and cannot generally be used to refer to a location universally. It is comprised of a number of *junctions*, in order, each morphing the previous location, either diving down into one of its internal locations, called a *sub-consensus*, or going up into its parent location. Correct `MultiLocation` values must have all `Parent` junctions as a prefix to all *sub-consensus* junctions.
+A `MultiLocation` is a *relative identifier*, meaning that it can only be used to define the relative path between two locations, and cannot generally be used to refer to a location universally. Much like a relative file-system path will first begin with any "../" components used to ascend into to the containing directory, followed by the directory names into which to descend, a `MultiLocation` has two main parts to it: the number of times to ascend into the outer consensus from the local and then an interior location within that outer consensus.
 
-A `MultiLocation` value with no junctions simply refers to the "current" interpreting consensus system.
+A `MultiLocation` is thus encoded as the pair of values:
 
-Note: `MultiLocation`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and filesystems. E.g. a `MultiLocation` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `MultiLocation` of three `Junction`s: `Parent`, `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
+- `parents: u8`: The levels of consensus to ascend before interpreting the `interior` parameter.
+- `interior: InteriorMultiLocation`: A location interior to the outer consensus system found by ascending from the local system `parents` times.
 
-### Junctions
+### Interior Locations & Junctions
 
-A `Junction` is encoded as the tagged union of:
+There is a second type `InteriorMultiLocation` which always identifies a consensus system *interior* to the local consensus system. Being strictly interior implies a relationship of subordination: for a consensus system A to be interior to that of B would mean that a state change of A implies a state change in B. As an example, a smart contract location within the Ethereum blockchain would be considered an interior location of the Ethereum blockchain itself.
 
-- `Parent = 0`: The consensus system of which the context is a member and state-wise super-set. Note: This item is *not* a sub-consensus item: a consensus system may not identify itself trustlessly as a location that includes this junction. Sometimes written with the shorthand `..`
+An `InteriorMultiLocation` is comprised of a number of *junctions*, in order, each specifying a location further internal to the previous. An `InteriorMultiLocation` value with no junctions simply refers to the local consensus system.
 
-- `Parachain = 1 { index: Compact<u32> }`: An indexed parachain belonging to and operated by the context. Generally used when the context is a Polkadot Relay-chain.
+An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junction` meanwhile is encoded as the tagged union of:
 
-- `AccountId32 = 2 { network: NetworkId, id: [u8; 32] }`: A 32-byte `id`entifier for an account of a specific `network` that is respected as a sovereign endpoint within the context. Generally used when the context is a Substrate-based chain.
+- `Parachain = 0 { index: Compact<u32> }`: An indexed parachain belonging to and operated by the context. Generally used when the context is a Polkadot Relay-chain.
 
-- `AccountIndex64 = 3 { network: NetworkId, index: Compact<u64> }`: An 8-byte `index` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is a Frame-based chain and includes e.g. an indices pallet. The `network` id may be used to restrict or qualify the meaning of the index and may not refer specifically to a *blockchain* network. An example might be a smart contract chain which uses different `network` values to distinguish between account indices and smart contracts indices.
+- `AccountId32 = 1 { network: NetworkId, id: [u8; 32] }`: A 32-byte `id`entifier for an account of a specific `network` that is respected as a sovereign endpoint within the context. Generally used when the context is a Substrate-based chain.
 
-- `AccountKey20 = 4 { network: NetworkId, key: [u8; 20] }`: A 20-byte identifier `key` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is an Ethereum or Bitcoin chain or smart-contract.
+- `AccountIndex64 = 2 { network: NetworkId, index: Compact<u64> }`: An 8-byte `index` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is a Frame-based chain and includes e.g. an indices pallet. The `network` id may be used to restrict or qualify the meaning of the index and may not refer specifically to a *blockchain* network. An example might be a smart contract chain which uses different `network` values to distinguish between account indices and smart contracts indices.
 
-- `PalletInstance = 5 { index: u8 }`: An instanced, `index`ed pallet that forms a constituent part of the context. Generally used when the context is a Frame-based chain.
+- `AccountKey20 = 3 { network: NetworkId, key: [u8; 20] }`: A 20-byte identifier `key` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is an Ethereum or Bitcoin chain or smart-contract.
 
-- `GeneralIndex = 6 { index: Compact }`: A non-descript `index` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
+- `PalletInstance = 4 { index: u8 }`: An instanced, `index`ed pallet that forms a constituent part of the context. Generally used when the context is a Frame-based chain.
 
-- `GeneralKey = 7 { key: Vec<u8> }`: A nondescript datum acting as a `key` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
+- `GeneralIndex = 5 { index: Compact }`: A non-descript `index` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
 
-- `OnlyChild = 8`: The unambiguous child.
+- `GeneralKey = 6 { key: Vec<u8> }`: A nondescript datum acting as a `key` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
 
-## NetworkId
+- `OnlyChild = 7`: The unambiguous child.
+
+#### NetworkId
 
 A global identifier of an account-bearing consensus system.
 
@@ -783,6 +780,10 @@ Encoded as the tagged union of:
 - `Named = 1 { name: Vec<u8> }`: Some `name`d network.
 - `Polkadot = 2`: The Polkadot Relay chain
 - `Kusama = 3`: Kusama.
+
+### Written format
+
+Note: `MultiLocation`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and file systems. E.g. a `MultiLocation` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `MultiLocation` with one parent and two `Junction`s: `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
 
 ## **8** `XcmError`: The types of error in XCM
 
