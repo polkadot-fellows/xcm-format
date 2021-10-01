@@ -120,7 +120,7 @@ Expresses the index of the currently executing instruction within the Programme 
 
 ### **3.3** Error
 
-Of type: `Option<(u32, XcmError)>`, initialized to `None`.
+Of type: `Option<(u32, Error)>`, initialized to `None`.
 
 Expresses information on the last known error which happened during programme execution. Set only when a programme encounters an error. May be cleared at will. The two internal fields express the value of the Programme Counter when the error occurred and the type of error which happened.
 
@@ -283,6 +283,19 @@ Kind: *Information*.
 Errors: *Fallible*.
 
 Weight: Weight estimation may utilise `max_weight` which may lead to an increase in Surplus Weight Register at run-time.
+
+#### `Response`
+
+The `Response` type represents information content in the `QueryResponse` XCM instruction. It can represent one of several different data types and it therefore represented as the SCALE-encoded tagged union:
+
+- `Null = 0`: No information.
+- `Assets { assets: MultiAssets } = 1`: Some assets.
+- `ExecutionResult { result: Result<(), (u32, Error)> } = 2`: An error (or not), equivalent to the type of value contained in the Error Register.
+- `Version { version: VersionId } = 3`: An XCM version.
+
+#### `VersionId`
+
+The `VersionId` type represents a specific version of XCM, encoded as a single byte.
 
 ### `TransferAsset`
 
@@ -603,6 +616,8 @@ Kind: *Instruction*
 Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
 
 Kind: *Instruction*
+
+
 
 ## **6** Universal Asset Identifiers
 
