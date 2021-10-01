@@ -55,6 +55,10 @@ The XCVM is a register-based machine, none of whose registers are general purpos
 - *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship both of the STF and the validity/finality/availability between them.
 - *Transfer* The movement of funds from one controlling authority to another. This is within the same chain or overall asset-ownership environment and at the same abstraction level.
 
+![image](XCM_basic_interaction_diagram.png)
+
+_Basic interaction diagram. Boxes are blockchains, cylinders are accounts, red account color is a debit, green account color is a credit. Shaded grey accounts are Holding Accounts._
+
 ### **1.4** Document Structure
 
 The format is defined in five main parts. The top-level datagram formats are specified in section 2. The XCVM is defined in sections 3, 4 and 5. The `MultiLocation` and `MultiAsset` formats are defined in sections 6 and 7. Example messages are specified in section 8.
