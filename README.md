@@ -46,7 +46,7 @@ The XCVM is a register-based machine, none of whose registers are general purpos
 ### **1.3** Vocabulary
 
 - *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams. May be specified by a `MultiLocation` value (though not all such values identify a *Consensus System*). Examples include *The Polkadot Relay chain*, *The XDAI Ethereum PoA chain*, *The Ethereum Tether smart contract*.
-- *Location* A *Consensus System*, or an addressable account or datastructure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
+- *Location* A *Consensus System*, or an addressable account or data structure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
 - *Sovereign Account* An account controlled by a particular *Consensus System*, within some other *Consensus System*. There may be many such accounts or just one. If many, then this assumes and identifies a unique *primary* account.
 - *XCVM* The Cross-conseusus Virtual Machine, for which the definition of XCM messages s large part relies upon.
 - *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve *Consensus System* is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
@@ -814,3 +814,4 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `NotHoldingFees = 19`: Used by `BuyExecution` when the Holding Register does not contain payable fees.
 - `TooExpensive = 20`: Used by `BuyExecution` when the fees declared to purchase weight are insufficient.
 - `Trap(u64) = 21`: Used by the `Trap` instruction to force an error intentionally. Its code is included.
+
