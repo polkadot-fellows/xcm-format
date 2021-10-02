@@ -48,16 +48,12 @@ The XCVM is a register-based machine, none of whose registers are general purpos
 - *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams. May be specified by a `MultiLocation` value (though not all such values identify a *Consensus System*). Examples include *The Polkadot Relay chain*, *The XDAI Ethereum PoA chain*, *The Ethereum Tether smart contract*.
 - *Location* A *Consensus System*, or an addressable account or data structure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
 - *Sovereign Account* An account controlled by a particular *Consensus System*, within some other *Consensus System*. There may be many such accounts or just one. If many, then this assumes and identifies a unique *primary* account.
-- *XCVM* The Cross-conseusus Virtual Machine, for which the definition of XCM messages s large part relies upon.
+- *XCVM* The Cross-consensus Virtual Machine, for which the definition of XCM messages s large part relies upon.
 - *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve *Consensus System* is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
 - *Origin* The *Consensus System* from which a given message has been (directly and immediately) delivered. Specified as a `MultiLocation`.
 - *Recipient* The *Consensus System* to which a given message has been delivered. Specified as a `MultiLocation`.
 - *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship both of the STF and the validity/finality/availability between them.
 - *Transfer* The movement of funds from one controlling authority to another. This is within the same chain or overall asset-ownership environment and at the same abstraction level.
-
-![image](XCM_basic_interaction_diagram.png)
-
-_Basic interaction diagram. Boxes are blockchains, cylinders are accounts, red account color is a debit, green account color is a credit. Shaded grey accounts are Holding Accounts._
 
 ### **1.4** Document Structure
 
@@ -759,7 +755,7 @@ An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junct
 
 - `Parachain = 0 { index: Compact<u32> }`: An indexed parachain belonging to and operated by the context. Generally used when the context is a Polkadot Relay-chain.
 
-- `AccountId32 = 1 { network: NetworkId, id: [u8; 32] }`: A 32-byte `id`entifier for an account of a specific `network` that is respected as a sovereign endpoint within the context. Generally used when the context is a Substrate-based chain.
+- `AccountId32 = 1 { network: NetworkId, id: [u8; 32] }`: A 32-byte identifier (`id`) for an account of a specific `network` that is respected as a sovereign endpoint within the context. Generally used when the context is a Substrate-based chain.
 
 - `AccountIndex64 = 2 { network: NetworkId, index: Compact<u64> }`: An 8-byte `index` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is a Frame-based chain and includes e.g. an indices pallet. The `network` id may be used to restrict or qualify the meaning of the index and may not refer specifically to a *blockchain* network. An example might be a smart contract chain which uses different `network` values to distinguish between account indices and smart contracts indices.
 
@@ -767,7 +763,7 @@ An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junct
 
 - `PalletInstance = 4 { index: u8 }`: An instanced, `index`ed pallet that forms a constituent part of the context. Generally used when the context is a Frame-based chain.
 
-- `GeneralIndex = 5 { index: Compact }`: A non-descript `index` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
+- `GeneralIndex = 5 { index: Compact }`: A nondescript `index` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
 
 - `GeneralKey = 6 { key: Vec<u8> }`: A nondescript datum acting as a `key` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
 
@@ -814,4 +810,3 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `NotHoldingFees = 19`: Used by `BuyExecution` when the Holding Register does not contain payable fees.
 - `TooExpensive = 20`: Used by `BuyExecution` when the fees declared to purchase weight are insufficient.
 - `Trap(u64) = 21`: Used by the `Trap` instruction to force an error intentionally. Its code is included.
-
