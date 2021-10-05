@@ -177,7 +177,6 @@ Errors:
 ### `AccountClaim`
 Sends a claim verified to be from the `source` to the `destination` on the parachain. It has an `expiration` timestamp and a `scope` used to define the scope under which such a `claim` is made. A chain should only send such a claim if it is verified to have been intended to be sent by the `source`. It facilitates authentication across parachains.
 
-- `source: MultiLocation`
 - `destination: MultiLocation`
 - `expiration: Compact<u48>`: Timestamp of the claim expiration
 - `scope: Vec<u8>`
