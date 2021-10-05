@@ -218,6 +218,8 @@ The instructions, in order, are:
 - `Trap`
 - `SubscribeVersion`
 - `UnsubscribeVersion`
+- `QueryPallet`
+- `Dispatch`
 
 ### Notes on terminology
 
@@ -291,6 +293,8 @@ The `Response` type is used to express information content in the `QueryResponse
 - `Assets { assets: MultiAssets } = 1`: Some assets.
 - `ExecutionResult { result: Result<(), (u32, Error)> } = 2`: An error (or not), equivalent to the type of value contained in the Error Register.
 - `Version { version: Compact } = 3`: An XCM version.
+- `PalletsInfo { info: Vec<(u32, Vec<u8>, Vec<u8>, (u32, u32, u32))> } = 4`: The index, instance name, pallet name and version of some pallets.
+- `DispatchResult { maybe_error: Option<u32> } = 5`: The error of a dispatch attempt, or `None` if the dispatch executed without error.
 
 ### `TransferAsset`
 
@@ -411,83 +415,6 @@ Immediately report the contents of the Error Register to the given destination v
 
 A `QueryResponse` message of type `ExecutionOutcome` is sent to `destination` with the given
 `query_id` and the outcome of the XCM.
-
-### `QueryPallet`
-
-Query the existence of a particular pallet type.
-
-- `name: Vec<u8>`: The name of the pallet to query.
-- `query_id`: The value to make the returned message identifiable with this query.
-
-Returns: A honestly populated `PalletInfo` to the origin.
-
-Safety: No concerns.
-
-Kind: *Instruction*
-
-Errors:
-
-### `PalletInfo`
-
-Provide information on the existence of a particular pallet type.
-
-- `query_id` The identifier of the query which caused this message to be sent.
-- `pallets: Vec<(u32, (u32, u32, u32))>`: The index/version of each of the pallets whose name matches the name in the according `QueryPallet` message.
-
-Safety: No concerns.
-
-Kind: *Trusted Indication*
-
-Errors:
-
-### `Dispatch`
-
-Dispatch a call into a pallet in the Frame system. This provides a means of ensuring that the pallet continues to exist with a known version.
-
-- `origin_type`: The means of expressing the message origin as a dispatch origin.
-- `name: Vec<u8>`: The name of the pallet to which to dispatch a message.
-- `major_minor: (u32, u32)`: The major and minor version of the pallet. The major version must be equal and the minor version of the pallet must be at least as great.
-- `pallet_index: u32`: The index of the pallet to be called.
-- `call_index: u32`: The index of the dispatchable to be called.
-- `params: Vec<u8>`: The encoded parameters of the dispatchable.
-- `query_id`: The value to make the returned message identifiable with this query.
-
-Returns: `DispatchDone` or `DispatchFail` to origin.
-
-Safety: No concerns.
-
-Kind: *Instruction*
-
-Errors:
-
-### `DispatchOutcome`
-
-Provide information on the outcome of a previous `Dispatch` message.
-
-- `query_id` The identifier of the query which caused this message to be sent.
-- `error: Result<Option<u32>, DispatchError>`: If `Err` then the dispatch was not possible and the error is given. If `Ok`, then the dispatch was made and the inner value expresses the error with which the dispatch resulted: if `None`, then it succeeded.
-
-Safety: No concerns.
-
-Kind: *Trusted Indication*
-
-Errors:
-
-#### `DispatchError`
-
-`u8` enumeration:
-
-- `0x00: Pallet of the correct version not found` 
-
-Operands:
-
-- `query_id: QueryId`: The value to be used for the `query_id` field of the `QueryResponse` message.
-- `destination: MultiLocation`: The location to where the `QueryResponse` message should be sent.
-- `max_response_weight: Weight`: The value to be used for the `max_weight` field of the `QueryResponse` message.
-
-Kind: *Instruction*
-
-Errors: *Fallible*.
 
 ### `DepositAsset`
 
@@ -673,11 +600,49 @@ Operands:
 
 Kind: *Instruction*
 
+Errors: *Fallible*.
+
 ### `UnsubscribeVersion`
 
 Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
 
 Kind: *Instruction*
+
+Errors: *Fallible*.
+
+### `QueryPallet`
+
+Query the existence of a particular pallet type.
+
+- `name: Vec<u8>`: The name of the pallet to query.
+- `query_id`: The value to make the returned message identifiable with this query.
+- `max_response_weight: Weight`: The value to be used for the `max_weight` field of the `QueryResponse` message.
+
+Sends a `QueryResponse` to Origin whose data field `PalletsInfo` containing the information of all pallets on the local chain whose name is equal to `name`. This is empty in the case that the local chain is not based on Substrate Frame.
+
+Safety: No concerns.
+
+Kind: *Instruction*
+
+Errors: _Fallible_.
+
+### `Dispatch`
+
+Dispatch a call into a pallet in the Frame system. This provides a means of ensuring that the pallet continues to exist with a known version.
+
+- `origin_type`: The means of expressing the message origin as a dispatch origin.
+- `name: Vec<u8>`: The name of the pallet to which to dispatch a message.
+- `major_minor: (Compact, Compact)`: The major and minor version of the pallet. The major version must be equal and the minor version of the pallet must be at least as great.
+- `pallet_index: Compact`: The index of the pallet to be called.
+- `call_index: Compact`: The index of the dispatchable to be called.
+- `params: Vec<u8>`: The encoded parameters of the dispatchable.
+- `query_id: Option<(MultiLocation, QueryId, Weight)>`: If present, then a `QueryResponse` whose `query_id` and `max_weight` are the given `QueryId`and `Weight` values is sent to the given `MultiLocation` value with a `DispatchResult` response corresponding to the error status of the "inner" dispatch. This only happens if the dispatch was actually made - if an error happened prior to dispatch, then the Error Register is set and the operation aborted as usual.
+
+Safety: No concerns.
+
+Kind: *Instruction*
+
+Errors: *Fallible*.
 
 ## **6** Universal Asset Identifiers
 
@@ -877,3 +842,4 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `NotHoldingFees = 19`: Used by `BuyExecution` when the Holding Register does not contain payable fees.
 - `TooExpensive = 20`: Used by `BuyExecution` when the fees declared to purchase weight are insufficient.
 - `Trap(u64) = 21`: Used by the `Trap` instruction to force an error intentionally. Its code is included.
+- `IncorrectVersion = 22`: Used by the `Dispatch` instruction when pallet of the correct version is not found.
