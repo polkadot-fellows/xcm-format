@@ -416,6 +416,16 @@ Immediately report the contents of the Error Register to the given destination v
 A `QueryResponse` message of type `ExecutionOutcome` is sent to `destination` with the given
 `query_id` and the outcome of the XCM.
 
+Operands:
+
+- `query_id: QueryId`: The value to be used for the `query_id` field of the `QueryResponse` message.
+- `destination: MultiLocation`: The location to where the `QueryResponse` message should be sent.
+- `max_response_weight: Weight`: The value to be used for the `max_weight` field of the `QueryResponse` message.
+
+Kind: *Instruction*
+
+Errors: *Fallible*.
+
 ### `DepositAsset`
 
 Subtract the asset(s) (`assets`) from Holding and deposit on-chain equivalent assets under the ownership of `beneficiary`.
