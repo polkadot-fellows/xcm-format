@@ -612,6 +612,62 @@ Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
 
 Kind: *Instruction*
 
+### `BurnAsset(MultiAssets)`
+
+Reduce Holding by up to the given assets.
+
+Holding is reduced by as much as possible up to the assets in the parameter.
+
+Operands:
+
+- `assets: MultiAssets`: The assets by which to reduce Holding.
+
+Kind: *Instruction*
+
+Errors: *Fallible*
+
+### `ExpectAsset(MultiAssets)`
+
+Throw an error if Holding does not contain at least the given assets.
+
+Operands:
+
+- `assets: MultiAssets`: The minimum assets expected to be in Holding.
+
+Kind: *Instruction*
+
+Errors:
+
+- `ExpectationFalse`: If Holding does not contain the assets in the parameter.
+
+### `ExpectOrigin(MultiLocation)`
+
+Ensure that the Origin Register equals some given value and throw an error if not.
+
+Operands:
+
+- `origin: MultiLocation`: The value expected of the Origin Register.
+
+Kind: *Instruction*
+
+Errors:
+
+- `ExpectationFalse`: If Origin is not some value, or if that value is not equal to the parameter.
+
+### `ExpectError(Option<(u32, Error)>)`
+
+Ensure that the Error Register equals some given value and throw an error if not.
+
+Operands:
+
+- `error: Option<(u32, Error)>`: The value expected of the Error Register.
+
+Kind: *Instruction*
+
+Errors:
+
+- `ExpectationFalse`: If the value of the Error Register is not equal to the parameter.
+
 ## **6** Universal Asset Identifiers
 
 *Note on versioning:* This describes the `MultiAsset` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiAsset` value is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
@@ -810,3 +866,4 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `NotHoldingFees = 19`: Used by `BuyExecution` when the Holding Register does not contain payable fees.
 - `TooExpensive = 20`: Used by `BuyExecution` when the fees declared to purchase weight are insufficient.
 - `Trap(u64) = 21`: Used by the `Trap` instruction to force an error intentionally. Its code is included.
+- `ExpectationFalse = 22`: Used by `ExpectAsset`, `ExpectError` and `ExpectOrigin` when the expectation was not true.
