@@ -1,6 +1,6 @@
 # Polkadot Cross-Consensus Message (XCM) Format
 
-**Version 2, final.**
+**Version 3, in-progress.**
 **Authors: Gavin Wood.**
 
 This document details the message format for Polkadot-based message passing between chains. It describes the formal data format, any environmental data which may be additionally required and the corresponding meaning of the datagrams.
