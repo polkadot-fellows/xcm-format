@@ -412,7 +412,7 @@ Immediately report the contents of the Error Register to the given destination v
 A `QueryResponse` message of type `ExecutionOutcome` is sent to `destination` with the given
 `query_id` and the outcome of the XCM.
 
-Operands:
+## `Order` Types
 
 - `query_id: QueryId`: The value to be used for the `query_id` field of the `QueryResponse` message.
 - `destination: MultiLocation`: The location to where the `QueryResponse` message should be sent.
@@ -520,13 +520,25 @@ Operands:
 - `fees: MultiAsset`: The asset(s) by which to reduce Holding to pay execution fees.
 - `weight_limit: Option<Weight>`: If provided, then state the amount of weight to be purchased. If this is lower than the estimated weight of this message, then an error will be thrown.
 
-Kind: *Instruction*
+
 
 Errors: *Fallible*.
 
 ### `RefundSurplus`
 
 Increase Refunded Weight Register to the value of Surplus Weight Register. Attempt to accrue fees previously paid via `BuyExecution` into Holding for the amount that Refunded Weight Register is increased.
+
+Kind: *Instruction*
+
+Errors: *Infallible*.
+
+### `AccountClaim`
+Sends a claim verified to be from the `source` to the `destination` on the parachain. It has an `expiration` timestamp and a `scope` used to define the scope under which such a `claim` is made. A chain should only send such a claim if it is verified to have been intended to be sent by the `source`. It facilitates authentication across parachains.
+
+Operands:
+- `destination: MultiLocation`
+- `expiration: Compact<u48>`: Timestamp of the claim expiration
+- `scope: Vec<u8>`
 
 Kind: *Instruction*
 
@@ -611,6 +623,8 @@ Kind: *Instruction*
 Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
 
 Kind: *Instruction*
+
+
 
 ## **6** Universal Asset Identifiers
 
