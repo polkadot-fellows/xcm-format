@@ -836,6 +836,8 @@ A `WildMultiAsset` value is represented by the SCALE-encoded tagged union with t
 
 - `All = 0`: Matches for all assets.
 - `AllOf = 1 { class: AssetId, fun: WildFungibility }`: Matches for any assets which match the given `class` and fungibility (`fun`).
+- `AllCounted = 2 { count: Compact }`: Matches for the first `count` assets, when placed under standard asset ordering.
+- `AllOfCounted = 3 { class: AssetId, fun: WildFungibility, count: Compact }`: Matches for the first `count` (under standard asset ordering) of any assets which match the given `class` and fungibility (`fun`).
 
 A `MultiAssetFilter` value is represented by the SCALE-encoded tagged union with two variants:
 
