@@ -244,7 +244,7 @@ Operands:
 
 - `assets: MultiAssets`: The asset(s) to be removed; must be owned by Origin.
 
-Kind: *Instruction*.
+Kind: *Instruction*
 
 Errors: *Fallible*
 
@@ -312,7 +312,7 @@ Operands:
 - `assets: MultiAssetFilter`: The asset(s) to be withdrawn.
 - `beneficiary`: The new owner for the assets.
 
-Kind: *Instruction*.
+Kind: *Instruction*
 
 Errors: *Fallible*
 
@@ -328,7 +328,7 @@ Operands:
 - `destination: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
 - `xcm: Xcm`: The instructions that should follow the `ReserveAssetDeposited` instruction, which is sent onwards to `destination`.
 
-Kind: *Instruction*.
+Kind: *Instruction*
 
 Errors: *Fallible*
 
@@ -339,12 +339,12 @@ by the kind of origin `origin_type`.
 
 Operands:
 
-- `origin_type: OriginKind`: The means of expressing the message origin as a dispatch origin.
+- `origin_kind: OriginKind`: The means of expressing the message origin as a dispatch origin.
 - `require_weight_at_most: Weight`: The maximum amount of weight to expend while dispatching `call`. If dispatch requires more weight then an error will be thrown. If dispatch requires less weight, then Surplus Weight Register may increase.
 - `call: Vec<u8>`: The encoded transaction to be applied.
 - `query_id: Option<QueryResponseInfo>`: If present, then a `QueryResponse` constructed according to the provided `QueryResponseInfo` should be sent with a `DispatchResult` response corresponding to the error status of the "inner" dispatch. This only happens if the dispatch was actually made - if an error happened prior to dispatch, then the Error Register is set and the operation aborted as usual.
 
-Kind: *Instruction*.
+Kind: *Instruction*
 
 Errors: *Fallible*
 
@@ -401,7 +401,7 @@ Clear the Origin Register.
 
 This may be used by the XCM author to ensure that later instructions cannot command the authority of the Original Origin (e.g. if they are being relayed from an untrusted source, as often the case with `ReserveAssetDeposited`).
 
-Kind: *Instruction*.
+Kind: *Instruction*
 
 Errors: *Infallible*
 
@@ -441,7 +441,6 @@ Subtract the asset(s) (`assets`) from Holding and deposit on-chain equivalent as
 Operands:
 
 - `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `max_assets: Compact`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
 - `beneficiary: MultiLocation`: The new owner for the assets.
 
 Kind: *Instruction*
@@ -457,7 +456,6 @@ Send an onward XCM message to `destination` of `ReserveAssetDeposited` with the 
 Operands:
 
 - `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `max_assets: Compact`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
 - `destination: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
 - `xcm: Xcm`: The orders that should follow the `ReserveAssetDeposited` instruction which is sent onwards to `destination`.
 
