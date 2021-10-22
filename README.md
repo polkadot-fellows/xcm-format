@@ -104,6 +104,7 @@ The registers are named:
 - *Holding*
 - *Surplus Weight*
 - *Refunded Weight*
+- *Transact Status*
 
 ### **3.1** Programme
 
@@ -158,6 +159,12 @@ Expresses the amount of weight by which an estimation of the Original Programme 
 Of type `u64`, initialized to `0`.
 
 Expresses the portion of Surplus Weight which has been refunded. Not used on XCM platforms which do not require payment for execution.
+
+### **3.10** Transact Status
+
+Of type `Option<Vec<u8>>`, initialized to `None`.
+
+Expresses the outcome of the most recent dispatch made by the `Transact` operation.
 
 ## **4** Basic XCVM Operation
 
@@ -239,7 +246,7 @@ Operands:
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `ReserveAssetDeposited`
 
@@ -253,7 +260,7 @@ Kind: *Trusted Indication*.
 
 Trust: Origin must be trusted to act as a reserve for `assets`.
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `ReceiveTeleportedAsset`
 
@@ -267,7 +274,7 @@ Kind: *Trusted Indication*.
 
 Trust: Origin must be trusted to have removed the `assets` as a consequence of sending this message.
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `QueryResponse`
 
@@ -281,7 +288,7 @@ Operands:
 
 Kind: *Information*.
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 Weight: Weight estimation may utilise `max_weight` which may lead to an increase in Surplus Weight Register at run-time.
 
@@ -293,7 +300,7 @@ The `Response` type is used to express information content in the `QueryResponse
 - `Assets { assets: MultiAssets } = 1`: Some assets.
 - `ExecutionResult { result: Result<(), (u32, Error)> } = 2`: An error (or not), equivalent to the type of value contained in the Error Register.
 - `Version { version: Compact } = 3`: An XCM version.
-- `PalletsInfo { info: Vec<(u32, Vec<u8>, Vec<u8>, (u32, u32, u32))> } = 4`: The index, instance name, pallet name and version of some pallets.
+- `PalletsInfo { info: Vec<PalletInfo> } = 4`: The information relating to a number of pallets.
 - `DispatchResult { maybe_error: Option<u32> } = 5`: The error of a dispatch attempt, or `None` if the dispatch executed without error.
 
 ### `TransferAsset`
@@ -307,7 +314,7 @@ Operands:
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `TransferReserveAsset`
 
@@ -323,7 +330,7 @@ Operands:
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `Transact`
 
@@ -333,14 +340,15 @@ by the kind of origin `origin_type`.
 Operands:
 
 - `origin_type: OriginKind`: The means of expressing the message origin as a dispatch origin.
-- `max_weight: Weight`: The maximum amount of weight to expend while dispatching `call`. If dispatch requires more weight then an error will be thrown. If dispatch requires less weight, then Surplus Weight Register may increase.
+- `require_weight_at_most: Weight`: The maximum amount of weight to expend while dispatching `call`. If dispatch requires more weight then an error will be thrown. If dispatch requires less weight, then Surplus Weight Register may increase.
 - `call: Vec<u8>`: The encoded transaction to be applied.
+- `query_id: Option<QueryResponseInfo>`: If present, then a `QueryResponse` constructed according to the provided `QueryResponseInfo` should be sent with a `DispatchResult` response corresponding to the error status of the "inner" dispatch. This only happens if the dispatch was actually made - if an error happened prior to dispatch, then the Error Register is set and the operation aborted as usual.
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
-Weight: Weight estimation may utilise `max_weight` which may lead to an increase in Surplus Weight Register at run-time.
+Weight: Weight estimation may utilise `require_weight_at_most` which may lead to an increase in Surplus Weight Register at run-time.
 
 ### `HrmpNewChannelOpenRequest`
 
@@ -369,7 +377,7 @@ Safety: The message should originate directly from the Relay-chain.
 
 Kind: *System Notification*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `HrmpChannelClosing`
 
@@ -385,7 +393,7 @@ Safety: The message should originate directly from the Relay-chain.
 
 Kind: *System Notification*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `ClearOrigin`
 
@@ -395,7 +403,7 @@ This may be used by the XCM author to ensure that later instructions cannot comm
 
 Kind: *Instruction*.
 
-Errors: *Infallible*.
+Errors: *Infallible*
 
 ### `DescendOrigin`
 
@@ -407,7 +415,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `ReportError`
 
@@ -424,7 +432,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `DepositAsset`
 
@@ -438,7 +446,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `DepositReserveAsset`
 
@@ -455,7 +463,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `ExchangeAsset`
 
@@ -468,7 +476,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `InitiateReserveWithdraw`
 
@@ -482,7 +490,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `InitiateTeleport`
 
@@ -498,7 +506,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `ReportHolding`
 
@@ -513,7 +521,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `BuyExecution`
 
@@ -526,7 +534,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `RefundSurplus`
 
@@ -534,7 +542,7 @@ Increase Refunded Weight Register to the value of Surplus Weight Register. Attem
 
 Kind: *Instruction*
 
-Errors: *Infallible*.
+Errors: *Fallible*
 
 ### `SetErrorHandler`
 
@@ -546,7 +554,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Infallible*.
+Errors: *Infallible*
 
 Weight: The estimated weight of this instruction must include the estimated weight of `error_handler`. At run-time, Surplus Weight Register should be increased by the estimated weight of the Error Handler prior to being changed.
 
@@ -560,7 +568,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Infallible*.
+Errors: *Infallible*
 
 Weight: The estimated weight of this instruction must include the estimated weight of `appendix`. At run-time, Surplus Weight Register should be increased by the estimated weight of the Appendix prior to being changed.
 
@@ -570,7 +578,7 @@ Clear the Error Register.
 
 Kind: *Instruction*
 
-Errors: *Infallible*.
+Errors: *Infallible*
 
 ### `ClaimAsset`
 
@@ -583,7 +591,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `Trap`
 
@@ -595,7 +603,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Always*.
+Errors: *Always*
 
 ### `SubscribeVersion`
 
@@ -610,7 +618,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `UnsubscribeVersion`
 
@@ -618,7 +626,7 @@ Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: *Fallible*
 
 ### `BurnAsset(MultiAssets)`
 
@@ -681,7 +689,7 @@ Errors:
 Query the existence of a particular pallet type.
 
 - `name: Vec<u8>`: The name of the pallet to query.
-- `query_id`: The value to make the returned message identifiable with this query.
+- `query_id: QueryId`: The value to make the returned message identifiable with this query.
 - `max_response_weight: Weight`: The value to be used for the `max_weight` field of the `QueryResponse` message.
 
 Sends a `QueryResponse` to Origin whose data field `PalletsInfo` containing the information of all pallets on the local chain whose name is equal to `name`. This is empty in the case that the local chain is not based on Substrate Frame.
@@ -690,25 +698,81 @@ Safety: No concerns.
 
 Kind: *Instruction*
 
-Errors: _Fallible_.
+Errors: *Fallible*
 
-### `Dispatch`
+### `ExpectPallet`
 
-Dispatch a call into a pallet in the Frame system. This provides a means of ensuring that the pallet continues to exist with a known version.
+Ensure that a particular pallet with a particular version exists.
 
-- `origin_type`: The means of expressing the message origin as a dispatch origin.
-- `name: Vec<u8>`: The name of the pallet to which to dispatch a message.
-- `major_minor: (Compact, Compact)`: The major and minor version of the pallet. The major version must be equal and the minor version of the pallet must be at least as great.
-- `pallet_index: Compact`: The index of the pallet to be called.
-- `call_index: Compact`: The index of the dispatchable to be called.
-- `params: Vec<u8>`: The encoded parameters of the dispatchable.
-- `query_id: Option<(MultiLocation, QueryId, Weight)>`: If present, then a `QueryResponse` whose `query_id` and `max_weight` are the given `QueryId`and `Weight` values is sent to the given `MultiLocation` value with a `DispatchResult` response corresponding to the error status of the "inner" dispatch. This only happens if the dispatch was actually made - if an error happened prior to dispatch, then the Error Register is set and the operation aborted as usual.
+- `index: Compact`: The index which identifies the pallet. An error if no pallet exists at this index.
+- `name: Vec<u8>`: Name which must be equal to the name of the pallet.
+- `module_name: Vec<u8>`: Module name which must be equal to the name of the module in which the pallet exists.
+- `crate_major: Compact`: Version number which must be equal to the major version of the crate which implements the pallet.
+- `min_crate_minor: Compact`: Version number which must be at most the minor version of the crate which implements the pallet.
 
 Safety: No concerns.
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors:
+
+- `ExpectationFalse`: In case any of the expectations are broken.
+
+### `ReportTransactStatus`
+
+Send a `QueryResponse` message containing the value of the Transact Status Register to some
+destination.
+
+- `query_response_info: QueryResponseInfo`: The information needed for constructing and sending the
+  `QueryResponse` message.
+
+Safety: No concerns.
+
+Kind: *Instruction*
+
+Errors: *Fallible*
+
+### `ClearTransactStatus`
+
+Set the Transact Status Register to its default, cleared, value.
+
+Safety: No concerns.
+
+Kind: *Instruction*
+
+Errors: *Infallible*
+
+### Auxiliary Data-types
+
+#### `PalletInfo`
+
+Information regarding an instance of a pallet within a chain. Encoded as the tuple of fields:
+
+- `index: Compact`: The index of the pallet instance.
+- `name: Vec<u8>`: The name given to the pallet instance.
+- `module_name: Vec<u8>`: The module name in which the pallet exists. If it exists at the top-level of a crate then this will be the crate's name.
+- `crate_major: Compact`: The major version of the crate which implements the pallet.
+- `crate_minor: Compact`: The minor version of the crate which implements the pallet.
+- `crate_patch: Compact`: The patch version of the crate which implements the pallet.
+
+#### `OriginKind`
+
+An identifier for a type of calling origin.
+
+Encoded as the tagged union of:
+
+- `Native = 0`: Origin should be the native dispatch origin representation for the sender in the local runtime framework. For Cumulus/Frame chains this is the `Parachain` or `Relay` origin if coming from a chain, though there may be others if the `MultiLocation` XCM origin has a primary/native dispatch origin form.
+- `SovereignAccount = 1`: Origin should be the standard account-based origin with the sovereign account of the sender. For Cumulus/Frame chains, this is the `Signed` origin.
+- `Superuser = 2`: Origin should be the super-user. For Cumulus/Frame chains, this is the `Root` origin. This will not usually be an available option.
+- `Xcm = 3`: Origin should be interpreted as an XCM native origin and the `MultiLocation` should be encoded directly in the dispatch origin unchanged. For Cumulus/Frame chains, this will be the `pallet_xcm::Origin::Xcm` type.
+
+#### `QueryResponseInfo`
+
+Information needed to determine how a `QueryResponse` message should be constructed and sent. Encoded as the tuple of fields:
+
+- `destination: MultiLocation`: The destination to which the query response message should be send.
+- `query_id: QueryId`: The `query_id` field of the `QueryResponse` message.
+- `max_weight: Weight`: The `max_weight` field of the `QueryResponse` message.
 
 ## **6** Universal Asset Identifiers
 
