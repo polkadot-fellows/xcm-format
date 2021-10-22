@@ -1,9 +1,9 @@
-# Polkadot Cross-Consensus Message (XCM) Format
+# Cross-Consensus Message (XCM) Format
 
 **Version 3, in-progress.**
 **Authors: Gavin Wood.**
 
-This document details the message format for Polkadot-based message passing between chains. It describes the formal data format, any environmental data which may be additionally required and the corresponding meaning of the datagrams.
+This document details the message format for message passing between differing chains and consensus systems. It describes the formal data format, any environmental data which may be required and the corresponding meaning of the datagrams.
 
 ## **1** Background
 
@@ -21,6 +21,8 @@ Polkadot has three main transport systems for passing messages between chains al
 - **VMP** *Vertical Message Passing* message passing between the Relay-chain itself and a parachain. Message data in both cases exists on the Relay-chain. This includes:
   - **UMP** *Upward Message Passing* message passing from a parachain to the Relay-chain.
   - **DMP** *Downward Message Passing* message passing from the Relay-chain to a parachain.
+
+While XCM was created with an acute need from within the Polkadot ecosystem, it is never the less designed to be of utility beyond wht might be termed the purely Polkadot ecosystem and rather more broadly in the general consensus, crypto and blockchain industry.
 
 ### **1.1** XCM Communication Model
 
