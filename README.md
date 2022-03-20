@@ -330,7 +330,8 @@ Operands:
 
 - `origin_type: OriginKind`: The means of expressing the message origin as a dispatch origin.
 - `max_weight: Weight`: The maximum amount of weight to expend while dispatching `call`. If dispatch requires more weight then an error will be thrown. If dispatch requires less weight, then Surplus Weight Register may increase.
-- `call: Vec<u8>`: The encoded transaction to be applied.
+- `call: ([u8; 32], Vec<u8)`: A well known interface identifier and the encoded body of the transaction to be applied.
+- `index: u8`: A disambiguation index in case the call can be dispatched by more than one subsystem.
 
 Kind: *Instruction*.
 
