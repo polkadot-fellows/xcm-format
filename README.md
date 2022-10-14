@@ -48,7 +48,7 @@ The XCVM is a register-based machine, none of whose registers are general purpos
 - *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams. May be specified by a `MultiLocation` value (though not all such values identify a *Consensus System*). Examples include *The Polkadot Relay chain*, *The XDAI Ethereum PoA chain*, *The Ethereum Tether smart contract*.
 - *Location* A *Consensus System*, or an addressable account or data structure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
 - *Sovereign Account* An account controlled by a particular *Consensus System*, within some other *Consensus System*. There may be many such accounts or just one. If many, then this assumes and identifies a unique *primary* account.
-- *XCVM* The Cross-consensus Virtual Machine, for which the definition of XCM messages s large part relies upon.
+- *XCVM* The Cross-Consensus Virtual Machine, for which the definition of XCM messages in large part relies upon.
 - *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve *Consensus System* is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
 - *Origin* The *Consensus System* from which a given message has been (directly and immediately) delivered. Specified as a `MultiLocation`.
 - *Recipient* The *Consensus System* to which a given message has been delivered. Specified as a `MultiLocation`.
@@ -670,7 +670,7 @@ Errors:
 
 ## **6** Universal Asset Identifiers
 
-*Note on versioning:* This describes the `MultiAsset` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiAsset` value is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
+*Note on versioning:* This describes the `MultiAsset` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiAsset` value that is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
 
 ### Description
 
@@ -684,7 +684,7 @@ Assets classes may be identified in one of two ways: either an abstract identifi
 
 #### Abstract identifiers
 
-Abstract identifiers are absolute identifiers that represent a notional asset which can exist within multiple consensus systems. These tend to be simpler to deal with since their broad meaning is unchanged regardless stay of the consensus system in which it is interpreted.
+Abstract identifiers are absolute identifiers that represent a notional asset which can exist within multiple consensus systems. These tend to be simpler to deal with since their broad meaning is unchanged regardless of the consensus system in which it is interpreted.
 
 However, in the attempt to provide uniformity across consensus systems, they may conflate different instantiations of some notional asset (e.g. the reserve asset and a local reserve-backed derivative of it) under the same name, leading to confusion. It also implies that one notional asset is accounted for locally in only one way. This may not be the case, e.g. where there are multiple bridge instances each providing a bridged "BTC" token yet none being fungible with the others.
 
@@ -776,7 +776,7 @@ A general identifier for an asset class. This is a SCALE-encoded tagged union (`
 
 ## **7** Universal Consensus Location Identifiers
 
-This describes the `MultiLocation` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiLocation` value is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiLocation` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
+This describes the `MultiLocation` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiLocation` value that is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiLocation` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
 
 ### **7.1** Description
 
