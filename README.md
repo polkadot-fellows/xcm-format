@@ -104,6 +104,8 @@ The registers are named:
 - *Holding*
 - *Surplus Weight*
 - *Refunded Weight*
+- *Transact Status*
+- *Topic*
 
 ### **3.1** Programme
 
@@ -158,6 +160,19 @@ Expresses the amount of weight by which an estimation of the Original Programme 
 Of type `u64`, initialized to `0`.
 
 Expresses the portion of Surplus Weight which has been refunded. Not used on XCM platforms which do not require payment for execution.
+
+### **4.0** Transact Status
+
+Of type `MaybeErrorCode`, initialized to `0`.
+
+Expresses the status when checking the versions between the origin, destination chain, and the requested pallet located on the destination chain.
+
+### **4.1** Topic
+
+Of type `Option<[u8; 32]>`, initialized to `0`.
+
+Expresses the a topicv
+
 
 ## **4** Basic XCVM Operation
 
@@ -218,6 +233,17 @@ The instructions, in order, are:
 - `Trap`
 - `SubscribeVersion`
 - `UnsubscribeVersion`
+- `ExpectAsset`
+- `ExpectError`
+- `ExpectOrigin`
+- `QueryPallet`
+- `ExpectPallet`
+- `ReportTransactStatus`
+- `ClearTransactStatus`
+- `LockAsset`
+- `UnlockAsset`
+- `NoteUnlockable`
+- `RequestUnlock`
 
 ### Notes on terminology
 
@@ -667,6 +693,107 @@ Kind: *Instruction*
 Errors:
 
 - `ExpectationFalse`: If the value of the Error Register is not equal to the parameter.
+
+### `QueryPallet`
+
+Queries the existence of a particular pallet type.
+
+Operands:
+
+Kind: *Instruction*
+
+Errors:
+
+### `ExpectPallet`
+
+Ensure that a particular pallet with a particular version exists.
+
+Operands:
+
+Kind: *Instruction*
+
+Errors:
+
+### `ReportTransactStatus(QueryResponseInfo)`
+
+Send a `QueryResponse` message containing the value of the Transact Status Register to some destination.
+
+Operands:
+
+- `query_response_info`: The information needed for constructing and sending the  `QueryResponse` message.
+
+Kind: *Instruction*
+
+Errors: *Fallible*.
+
+### `ClearTransactStatus(QueryResponseInfo)`
+
+Set the Transact Status Register to its default, cleared, value.
+
+Operands: None
+
+Kind: *Instruction*
+
+Errors: *Infallible*.
+
+### `LockAsset(MultiAsset, MultiLocation)`
+
+  Lock the locally held asset and prevent further transfer or withdrawal.
+
+  This restriction may be removed by the `UnlockAsset` instruction being called with an
+  Origin of `unlocker` and a `target` equal to the current `Origin`.
+
+  If the locking is successful, then a `NoteUnlockable` instruction is sent to `unlocker`.
+
+
+Operands:
+
+- `asset`: The asset(s) which should be locked.
+- `unlocker`: The value which the Origin must be for a corresponding `UnlockAsset` instruction to work.
+
+Kind: *Instruction*
+
+Errors: *Fallible*.
+
+### `UnlockAsset(MultiAsset, MultiLocation)`
+
+Remove the lock over `asset` on this chain and (if nothing else is preventing it) allow the asset to be transferred.
+
+Operands:
+
+- `asset`: The asset to be unlocked.
+- `owner`: The owner of the asset on the local chain.
+
+Kind: *Instruction*
+
+Errors:
+
+### `NoteUnlockable(MultiAsset, MultiLocation)`
+
+Asset (`asset`) has been locked on the `origin` system and may not be transferred. It may only be unlocked with the receipt of the `UnlockAsset` instruction from this chain.
+
+Operands:
+
+- `asset`: The asset(s) which are now unlockable from this origin.
+- `owner`: The owner of the asset on the chain in which it was locked. This may be a location specific to the origin network.
+
+Kind: *Instruction*
+
+Errors: *Fallible*.
+
+### `RequestUnlock(MultiAsset, MultiLocation)`
+
+Send an `UnlockAsset` instruction to the `locker` for the given `asset`. This may fail if the local system is making use of the fact that the asset is locked or, of course, if there is no record that the asset actually is locked.
+
+Operands:
+
+- `asset`: The asset(s) to be unlocked.
+- `locker`: The location from which a previous `NoteUnlockable` was sent and to which an `UnlockAsset` should be sent.
+
+Kind: *Instruction*
+
+Errors: *Fallible*.
+
 
 ## **6** Universal Asset Identifiers
 
