@@ -163,15 +163,15 @@ Expresses the portion of Surplus Weight which has been refunded. Not used on XCM
 
 ### **4.0** Transact Status
 
-Of type `MaybeErrorCode`, initialized to `0`.
+Of type `MaybeErrorCode`, initialized to `MaybeErrorCode::Success`.
 
 Expresses the status when checking the versions between the origin, destination chain, and the requested pallet located on the destination chain.
 
 ### **4.1** Topic
 
-Of type `Option<[u8; 32]>`, initialized to `0`.
+Of type `Option<[u8; 32]>`, initialized to `None`.
 
-Expresses the a topicv
+Expresses an arbitrary topic of an XCM.  This value can be set to anything, and is used as part of `XcmContext`.
 
 
 ## **4** Basic XCVM Operation
