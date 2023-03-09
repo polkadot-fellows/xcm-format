@@ -233,6 +233,7 @@ The instructions, in order, are:
 - `Trap`
 - `SubscribeVersion`
 - `UnsubscribeVersion`
+- `BurnAsset`
 - `ExpectAsset`
 - `ExpectError`
 - `ExpectOrigin`
