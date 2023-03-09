@@ -161,7 +161,7 @@ Of type `u64`, initialized to `0`.
 
 Expresses the portion of Surplus Weight which has been refunded. Not used on XCM platforms which do not require payment for execution.
 
-### **4.0** Transact Status
+### **3.10** Transact Status
 
 Of type `MaybeErrorCode`, initialized to `MaybeErrorCode::Success`.
 
