@@ -167,7 +167,7 @@ Of type `MaybeErrorCode`, initialized to `MaybeErrorCode::Success`.
 
 Expresses the status when checking the versions between the origin, destination chain, and the requested pallet located on the destination chain.
 
-### **4.1** Topic
+### **3.11** Topic
 
 Of type `Option<[u8; 32]>`, initialized to `None`.
 
