@@ -165,7 +165,7 @@ Expresses the portion of Surplus Weight which has been refunded. Not used on XCM
 
 Of type `MaybeErrorCode`, initialized to `MaybeErrorCode::Success`.
 
-Expresses the status when checking the versions between the origin, destination chain, and the requested pallet located on the destination chain.
+Expresses the status of a `Transact` instruction after the encoded call within has been dispatched.
 
 ### **3.11** Topic
 
