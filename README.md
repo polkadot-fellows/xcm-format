@@ -778,7 +778,7 @@ Operands:
 - `asset`: The asset(s) which are now unlockable from this origin.
 - `owner`: The owner of the asset on the chain in which it was locked. This may be a location specific to the origin network.
 
-Kind: *Instruction*
+Kind: *Trusted Indication*
 
 Errors: *Fallible*.
 
