@@ -763,7 +763,7 @@ Remove the lock over `asset` on this chain and (if nothing else is preventing it
 Operands:
 
 - `asset`: The asset to be unlocked.
-- `owner`: The owner of the asset on the local chain.
+- `target`: The owner of the asset on the local chain.
 
 Kind: *Instruction*
 
