@@ -893,12 +893,12 @@ A general identifier for an instance of a non-fungible asset within its class.
 Given by the SCALE tagged union of:
 
 - `Undefined = 0`: Undefined - used if the NFA class has only one instance.
-- `Index = 1: { index: Compact }`: A compact `index`. Technically this could be greater than u128, but this implementation supports only values up to `2**128 - 1`.
+- `Index = 1: { index: Compact<u128> }`: A compact `index`. Technically this could be greater than u128, but this implementation supports only values up to `2**128 - 1`.
 - `Array4 = 2: { datum: [u8; 4] }`: A 4-byte fixed-length `datum`.
 - `Array8 = 3: { datum: [u8; 8] }`: A 8-byte fixed-length `datum`.
 - `Array16 = 4: { datum: [u8; 16] }`: A 16-byte fixed-length `datum`.
 - `Array32 = 5: { datum: [u8; 32] }`: A 32-byte fixed-length `datum`.
-- `Blob = 6: { data: Vec<u8> }`: An arbitrary piece of `data`. Use only when necessary.
+
 
 #### `WildFungibility`
 
@@ -1021,8 +1021,8 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `Unimplemented = 1`: The instruction is intentionally unsupported.
 - `UntrustedReserveLocation = 2`: Origin Register does not contain a value value for a reserve transfer notification.
 - `UntrustedTeleportLocation = 3`: Origin Register does not contain a value value for a teleport notification.
-- `MultiLocationFull = 4`: `MultiLocation` value too large to descend further.
-- `MultiLocationNotInvertible = 5`: `MultiLocation` value ascend more parents than known ancestors of local location.
+- `LocationFull = 4`: `MultiLocation` value too large to descend further.
+- `LocationNotInvertible = 5`: `MultiLocation` value ascend more parents than known ancestors of local location.
 - `BadOrigin = 6`: The Origin Register does not contain a valid value for instruction.
 - `InvalidLocation = 7`: The location parameter is not a valid value for the instruction.
 - `AssetNotFound = 8`: The given asset is not handled.
@@ -1035,8 +1035,20 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `Unroutable = 15`: Destination is known to be unroutable.
 - `UnknownClaim = 16`: Used by `ClaimAsset` when the given claim could not be recognized/found.
 - `FailedToDecode = 17`: Used by `Transact` when the functor cannot be decoded.
-- `TooMuchWeightRequired = 18`: Used by `Transact` to indicate that the given weight limit could be breached by the functor.
+- `MaxWeightInvalid = 18`: Used by `Transact` to indicate that the given weight limit could be breached by the functor.
 - `NotHoldingFees = 19`: Used by `BuyExecution` when the Holding Register does not contain payable fees.
 - `TooExpensive = 20`: Used by `BuyExecution` when the fees declared to purchase weight are insufficient.
 - `Trap(u64) = 21`: Used by the `Trap` instruction to force an error intentionally. Its code is included.
 - `ExpectationFalse = 22`: Used by `ExpectAsset`, `ExpectError` and `ExpectOrigin` when the expectation was not true.
+- `PalletNotFound = 23`: The provided pallet index was not found.
+- `NameMismatch = 24`:  The given pallet's name is different to that expected.
+- `VersionIncompatible = 25`:  The given pallet's version has an incompatible version to that expected.
+- `HoldingWouldOverflow = 26`: The given operation would lead to an overflow of the Holding Register.
+- `ExportError = 27`: The message was unable to be exported.
+- `ReanchorFailed = 28`: `MultiLocation` value failed to be reanchored.
+- `NoDeal = 29`: No deal is possible under the given constraints.
+- `FeesNotMet = 30`: Fees were required which the origin could not pay.
+- `LockError = 31`: Some other error with locking.
+- `NoPermission = 32`: The state was not in a condition where the operation was valid to make.
+- `Unanchored = 33`: The universal location of the local consensus is improper.
+- `NotDepositable = 34`: An asset cannot be deposited, probably because (too much of) it already exists.
