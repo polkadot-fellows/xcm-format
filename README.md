@@ -842,25 +842,29 @@ A concrete identifier is represented by a `MultiLocation`. If a system has an un
 
 A `MultiAsset` value is represented by the SCALE-encoded pair of fields:
 
-- `class: AssetId`: The asset class.
+- `id: AssetId`: The asset id.
 - `fun`: The fungibility of the asset, this is a tagged union with two possible variants:
-  - `Fungible = 0 { amount: Compact }`: In which case this is a fungible asset and the `amount` is expected to follow the `0` byte to identify this variant.
+  - `Fungible = 0 { amount: Compact[128] }`: In which case this is a fungible asset and the `amount` is expected to follow the `0` byte to identify this variant.
   - `NonFungible = 1 { instance: AssetInstance }`: In which case this is a non-fungible asset and the `instance` is expected to follow the `1` byte to identify this variant.
 
-If multiple classes need to be expressed in a value, then the `MultiAssets` type should be used. This is encoded exactly as a `Vec<MultiAsset>`, but with some additional requirements:
+If multiple ids need to be expressed in a value, then the `MultiAssets` type should be used. This is encoded exactly as a `Vec<MultiAsset>`, but with some additional requirements:
 
 - All fungible assets must be placed in the encoding before non-fungible assets.
-- Fungible assets must be ordered by class in Standard Ordering (see next).
-- Non-fungible assets must be ordered by class and then by instance in Standard Ordering.
-- There may be only one fungible asset for each fungible asset class.
-- There may be only one non-fungible asset for each non-fungible asset class/instance pair.
+- Fungible assets must be ordered by id in Standard Ordering (see next).
+- Non-fungible assets must be ordered by id and then by instance in Standard Ordering.
+- There may be only one fungible asset for each fungible asset id.
+- There may be only one non-fungible asset for each non-fungible asset id/instance pair.
 
 (The ordering provides an efficient means of guaranteeing that each asset is indeed unique within the set.)
 
-A `WildMultiAsset` value is represented by the SCALE-encoded tagged union with two variants:
+A `WildMultiAsset` value is represented by the SCALE-encoded tagged union with four variants:
 
 - `All = 0`: Matches for all assets.
-- `AllOf = 1 { class: AssetId, fun: WildFungibility }`: Matches for any assets which match the given `class` and fungibility (`fun`).
+- `AllOf = 1 { id: AssetId, fun: WildFungibility }`: Matches for any assets which match the given `id` and fungibility (`fun`).
+- `AllCounted = 2 ( Compact[u32] )`: Matches for all assets up to `u32` number of individual assets. 
+- `AllOfCounted = 3 { id: AssetId, fun: WildFungibility, count: Compact[u32] }`: Matches for any assets which match the given `id` and fungibility (`fun`) up to `u32` number of individual assets. 
+
+_Note: different instances of non-fungibles are counted as individual assets_
 
 A `MultiAssetFilter` value is represented by the SCALE-encoded tagged union with two variants:
 
@@ -954,6 +958,10 @@ An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junct
 
 - `OnlyChild = 7`: The unambiguous child.
 
+- `Plurality = 8 { id: BodyId, part: BodyPart }` A pluralistic body existing within consensus. Typical to be used to represent a governance origin of a chain, but could in principle be used to represent things such as multisigs also.
+
+- `GlobalConsensus = 9 (NetworkId)` A global network capable of externalizing its own consensus. This is not generally meaningful outside of the universal level.
+
 #### NetworkId
 
 A global identifier of an account-bearing consensus system.
@@ -964,6 +972,36 @@ Encoded as the tagged union of:
 - `Named = 1 { name: Vec<u8> }`: Some `name`d network.
 - `Polkadot = 2`: The Polkadot Relay chain
 - `Kusama = 3`: Kusama.
+
+#### BodyId
+An identifier of a pluralistic body.
+
+Encoded as the tagged union of:
+
+- `Unit = 0`: The only body in its context. It should be unambiguous to which body `Unit` refers. The `Unit` id should never be used in a context with multiple pluralistic bodies.
+- `Moniker = 1 [u8; 4]`: A named body.
+- `Index = 2 (Compact[u32])`: An indexed body.
+- `Executive = 3`: The unambiguous executive body (for Polkadot, this would be the Polkadot council).
+- `Technical = 4`: The unambiguous technical body (for Polkadot, this would be the Technical Committee).
+- `Legislative = 5`: The unambiguous legislative body (for Polkadot, this could be considered the opinion of a majority of lock-voters).
+- `Judicial = 6`: The unambiguous judicial body (this doesn't exist on Polkadot, but if it were to get a "grand oracle", it may be considered as that).
+- `Defense = 7`: The unambiguous defense body (for Polkadot, an opinion on the topic given via a public referendum on the `staking_admin` track).
+- `Administration = 8`: The unambiguous administration body (for Polkadot, an opinion on the topic given via a public referendum on the `general_admin` track).
+- `Treasury = 9`: The unambiguous treasury body (for Polkadot, an opinion on the topic given via a public referendum on the `treasurer` track).
+
+#### BodyPart
+
+A part of a pluralistic body.
+
+Encoded as the tagged union of:
+
+- `Voice = 0`: The body's declaration, under whatever means it decides.
+- `Members = 1 { count: Compact[u32] }`: A given number of members of the body.
+- `Fraction = 2 { nom: Compact[u32], denom: Compact[u32] }`: A given number of members of the body, out of some larger caucus.
+- `AtLeastProportion = 3 { nom: Compact[u32], denom: Compact[u32] }`:  No less than the given proportion of members of the body.
+- `MoreThanProportion = 4 { nom: Compact[u32], denom: Compact[u32] }`: More than the given proportion of members of the body.
+
+
 
 ### Written format
 
