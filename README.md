@@ -968,10 +968,16 @@ A global identifier of an account-bearing consensus system.
 
 Encoded as the tagged union of:
 
-- `Any = 0`: Unidentified/any.
-- `Named = 1 { name: Vec<u8> }`: Some `name`d network.
-- `Polkadot = 2`: The Polkadot Relay chain
-- `Kusama = 3`: Kusama.
+- `ByGenesis = 0 ([u8; 32])`: Network specified by the first 32 bytes of its genesis block.
+- `ByFork = 1 { block_number: u64, block_hash: [u8; 32] }`: Network defined by the first 32-bytes of the hash and number of some block it contains.
+- `Polkadot = 2`: The Polkadot mainnet Relay-chain
+- `Kusama = 3`: The Kusama canary-net Relay-chain.
+- `Westend = 4`: The Westend testnet Relay-chain.
+- `Rococo = 5`: The Rococo testnet Relay-chain.
+- `Wococo = 6`: The Wococo testnet Relay-chain.
+- `Ethereum = 7 { chain_id: Compact[u64] }`: An Ethereum network specified by its EIP-155 chain ID.
+- `BitcoinCore = 8`: The Bitcoin network, including hard-forks supported by Bitcoin Core development team.
+- `BitcoinCash = 9`:  The Bitcoin network, including hard-forks supported by Bitcoin Cash developers.
 
 #### BodyId
 An identifier of a pluralistic body.
