@@ -944,17 +944,17 @@ An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junct
 
 - `Parachain = 0 { index: Compact<u32> }`: An indexed parachain belonging to and operated by the context. Generally used when the context is a Polkadot Relay-chain.
 
-- `AccountId32 = 1 { network: NetworkId, id: [u8; 32] }`: A 32-byte identifier (`id`) for an account of a specific `network` that is respected as a sovereign endpoint within the context. Generally used when the context is a Substrate-based chain.
+- `AccountId32 = 1 { network: Option<NetworkId>, id: [u8; 32] }`: A 32-byte identifier (`id`) for an account of a specific `network` that is respected as a sovereign endpoint within the context. Generally used when the context is a Substrate-based chain.
 
-- `AccountIndex64 = 2 { network: NetworkId, index: Compact<u64> }`: An 8-byte `index` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is a Frame-based chain and includes e.g. an indices pallet. The `network` id may be used to restrict or qualify the meaning of the index and may not refer specifically to a *blockchain* network. An example might be a smart contract chain which uses different `network` values to distinguish between account indices and smart contracts indices.
+- `AccountIndex64 = 2 { network: Option<NetworkId>, index: Compact<u64> }`: An 8-byte `index` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is a Frame-based chain and includes e.g. an indices pallet. The `network` id may be used to restrict or qualify the meaning of the index and may not refer specifically to a *blockchain* network. An example might be a smart contract chain which uses different `network` values to distinguish between account indices and smart contracts indices.
 
-- `AccountKey20 = 3 { network: NetworkId, key: [u8; 20] }`: A 20-byte identifier `key` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is an Ethereum or Bitcoin chain or smart-contract.
+- `AccountKey20 = 3 { network: Option<NetworkId>, key: [u8; 20] }`: A 20-byte identifier `key` for an account of a specific `network` that is respected as a sovereign endpoint within the context. May be used when the context is an Ethereum or Bitcoin chain or smart-contract.
 
-- `PalletInstance = 4 { index: u8 }`: An instanced, `index`ed pallet that forms a constituent part of the context. Generally used when the context is a Frame-based chain.
+- `PalletInstance = 4 (u8)`: An instanced, indexed pallet that forms a constituent part of the context. Generally used when the context is a Frame-based chain.
 
-- `GeneralIndex = 5 { index: Compact }`: A nondescript `index` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
+- `GeneralIndex = 5 (Compact<u128>)`: A nondescript index within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
 
-- `GeneralKey = 6 { key: Vec<u8> }`: A nondescript datum acting as a `key` within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
+- `GeneralKey = 6 { length: u8, data: [u8;32] }`: A nondescript array datum, 32 bytes, acting as a key within the context location. Usage will vary widely owing to its generality. Note: Try to avoid using this and instead use a more specific item.
 
 - `OnlyChild = 7`: The unambiguous child.
 
