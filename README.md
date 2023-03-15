@@ -844,7 +844,7 @@ A `MultiAsset` value is represented by the SCALE-encoded pair of fields:
 
 - `id: AssetId`: The asset id.
 - `fun`: The fungibility of the asset, this is a tagged union with two possible variants:
-  - `Fungible = 0 { amount: Compact[128] }`: In which case this is a fungible asset and the `amount` is expected to follow the `0` byte to identify this variant.
+  - `Fungible = 0 { amount: Compact<128> }`: In which case this is a fungible asset and the `amount` is expected to follow the `0` byte to identify this variant.
   - `NonFungible = 1 { instance: AssetInstance }`: In which case this is a non-fungible asset and the `instance` is expected to follow the `1` byte to identify this variant.
 
 If multiple ids need to be expressed in a value, then the `MultiAssets` type should be used. This is encoded exactly as a `Vec<MultiAsset>`, but with some additional requirements:
@@ -861,8 +861,8 @@ A `WildMultiAsset` value is represented by the SCALE-encoded tagged union with f
 
 - `All = 0`: Matches for all assets.
 - `AllOf = 1 { id: AssetId, fun: WildFungibility }`: Matches for any assets which match the given `id` and fungibility (`fun`).
-- `AllCounted = 2 ( Compact[u32] )`: Matches for all assets up to `u32` number of individual assets. 
-- `AllOfCounted = 3 { id: AssetId, fun: WildFungibility, count: Compact[u32] }`: Matches for any assets which match the given `id` and fungibility (`fun`) up to `u32` number of individual assets. 
+- `AllCounted = 2 ( Compact<u32> )`: Matches for all assets up to `u32` number of individual assets. 
+- `AllOfCounted = 3 { id: AssetId, fun: WildFungibility, count: Compact<u32> }`: Matches for any assets which match the given `id` and fungibility (`fun`) up to `u32` number of individual assets. 
 
 _Note: different instances of non-fungibles are counted as individual assets_
 
@@ -975,7 +975,7 @@ Encoded as the tagged union of:
 - `Westend = 4`: The Westend testnet Relay-chain.
 - `Rococo = 5`: The Rococo testnet Relay-chain.
 - `Wococo = 6`: The Wococo testnet Relay-chain.
-- `Ethereum = 7 { chain_id: Compact[u64] }`: An Ethereum network specified by its EIP-155 chain ID.
+- `Ethereum = 7 { chain_id: Compact<u64> }`: An Ethereum network specified by its EIP-155 chain ID.
 - `BitcoinCore = 8`: The Bitcoin network, including hard-forks supported by Bitcoin Core development team.
 - `BitcoinCash = 9`:  The Bitcoin network, including hard-forks supported by Bitcoin Cash developers.
 
@@ -986,7 +986,7 @@ Encoded as the tagged union of:
 
 - `Unit = 0`: The only body in its context. It should be unambiguous to which body `Unit` refers. The `Unit` id should never be used in a context with multiple pluralistic bodies.
 - `Moniker = 1 [u8; 4]`: A named body.
-- `Index = 2 (Compact[u32])`: An indexed body.
+- `Index = 2 (Compact<u32>)`: An indexed body.
 - `Executive = 3`: The unambiguous executive body (for Polkadot, this would be the Polkadot council).
 - `Technical = 4`: The unambiguous technical body (for Polkadot, this would be the Technical Committee).
 - `Legislative = 5`: The unambiguous legislative body (for Polkadot, this could be considered the opinion of a majority of lock-voters).
@@ -1002,10 +1002,10 @@ A part of a pluralistic body.
 Encoded as the tagged union of:
 
 - `Voice = 0`: The body's declaration, under whatever means it decides.
-- `Members = 1 { count: Compact[u32] }`: A given number of members of the body.
-- `Fraction = 2 { nom: Compact[u32], denom: Compact[u32] }`: A given number of members of the body, out of some larger caucus.
-- `AtLeastProportion = 3 { nom: Compact[u32], denom: Compact[u32] }`:  No less than the given proportion of members of the body.
-- `MoreThanProportion = 4 { nom: Compact[u32], denom: Compact[u32] }`: More than the given proportion of members of the body.
+- `Members = 1 { count: Compact<u32> }`: A given number of members of the body.
+- `Fraction = 2 { nom: Compact<u32>, denom: Compact<u32> }`: A given number of members of the body, out of some larger caucus.
+- `AtLeastProportion = 3 { nom: Compact<u32>, denom: Compact<u32> }`:  No less than the given proportion of members of the body.
+- `MoreThanProportion = 4 { nom: Compact<u32>, denom: Compact<u32> }`: More than the given proportion of members of the body.
 
 
 
