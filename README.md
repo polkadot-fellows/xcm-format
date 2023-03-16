@@ -206,46 +206,54 @@ The XCVM instruction type (`Instruction`) is represented as a tagged union (`enu
 
 The instructions, in order, are:
 
-- `WithdrawAsset`
-- `ReserveAssetDeposited`
-- `ReceiveTeleportedAsset`
-- `QueryResponse`
-- `TransferAsset`
-- `TransferReserveAsset`
-- `Transact`
-- `HrmpNewChannelOpenRequest`
-- `HrmpChannelAccepted`
-- `HrmpChannelClosing`
-- `ClearOrigin`
-- `DescendOrigin`
-- `ReportError`
-- `DepositAsset`
-- `DepositReserveAsset`
-- `ExchangeAsset`
-- `InitiateReserveWithdraw`
-- `InitiateTeleport`
-- `QueryHolding`
-- `BuyExecution`
-- `RefundSurplus`
-- `SetErrorHandler`
-- `SetAppendix`
-- `ClearError`
-- `ClaimAsset`
-- `Trap`
-- `SubscribeVersion`
-- `UnsubscribeVersion`
-- `BurnAsset`
-- `ExpectAsset`
-- `ExpectError`
-- `ExpectOrigin`
-- `QueryPallet`
-- `ExpectPallet`
-- `ReportTransactStatus`
-- `ClearTransactStatus`
-- `LockAsset`
-- `UnlockAsset`
-- `NoteUnlockable`
-- `RequestUnlock`
+- `WithdrawAsset = 0 (MultiAssets)`
+- `ReserveAssetDeposited = 1 (MultiAssets)`
+- `ReceiveTeleportedAsset = 2 (MultiAssets)`
+- `QueryResponse = 3 {query_id: Compact<QueryId>, response: Response, max_weight: Weight, querier: Option<MultiLocation> }`
+- `TransferAsset = 4 { assets: MultiAssets, beneficiary: MultiLocation }`
+- `TransferReserveAsset = 5 { assets: MultiAssets, dest: MultiLocation, xcm: Xcm<()> }`
+- `Transact = 6 { origin_kind: OriginKind, require_weight_at_most: Weight, call: DoubleEncoded<Call> }`
+- `HrmpNewChannelOpenRequest = 7 { sender: Compact<u32>, max_message_size: Compact<u32>, max_capacity: Compact<u32> }`
+- `HrmpChannelAccepted = 8 { recipient: Compact<u32> }`
+- `HrmpChannelClosing = 9 { initiator: Compact<u32>, sender: Compact<u32>, recipient: Compact<u32> }`
+- `ClearOrigin = 10`
+- `DescendOrigin = 11 (InteriorMultiLocation)`
+- `ReportError = 12 (QueryResponseInfo)`
+- `DepositAsset = 13 { assets: MultiAssetFilter, beneficiary: MultiLocation }`
+- `DepositReserveAsset = 14 { assets: MultiAssetFilter, dest: MultiLocation, xcm: Xcm<()> }`
+- `ExchangeAsset = 15 { give: MultiAssetFilter, want: MultiAssets, maximal: bool }`
+- `InitiateReserveWithdraw = 16 { assets: MultiAssetFilter, reserve: MultiLocation, xcm: Xcm<()> }`
+- `InitiateTeleport = 17 { assets: MultiAssetFilter, dest: MultiLocation, xcm: Xcm<()> }`
+- `ReportHolding = 18 { response_info: QueryResponseInfo, assets: MultiAssetFilter }`
+- `BuyExecution = 19 { fees: MultiAsset, weight_limit: WeightLimit }`
+- `RefundSurplus = 20`
+- `SetErrorHandler = 21 (Xcm<Call>)`
+- `SetAppendix = 22 (Xcm<Call>)`
+- `ClearError = 23`
+- `ClaimAsset = 24 { assets: MultiAssets, ticket: MultiLocation }`
+- `Trap = 25 (Compact<u64>)`
+- `SubscribeVersion = 26 {query_id: Compact<QueryId>, max_response_weight: Weight}`
+- `UnsubscribeVersion = 27`
+- `BurnAsset = 28 (MultiAssets)`
+- `ExpectAsset = 29 (MultiAssets)`
+- `ExpectOrigin = 30 (Option<MultiLocation>)`
+- `ExpectError = 31 (Option<(u32, Error)>)`
+- `ExpectTransactStatus = 32 (MaybeErrorCode)`
+- `QueryPallet = 33 { module_name: Vec<u8>, response_info: QueryResponseInfo }`
+- `ExpectPallet = 34 { index: Compact<u32>, name: Vec<u8>, module_name: Vec<u8>, crate_major: Compact<u32>, min_crate_minor: Compact<u32> }`
+- `ReportTransactStatus = 35 (QueryResponseInfo)`
+- `ClearTransactStatus = 36`
+- `UniversalOrigin = 37 (Junction)`
+- `ExportMessage = 38 { network: NetworkId, destination: InteriorMultiLocation, xcm: Xcm<()> }`
+- `LockAsset = 39 { asset: MultiAsset, unlocker: MultiLocation }`
+- `UnlockAsset = 40 { asset: MultiAsset, target: MultiLocation }`
+- `NoteUnlockable = 41 { asset: MultiAsset, owner: MultiLocation }`
+- `RequestUnlock = 42 { asset: MultiAsset, locker: MultiLocation }`
+- `SetFeesMode = 43 { jit_withdraw: bool }`
+- `SetTopic = 44 ([u8; 32])`
+- `ClearTopic = 45`
+- `AliasOrigin = 46 (MultiLocation)`
+- `UnpaidExecution = 47 { weight_limit: WeightLimit, check_origin: Option<MultiLocation> }`
 
 ### Notes on terminology
 
