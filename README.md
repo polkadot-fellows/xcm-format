@@ -265,11 +265,11 @@ The instructions, in order, are:
 
 ### `WithdrawAsset`
 
-Remove the on-chain asset(s) (`assets`) and accrue them into Holding.
+Withdraw asset(s) (`assets`) from the ownership of `origin` and place them into the Holding Register.
 
 Operands:
 
-- `assets: MultiAssets`: The asset(s) to be removed; must be owned by Origin.
+- `assets: MultiAssets`: The asset(s) to be withdrawn into holding.
 
 Kind: *Instruction*.
 
@@ -277,65 +277,71 @@ Errors: *Fallible*.
 
 ### `ReserveAssetDeposited`
 
-Accrue into Holding derivative assets to represent the asset(s) (`assets`) on Origin.
+Asset(s) (`assets`) have been received into the ownership of this system on the `origin` system and equivalent derivatives should be placed into the Holding Register.
 
 Operands:
 
-- `assets: MultiAssets`: The asset(s) which have been received into the Sovereign account of the local consensus system on Origin.
+- `assets: MultiAssets`: The asset(s) that are minted into holding.
 
 Kind: *Trusted Indication*.
 
-Trust: Origin must be trusted to act as a reserve for `assets`.
+Safety: `origin` must be trusted to have received and be storing `assets` such that they may later be withdrawn should this system send a corresponding message.
 
 Errors: *Fallible*.
 
 ### `ReceiveTeleportedAsset`
 
-Accrue assets into Holding equivalent to the given assets (`assets`) on Origin.
+Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent assets should be created and placed into the Holding Register.
 
 Operands:
 
-- `assets: MultiAssets`: The asset(s) which have been removed from Origin.
+- `assets: MultiAssets`: The asset(s) that are minted into the Holding Register.
 
 Kind: *Trusted Indication*.
 
-Trust: Origin must be trusted to have removed the `assets` as a consequence of sending this message.
+Safety:`origin` must be trusted to have irrevocably destroyed the corresponding `assets`
+prior as a consequence of sending this message.
 
 Errors: *Fallible*.
 
 ### `QueryResponse`
 
-Provide expected information from Origin.
+Respond with information that the local system is expecting.
 
 Operands:
 
 - `query_id: QueryId`: The identifier of the query that resulted in this message being sent.
-- `response: Response`: The information content.
-- `max_weight: Weight`: The maximum weight that handling this response should take. If proper execution requires more weight then an error will be thrown. If it requires less weight, then Surplus Weight Register may increase.
+- `response: Response`: The message content.
+- `max_weight: Weight`: The maximum weight that handling this response should take. 
+- `querier`: The location responsible for the initiation of the response, if there is one. In general this will tend to be the same location as the receiver of this message. 
+NOTE: As usual, this is interpreted from the perspective of the receiving consensus
+system.
 
 Kind: *Information*.
 
-Errors: *Fallible*.
+Safety: Since this is information only, there are no immediate concerns. However, it should be remembered that even if the Origin behaves reasonably, it can always be asked to make a response to a third-party chain who may or may not be expecting the response. Therefore the `querier` should be checked to match the expected value.
 
-Weight: Weight estimation may utilise `max_weight` which may lead to an increase in Surplus Weight Register at run-time.
+Errors: *Fallible*.
 
 #### `Response`
 
 The `Response` type is used to express information content in the `QueryResponse` XCM instruction. It can represent one of several different data types and it therefore encoded as the SCALE-encoded tagged union:
 
-- `Null = 0`: No information.
-- `Assets { assets: MultiAssets } = 1`: Some assets.
-- `ExecutionResult { result: Result<(), (u32, Error)> } = 2`: An error (or not), equivalent to the type of value contained in the Error Register.
-- `Version { version: Compact } = 3`: An XCM version.
+- `Null = 0`:  No response. Serves as a neutral default.
+- `Assets = 1 (MultiAssets)`: Some assets.
+- `ExecutionResult = 2 (Option<(u32, Error)>)`: The outcome of an XCM instruction.
+- `Version = 3 (u32)`: An XCM version.
+- `PalletsInfo = 4 (BoundedVec<PalletInfo, MaxPalletsInfo>)`: The index, instance name, pallet name and version of some pallets.
+- `DispatchResult = 5 (MaybeErrorCode)`: The status of a dispatch attempt using `Transact`.
 
 ### `TransferAsset`
 
-Withdraw asset(s) (`assets`) from the ownership of Origin and deposit equivalent assets under the ownership of `beneficiary`.
+Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent assets under the ownership of `beneficiary`.
 
 Operands:
 
-- `assets: MultiAssetFilter`: The asset(s) to be withdrawn.
-- `beneficiary`: The new owner for the assets.
+- `assets: MultiAssets`: The asset(s) to be withdrawn.
+- `beneficiary: MultiLocation`: The new owner for the assets.
 
 Kind: *Instruction*.
 
@@ -343,7 +349,7 @@ Errors: *Fallible*.
 
 ### `TransferReserveAsset`
 
-Withdraw asset(s) (`assets`) from the ownership of Origin and deposit equivalent assets under the ownership of `destination` (i.e. within its Sovereign account).
+Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent assets under the ownership of `dest` within this consensus system (i.e. its sovereign account).
 
 Send an onward XCM message to `destination` of `ReserveAssetDeposited` with the given `xcm`.
 
@@ -359,14 +365,15 @@ Errors: *Fallible*.
 
 ### `Transact`
 
-Dispatch the encoded functor `call`, whose dispatch-origin should be Origin as expressed
-by the kind of origin `origin_type`.
+Apply the encoded transaction `call`, whose dispatch-origin should be `origin` as expressed by the kind of origin `origin_kind`.
+
+The Transact Status Register is set according to the result of dispatching the call.
 
 Operands:
 
-- `origin_type: OriginKind`: The means of expressing the message origin as a dispatch origin.
-- `max_weight: Weight`: The maximum amount of weight to expend while dispatching `call`. If dispatch requires more weight then an error will be thrown. If dispatch requires less weight, then Surplus Weight Register may increase.
-- `call: Vec<u8>`: The encoded transaction to be applied.
+- `origin_kind: OriginKind`: The means of expressing the message origin as a dispatch origin.
+- `require_weight_at_most: Weight`: The weight of `call`; this should be at least the chain's calculated weight and will be used in the weight determination arithmetic.
+- `call: DoubleEncoded<Call>`: The encoded transaction to be applied.
 
 Kind: *Instruction*.
 
@@ -376,8 +383,7 @@ Weight: Weight estimation may utilise `max_weight` which may lead to an increase
 
 ### `HrmpNewChannelOpenRequest`
 
-A message to notify about a new incoming HRMP channel. This message is meant to be sent by the
-Relay-chain to a para.
+A message to notify about a new incoming HRMP channel. This message is meant to be sent by the Relay-chain to a para.
 
 Operands:
 
@@ -450,9 +456,7 @@ A `QueryResponse` message of type `ExecutionOutcome` is sent to `destination` wi
 
 Operands:
 
-- `query_id: QueryId`: The value to be used for the `query_id` field of the `QueryResponse` message.
-- `destination: MultiLocation`: The location to where the `QueryResponse` message should be sent.
-- `max_response_weight: Weight`: The value to be used for the `max_weight` field of the `QueryResponse` message.
+- `response_info: QueryResponseInfo`: Information for making the response.
 
 Kind: *Instruction*
 
@@ -460,12 +464,11 @@ Errors: *Fallible*.
 
 ### `DepositAsset`
 
-Subtract the asset(s) (`assets`) from Holding and deposit on-chain equivalent assets under the ownership of `beneficiary`.
+Remove the asset(s) (`assets`) from the Holding Register and place equivalent assets under the ownership of `beneficiary` within this consensus system.
 
 Operands:
 
-- `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `max_assets: Compact`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
+- `assets: MultiAssetFilter`: The asset(s) to remove from holding.
 - `beneficiary: MultiLocation`: The new owner for the assets.
 
 Kind: *Instruction*
@@ -474,16 +477,15 @@ Errors: *Fallible*.
 
 ### `DepositReserveAsset`
 
-Remove the asset(s) (`assets`) from the Holding Register and deposit on-chain equivalent assets under the ownership of `destination` (i.e. deposit them into its Sovereign Account).
+Remove the asset(s) (`assets`) from the Holding Register and place equivalent assets under the ownership of `dest` within this consensus system (i.e. deposit them into its sovereign account).
 
-Send an onward XCM message to `destination` of `ReserveAssetDeposited` with the given `effects`.
+Send an onward XCM message to `dest` of `ReserveAssetDeposited` with the given `effects`.
 
 Operands:
 
 - `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `max_assets: Compact`: The maximum number of unique assets/asset instances to remove from the Holding Register. Only the first `max_assets` assets/instances of those matched by `assets` will be removed, prioritized under standard asset ordering. Any others will remain in holding.
-- `destination: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
-- `xcm: Xcm`: The orders that should follow the `ReserveAssetDeposited` instruction which is sent onwards to `destination`.
+- `dest: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
+- `xcm: Xcm`: The orders that should follow the `ReserveAssetDeposited` instruction which is sent onwards to `dest`.
 
 Kind: *Instruction*
 
@@ -491,12 +493,13 @@ Errors: *Fallible*.
 
 ### `ExchangeAsset`
 
-Reduce Holding by up to some amount of asset(s) (`give`) and accrue Holding with a minimum amount of some alternative assets (`receive`).
+Remove the asset(s) (`want`) from the Holding Register and replace them with alternative assets.
 
 Operands:
 
-- `give: MultiAssetFilter`: The asset(s) by which Holding should be reduced.
-- `receive: MultiAssets`: The asset(s) by which Holding must be increased. Any fungible assets appearing in `receive` may be increased by an amount greater than expressed, but Holding may not accrue assets not stated in `receive`.
+- `give: MultiAssetFilter`: The maximum amount of assets to remove from holding.
+- `want: MultiAssets`: The minimum amount of assets which `give` should be exchanged for.
+- `maximal: bool`: If `true`, then prefer to give as much as possible up to the limit of `give` and receive accordingly more. If `false`, then prefer to give as little as possible in order to receive as little as possible while receiving at least `want`.
 
 Kind: *Instruction*
 
@@ -504,13 +507,13 @@ Errors: *Fallible*.
 
 ### `InitiateReserveWithdraw`
 
-Reduce the value of the Holding Register by the asset(s) (`assets`) and send an XCM message beginning with `WithdrawAsset` to a reserve location.
+Remove the asset(s) (`assets`) from holding and send a `WithdrawAsset` XCM message to a reserve location.
 
 Operands:
 
-- `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `reserve`: A valid location that acts as a reserve for all asset(s) in `assets`. The sovereign account of this consensus system *on the reserve location* will have appropriate assets withdrawn and `effects` will be executed on them. There will typically be only one valid location on any given asset/chain combination.
-- `xcm`: The instructions to execute on the assets once withdrawn *on the reserve location*.
+- `assets: MultiAssetFilter`: The asset(s) to remove from the holding.
+- `reserve: MultiLocation`: A valid location that acts as a reserve for all asset(s) in `assets`. The sovereign account of this consensus system *on the reserve location* will have appropriate assets withdrawn and `effects` will be executed on them. There will typically be only one valid location on any given asset/chain combination.
+- `xcm: Xcm`: The instructions to execute on the assets once withdrawn *on the reserve location*.
 
 Kind: *Instruction*
 
@@ -534,14 +537,11 @@ Errors: *Fallible*.
 
 ### `ReportHolding`
 
-Send a `QueryResponse` XCM message with the `assets` value equal to the holding contents, or a portion thereof.
+Report to a given destination the contents of the Holding Register. A `QueryResponse` message of type `Assets` is sent to the described destination.
 
 Operands:
-
-- `query_id: QueryId`: The value to be used for the `query_id` field of the `QueryResponse` message.
-- `destination: MultiLocation`: The location to where the `QueryResponse` message should be sent.
-- `assets: MultiAssetFilter`: A filter for the assets that should be reported back.
-- `max_response_weight: Weight`: The value to be used for the `max_weight` field of the `QueryResponse` message.
+- `response_info: QueryResponseInfo`: Information for making the response.
+ `assets: MultiAssetFilter`: A filter for the assets that should be reported back. The assets reported back will be, asset-wise, *the lesser of this value and the holding register*. No wildcards will be used when reporting assets back.
 
 Kind: *Instruction*
 
@@ -549,12 +549,12 @@ Errors: *Fallible*.
 
 ### `BuyExecution`
 
-Pay for the execution of the current message from Holding.
+Pay for the execution of some XCM `xcm` and `orders` with up to `weight` picoseconds of execution time, paying for this with up to `fees` from the Holding Register.
 
 Operands:
 
-- `fees: MultiAsset`: The asset(s) by which to reduce Holding to pay execution fees.
-- `weight_limit: Option<Weight>`: If provided, then state the amount of weight to be purchased. If this is lower than the estimated weight of this message, then an error will be thrown.
+- `fees: MultiAsset`: The asset(s) to remove from the Holding Register to pay for fees.
+- `weight_limit: WeightLimit`: The maximum amount of weight to purchase; this must be at least the expected maximum weight of the total XCM to be executed for the `AllowTopLevelPaidExecutionFrom` barrier to allow the XCM be executed.
 
 Kind: *Instruction*
 
@@ -562,7 +562,7 @@ Errors: *Fallible*.
 
 ### `RefundSurplus`
 
-Increase Refunded Weight Register to the value of Surplus Weight Register. Attempt to accrue fees previously paid via `BuyExecution` into Holding for the amount that Refunded Weight Register is increased.
+Refund any surplus weight previously bought with `BuyExecution`.
 
 Kind: *Instruction*
 
@@ -570,7 +570,11 @@ Errors: *Infallible*.
 
 ### `SetErrorHandler`
 
-Set the Error Handler Register.
+Set the Error Handler Register. This is code that should be called in the case of an error happening.
+
+An error occurring within execution of this code will _NOT_ result in the error register being set, nor will an error handler be called due to it. The error handler and appendix may each still be set.
+
+The apparent weight of this instruction is inclusive of the inner `Xcm`; the executing weight however includes only the difference between the previous handler and the new handler, which can reasonably be negative, which would result in a surplus.
 
 Operands:
 
@@ -580,11 +584,13 @@ Kind: *Instruction*
 
 Errors: *Infallible*.
 
-Weight: The estimated weight of this instruction must include the estimated weight of `error_handler`. At run-time, Surplus Weight Register should be increased by the estimated weight of the Error Handler prior to being changed.
-
 ### `SetAppendix`
 
-Set the Appendix Register.
+Set the Appendix Register. This is code that should be called after code execution (including the error handler if any) is finished. This will be called regardless of whether an error occurred.
+
+Any error occurring due to execution of this code will result in the error register being set, and the error handler (if set) firing.
+
+The apparent weight of this instruction is inclusive of the inner `Xcm`; the executing weight however includes only the difference between the previous appendix and the new appendix, which can reasonably be negative, which would result in a surplus.
 
 Operands:
 
@@ -593,8 +599,6 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Infallible*.
-
-Weight: The estimated weight of this instruction must include the estimated weight of `appendix`. At run-time, Surplus Weight Register should be increased by the estimated weight of the Appendix prior to being changed.
 
 ### `ClearError`
 
@@ -606,11 +610,11 @@ Errors: *Infallible*.
 
 ### `ClaimAsset`
 
-Create some assets which are being held on behalf of Origin.
+Create some assets which are being held on behalf of the origin.
 
 Operands:
 
-- `assets: MultiAssets`: The assets which are to be claimed. This must match exactly with the assets claimable by Origin with the given `ticket`.
+- `assets: MultiAssets`: The assets which are to be claimed. This must match exactly with the assets claimable by the origin of the ticket.
 - `ticket: MultiLocation`: The ticket of the asset; this is an abstract identifier to help locate the asset.
 
 Kind: *Instruction*
@@ -628,31 +632,35 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Always*.
+- `Trap`: All circumstances, whose inner value is the same as this item's inner value.
 
 ### `SubscribeVersion`
 
-Send a `QueryResponse` message to Origin specifying XCM version 2 in the `response` field.
-
-Any upgrades to the local consensus which result in a later version of XCM being supported should  elicit a similar response.
+Ask the destination system to respond with the most recent version of XCM that they support in a `QueryResponse` instruction. Any changes to this should also elicit similar responses when they happen.
 
 Operands:
 
-- `query_id: QueryId`: The value to be used for the `query_id` field of the `QueryResponse` message.
-- `max_response_weight: Weight`: The value to be used for the `max_weight` field of the `QueryResponse` message.
+- `query_id: Compact<QueryId>`: An identifier that will be replicated into the returned XCM message.
+- `max_response_weight: Weight`: The maximum amount of weight that the `QueryResponse` item which is sent as a reply may take to execute. 
+NOTE: If this is unexpectedly large then the response may not execute at all.
 
 Kind: *Instruction*
+
+Errors: *Fallible*
 
 ### `UnsubscribeVersion`
 
-Cancel the effect of a previous `SubscribeVersion` instruction from Origin.
+Cancel the effect of a previous `SubscribeVersion` instruction.
 
 Kind: *Instruction*
 
-### `BurnAsset(MultiAssets)`
+Errors: *Fallible*
+
+### `BurnAsset`
 
 Reduce Holding by up to the given assets.
 
-Holding is reduced by as much as possible up to the assets in the parameter.
+Holding is reduced by as much as possible up to the assets in the parameter. It is not an error if the Holding does not contain the assets (to make this an error, use `ExpectAsset` prior).
 
 Operands:
 
@@ -660,9 +668,9 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*
+Errors: *Infallible*
 
-### `ExpectAsset(MultiAssets)`
+### `ExpectAsset`
 
 Throw an error if Holding does not contain at least the given assets.
 
@@ -676,13 +684,13 @@ Errors:
 
 - `ExpectationFalse`: If Holding does not contain the assets in the parameter.
 
-### `ExpectOrigin(MultiLocation)`
+### `ExpectOrigin`
 
 Ensure that the Origin Register equals some given value and throw an error if not.
 
 Operands:
 
-- `origin: MultiLocation`: The value expected of the Origin Register.
+- `origin: Option<MultiLocation>`: The value expected of the Origin Register.
 
 Kind: *Instruction*
 
@@ -690,7 +698,7 @@ Errors:
 
 - `ExpectationFalse`: If Origin is not some value, or if that value is not equal to the parameter.
 
-### `ExpectError(Option<(u32, Error)>)`
+### `ExpectError`
 
 Ensure that the Error Register equals some given value and throw an error if not.
 
@@ -704,105 +712,200 @@ Errors:
 
 - `ExpectationFalse`: If the value of the Error Register is not equal to the parameter.
 
+### `ExpectTransactStatus`
+
+Ensure that the Transact Status Register equals some given value and throw an error if not.
+
+Kind: *Instruction*
+
+Errors:
+- `ExpectationFalse`: If the value of the Transact Status Register is not equal to the parameter.
+
 ### `QueryPallet`
 
 Queries the existence of a particular pallet type.
 
 Operands:
+ - `module_name: Vec<u8>`: The module name of the pallet to query.
+ - `response_info: QueryResponseInfo`: Information for making the response.
+
+Sends a `QueryResponse` to Origin whose data field `PalletsInfo` containing the information of all pallets on the local chain whose name is equal to `name`. This is empty in the case that the local chain is not based on Substrate Frame.
 
 Kind: *Instruction*
 
-Errors:
+Errors: *Fallible*
 
 ### `ExpectPallet`
 
 Ensure that a particular pallet with a particular version exists.
-
+Safety
 Operands:
+ - `index: Compact`: The index which identifies the pallet. An error if no pallet exists at this index.
+ - `name: Vec<u8>`: Name which must be equal to the name of the pallet.
+ - `module_name: Vec<u8>`: Module name which must be equal to the name of the module in which the pallet exists.
+ - `crate_major: Compact`: Version number which must be equal to the major version of the crate which implements the pallet.
+ - `min_crate_minor: Compact`: Version number which must be at most the minor version of the crate which implements the pallet.
 
 Kind: *Instruction*
 
 Errors:
+- `ExpectationFalse`: In case any of the expectations are broken.
 
-### `ReportTransactStatus(QueryResponseInfo)`
+### `ReportTransactStatus`
 
 Send a `QueryResponse` message containing the value of the Transact Status Register to some destination.
 
 Operands:
-
-- `query_response_info`: The information needed for constructing and sending the  `QueryResponse` message.
+- `query_response_info: QueryResponseInfo`: The information needed for constructing and sending the  `QueryResponse` message.
 
 Kind: *Instruction*
 
 Errors: *Fallible*.
 
-### `ClearTransactStatus(QueryResponseInfo)`
+### `ClearTransactStatus`
 
 Set the Transact Status Register to its default, cleared, value.
-
-Operands: None
 
 Kind: *Instruction*
 
 Errors: *Infallible*.
 
-### `LockAsset(MultiAsset, MultiLocation)`
+### `UniversalOrigin`
 
-  Lock the locally held asset and prevent further transfer or withdrawal.
+Set the Origin Register to be some child of the Universal Ancestor.
 
-  This restriction may be removed by the `UnlockAsset` instruction being called with an
-  Origin of `unlocker` and a `target` equal to the current `Origin`.
-
-  If the locking is successful, then a `NoteUnlockable` instruction is sent to `unlocker`.
-
+Safety: Should only be usable if the Origin is trusted to represent the Universal Ancestor child in general. In general, no Origin should be able to represent the Universal Ancestor child which is the root of the local consensus system since it would by extension allow it to act as any location within the local consensus.
 
 Operands:
+- `junction: Junction`: The `Junction` parameter should generally be a `GlobalConsensus` variant since it is only these which are children of the Universal Ancestor.
 
-- `asset`: The asset(s) which should be locked.
-- `unlocker`: The value which the Origin must be for a corresponding `UnlockAsset` instruction to work.
+Kind: *Instruction*
+
+Error: *Fallible*
+
+### ExportMessage
+
+Send a message on to Non-Local Consensus system.
+
+This will tend to utilize some extra-consensus mechanism, the obvious one being a bridge. A fee may be charged; this may be determined based on the contents of `xcm`. It will be taken from the Holding register.
+
+Operands: 
+- `network: NetworkId`: The remote consensus system to which the message should be exported.
+- `destination: InteriorMultiLocation`: The location relative to the remote consensus system to which the message should be sent on arrival.
+- `xcm: Xcm`: The message to be exported.
+
+As an example, to export a message for execution on Statemine (parachain #1000 in the
+Kusama network), you would call with `network: NetworkId::Kusama` and
+`destination: X1(Parachain(1000))`. Alternatively, to export a message for execution on
+Polkadot, you would call with `network: NetworkId:: Polkadot` and `destination: Here`.
 
 Kind: *Instruction*
 
 Errors: *Fallible*.
 
-### `UnlockAsset(MultiAsset, MultiLocation)`
+### `LockAsset`
+
+Lock the locally held asset and prevent further transfer or withdrawal.
+
+This restriction may be removed by the `UnlockAsset` instruction being called with an Origin of `unlocker` and a `target` equal to the current `Origin`.
+
+If the locking is successful, then a `NoteUnlockable` instruction is sent to `unlocker`.
+
+Operands:
+- `asset: MultiAsset`: The asset(s) which should be locked.
+- `unlocker: MultiLocation`: The value which the Origin must be for a corresponding `UnlockAsset` instruction to work.
+
+Kind: *Instruction*
+
+Errors: *Fallible*.
+
+### `UnlockAsset`
 
 Remove the lock over `asset` on this chain and (if nothing else is preventing it) allow the asset to be transferred.
 
 Operands:
-
-- `asset`: The asset to be unlocked.
-- `target`: The owner of the asset on the local chain.
+- `asset: MultiAsset`: The asset to be unlocked.
+- `target: MultiLocation`: The owner of the asset on the local chain.
 
 Kind: *Instruction*
 
 Errors:
 
-### `NoteUnlockable(MultiAsset, MultiLocation)`
+### `NoteUnlockable`
 
 Asset (`asset`) has been locked on the `origin` system and may not be transferred. It may only be unlocked with the receipt of the `UnlockAsset` instruction from this chain.
 
 Operands:
 
-- `asset`: The asset(s) which are now unlockable from this origin.
-- `owner`: The owner of the asset on the chain in which it was locked. This may be a location specific to the origin network.
+- `asset: MultiAsset`: The asset(s) which are now unlockable from this origin.
+- `owner: MultiLocation`: The owner of the asset on the chain in which it was locked. This may be a location specific to the origin network.
+
+Safety: `origin` must be trusted to have locked the corresponding `asset` prior as a consequence of sending this message.
 
 Kind: *Trusted Indication*
 
 Errors: *Fallible*.
 
-### `RequestUnlock(MultiAsset, MultiLocation)`
+### `RequestUnlock`
 
 Send an `UnlockAsset` instruction to the `locker` for the given `asset`. This may fail if the local system is making use of the fact that the asset is locked or, of course, if there is no record that the asset actually is locked.
 
 Operands:
-
 - `asset`: The asset(s) to be unlocked.
 - `locker`: The location from which a previous `NoteUnlockable` was sent and to which an `UnlockAsset` should be sent.
 
 Kind: *Instruction*
 
 Errors: *Fallible*.
+
+### SetFeesMode
+
+Sets the Fees Mode Register.
+	
+- `jit_withdraw: bool`: The fees mode item; if set to `true` then fees for any instructions are withdrawn as needed using the same mechanism as `WithdrawAssets`.
+
+Kind: *Instruction*.
+
+Errors:
+
+### SetTopic
+
+Set the Topic Register
+
+Kind: *Instruction*
+
+Errors:
+
+### ClearTopic
+
+Clear the Topic Register
+
+Kind: *Instruction*
+
+Errors: *Infallible*
+
+### AliasOrigin
+
+Alter the current Origin to another given origin
+
+Operands:
+- `origin: MultiLocation`
+
+Errors: If the existing state would not allow such a change.
+
+### UnpaidExecution
+
+A directive to indicate that the origin expects free execution of the message.
+
+At execution time, this instruction just does a check on the Origin register. However, at the barrier stage messages starting with this instruction can be disregarded if the origin is not acceptable for free execution or the `weight_limit` is `Limited` and insufficient.
+
+Operands:
+- `weight_limit: WeightLimit`
+- `check_origin: Option<MultiLocation>`
+
+Kind: *Indication*
+
+Errors: If the given origin is `Some` and not equal to the current Origin register.
 
 
 ## **6** Universal Asset Identifiers
