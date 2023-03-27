@@ -456,11 +456,18 @@ A `QueryResponse` message of type `ExecutionOutcome` is sent to `destination` wi
 
 Operands:
 
-- `response_info: QueryResponseInfo`: Information for making the response.
+- `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
 
 Kind: *Instruction*
 
 Errors: *Fallible*.
+
+#### `QueryResponseInfo`
+Information regarding the composition of a query response.
+QueryResponseInfo:
+- `destination: MultiLocation`: The destination to which the query response message should be send.
+- `query_id: Compact<QueryId>`: The `query_id` field of the `QueryResponse` message.
+- `max_weight: Weight`: The `max_weight` field of the `QueryResponse` message.
 
 ### `DepositAsset`
 
@@ -540,7 +547,7 @@ Errors: *Fallible*.
 Report to a given destination the contents of the Holding Register. A `QueryResponse` message of type `Assets` is sent to the described destination.
 
 Operands:
-- `response_info: QueryResponseInfo`: Information for making the response.
+- `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
  `assets: MultiAssetFilter`: A filter for the assets that should be reported back. The assets reported back will be, asset-wise, *the lesser of this value and the holding register*. No wildcards will be used when reporting assets back.
 
 Kind: *Instruction*
@@ -716,6 +723,9 @@ Errors:
 
 Ensure that the Transact Status Register equals some given value and throw an error if not.
 
+Operands:
+- `maybe_error_code: MaybeErrorCode`: Expected status of the Transact Status Register.
+
 Kind: *Instruction*
 
 Errors:
@@ -727,7 +737,7 @@ Queries the existence of a particular pallet type.
 
 Operands:
  - `module_name: Vec<u8>`: The module name of the pallet to query.
- - `response_info: QueryResponseInfo`: Information for making the response.
+ - `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
 
 Sends a `QueryResponse` to Origin whose data field `PalletsInfo` containing the information of all pallets on the local chain whose name is equal to `name`. This is empty in the case that the local chain is not based on Substrate Frame.
 
@@ -756,7 +766,7 @@ Errors:
 Send a `QueryResponse` message containing the value of the Transact Status Register to some destination.
 
 Operands:
-- `query_response_info: QueryResponseInfo`: The information needed for constructing and sending the  `QueryResponse` message.
+- `query_response_info: QueryResponseInfo`: The [information](#QueryResponseInfo)  needed for constructing and sending the  `QueryResponse` message.
 
 Kind: *Instruction*
 
@@ -783,7 +793,7 @@ Kind: *Instruction*
 
 Error: *Fallible*
 
-### ExportMessage
+### `ExportMessage`
 
 Send a message on to Non-Local Consensus system.
 
@@ -858,7 +868,7 @@ Kind: *Instruction*
 
 Errors: *Fallible*.
 
-### SetFeesMode
+### `SetFeesMode`
 
 Sets the Fees Mode Register.
 	
@@ -868,7 +878,7 @@ Kind: *Instruction*.
 
 Errors:
 
-### SetTopic
+### `SetTopic`
 
 Set the Topic Register
 
@@ -876,7 +886,7 @@ Kind: *Instruction*
 
 Errors:
 
-### ClearTopic
+### `ClearTopic`
 
 Clear the Topic Register
 
@@ -884,7 +894,7 @@ Kind: *Instruction*
 
 Errors: *Infallible*
 
-### AliasOrigin
+### `AliasOrigin`
 
 Alter the current Origin to another given origin
 
@@ -893,7 +903,7 @@ Operands:
 
 Errors: If the existing state would not allow such a change.
 
-### UnpaidExecution
+### `UnpaidExecution`
 
 A directive to indicate that the origin expects free execution of the message.
 
