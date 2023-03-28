@@ -166,7 +166,7 @@ Expresses the portion of Surplus Weight which has been refunded. Not used on XCM
 
 Of type `MaybeErrorCode`, initialized to `MaybeErrorCode::Success`.
 
-Expresses the result of a `Transact` instruction after the encoded call within has been dispatched.
+Expresses the result of a [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482) instruction after the encoded call within has been dispatched.
 
 ### **3.11** Topic
 
@@ -263,7 +263,7 @@ The instructions, in order, are:
 - The term _on-chain_ should be taken to mean "within the persistent state of the local consensus system", and should not be considered to limit the current consensus system to one which is specifically a blockchain system.
 - The type `Compact`, `Weight` and `QueryId` should be intended to mean a compact integer as per the SCALE definition.
 
-### `WithdrawAsset`
+### [`WithdrawAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L380)
 
 Withdraw asset(s) (`assets`) from the ownership of `origin` and place them into the Holding Register.
 
@@ -279,7 +279,7 @@ Errors: *Fallible*.
 - `FailedToTransactAsset`
 - `HoldingWouldOverflow`
 
-### `ReserveAssetDeposited`
+### [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393)
 
 Asset(s) (`assets`) have been received into the ownership of this system on the `origin` system and equivalent derivatives should be placed into the Holding Register.
 
@@ -296,7 +296,7 @@ Errors: *Fallible*.
 - `UntrustedReserveLocation`
 - `HoldingWouldOverflow`
 
-### `ReceiveTeleportedAsset`
+### [`ReceiveTeleportedAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L406)
 
 Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent assets should be created and placed into the Holding Register.
 
@@ -316,7 +316,7 @@ Errors: *Fallible*.
 - `NotWithdrawable`
 - `HoldingWouldOverflow`
 
-### `QueryResponse`
+### [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426)
 
 Respond with information that the local system is expecting.
 
@@ -338,16 +338,16 @@ Errors: *Fallible*.
 
 #### `Response`
 
-The `Response` type is used to express information content in the `QueryResponse` XCM instruction. It can represent one of several different data types and it therefore encoded as the SCALE-encoded tagged union:
+The `Response` type is used to express information content in the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) XCM instruction. It can represent one of several different data types and it therefore encoded as the SCALE-encoded tagged union:
 
 - `Null = 0`:  No response. Serves as a neutral default.
 - `Assets = 1 (MultiAssets)`: Some assets.
 - `ExecutionResult = 2 (Option<(u32, Error)>)`: The outcome of an XCM instruction.
 - `Version = 3 (u32)`: An XCM version.
 - `PalletsInfo = 4 (BoundedVec<PalletInfo, MaxPalletsInfo>)`: The index, instance name, pallet name and version of some pallets.
-- `DispatchResult = 5 (MaybeErrorCode)`: The status of a dispatch attempt using `Transact`.
+- `DispatchResult = 5 (MaybeErrorCode)`: The status of a dispatch attempt using [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482).
 
-### `TransferAsset`
+### [`TransferAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L445)
 
 Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent assets under the ownership of `beneficiary`.
 
@@ -363,17 +363,17 @@ Errors: *Fallible*.
 - `AssetNotFound`
 - `FailedToTransactAsset`
 
-### `TransferReserveAsset`
+### [`TransferReserveAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L465)
 
 Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent assets under the ownership of `dest` within this consensus system (i.e. its sovereign account).
 
-Send an onward XCM message to `destination` of `ReserveAssetDeposited` with the given `xcm`.
+Send an onward XCM message to `destination` of [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) with the given `xcm`.
 
 Operands:
 
 - `assets: MultiAsset`: The asset(s) to be withdrawn.
 - `destination: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
-- `xcm: Xcm`: The instructions that should follow the `ReserveAssetDeposited` instruction, which is sent onwards to `destination`.
+- `xcm: Xcm`: The instructions that should follow the [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) instruction, which is sent onwards to `destination`.
 
 Kind: *Instruction*.
 
@@ -389,7 +389,7 @@ Errors: *Fallible*.
 - `Transport`
 
 
-### `Transact`
+### [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482)
 
 Apply the encoded transaction `call`, whose dispatch-origin should be `origin` as expressed by the kind of origin `origin_kind`.
 
@@ -412,7 +412,7 @@ Errors: *Fallible*.
 
 Weight: Weight estimation may utilise `max_weight` which may lead to an increase in Surplus Weight Register at run-time.
 
-### `HrmpNewChannelOpenRequest`
+### [`HrmpNewChannelOpenRequest`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L494)
 
 A message to notify about a new incoming HRMP channel. This message is meant to be sent by the Relay-chain to a para.
 
@@ -426,7 +426,7 @@ Safety: The message should originate directly from the Relay-chain.
 
 Kind: *System Notification*
 
-### `HrmpChannelAccepted`
+### [`HrmpChannelAccepted`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L512)
 
 A message to notify about that a previously sent open channel request has been accepted by the recipient. That means that the channel will be opened during the next Relay-chain session change. This message is meant to be sent by the Relay-chain to a para.
 
@@ -440,7 +440,7 @@ Kind: *System Notification*
 
 Errors: *Fallible*.
 
-### `HrmpChannelClosing`
+### [`HrmpChannelClosing`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L529)
 
 A message to notify that the other party in an open channel decided to close it. In particular, `initiator` is going to close the channel opened from `sender` to the `recipient`. The close will be enacted at the next Relay-chain session change. This message is meant to be sent by the Relay-chain to a para.
 
@@ -456,17 +456,17 @@ Kind: *System Notification*
 
 Errors: *Fallible*.
 
-### `ClearOrigin`
+### [`ClearOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L549)
 
 Clear the Origin Register.
 
-This may be used by the XCM author to ensure that later instructions cannot command the authority of the Original Origin (e.g. if they are being relayed from an untrusted source, as often the case with `ReserveAssetDeposited`).
+This may be used by the XCM author to ensure that later instructions cannot command the authority of the Original Origin (e.g. if they are being relayed from an untrusted source, as often the case with [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393)).
 
 Kind: *Instruction*.
 
 Errors: *Infallible*.
 
-### `DescendOrigin`
+### [`DescendOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L556)
 
 Mutate the origin to some interior location.
 
@@ -480,11 +480,11 @@ Errors: *Fallible*.
 - `BadOrigin`
 - `LocationFull`
 
-### `ReportError`
+### [`ReportError`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L567)
 
 Immediately report the contents of the Error Register to the given destination via XCM.
 
-A `QueryResponse` message of type `ExecutionOutcome` is sent to `destination` with the given
+A [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message of type `ExecutionOutcome` is sent to `destination` with the given
 `query_id` and the outcome of the XCM.
 
 Operands:
@@ -505,10 +505,10 @@ Errors: *Fallible*.
 Information regarding the composition of a query response.
 QueryResponseInfo:
 - `destination: MultiLocation`: The destination to which the query response message should be send.
-- `query_id: Compact<QueryId>`: The `query_id` field of the `QueryResponse` message.
-- `max_weight: Weight`: The `max_weight` field of the `QueryResponse` message.
+- `query_id: Compact<QueryId>`: The `query_id` field of the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message.
+- `max_weight: Weight`: The `max_weight` field of the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message.
 
-### `DepositAsset`
+### [`DepositAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L578)
 
 Remove the asset(s) (`assets`) from the Holding Register and place equivalent assets under the ownership of `beneficiary` within this consensus system.
 
@@ -523,17 +523,17 @@ Errors: *Fallible*.
 - `AssetNotFound`
 - `FailedToTransactAsset`
 
-### `DepositReserveAsset`
+### [`DepositReserveAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L596)
 
 Remove the asset(s) (`assets`) from the Holding Register and place equivalent assets under the ownership of `dest` within this consensus system (i.e. deposit them into its sovereign account).
 
-Send an onward XCM message to `dest` of `ReserveAssetDeposited` with the given `effects`.
+Send an onward XCM message to `dest` of [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) with the given `effects`.
 
 Operands:
 
 - `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
 - `dest: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
-- `xcm: Xcm`: The orders that should follow the `ReserveAssetDeposited` instruction which is sent onwards to `dest`.
+- `xcm: Xcm`: The orders that should follow the [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) instruction which is sent onwards to `dest`.
 
 Kind: *Instruction*
 
@@ -546,7 +546,7 @@ Errors: *Fallible*.
 - `ExceedsMaxMessageSize`
 - `Transport`
 
-### `ExchangeAsset`
+### [`ExchangeAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L613)
 
 Remove the asset(s) (`want`) from the Holding Register and replace them with alternative assets.
 
@@ -561,9 +561,9 @@ Kind: *Instruction*
 Errors: *Fallible*.
 - `NoDeal`
 
-### `InitiateReserveWithdraw`
+### [`InitiateReserveWithdraw`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L629)
 
-Remove the asset(s) (`assets`) from holding and send a `WithdrawAsset` XCM message to a reserve location.
+Remove the asset(s) (`assets`) from holding and send a [`WithdrawAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L380) XCM message to a reserve location.
 
 Operands:
 
@@ -580,9 +580,9 @@ Errors: *Fallible*.
 - `ExceedsMaxMessageSize`
 - `Transport`
 
-### `InitiateTeleport`
+### [`InitiateTeleport`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L645)
 
-Remove the asset(s) (`assets`) from the Holding Register and send an XCM message beginning with `ReceiveTeleportedAsset` to a `destination` location.
+Remove the asset(s) (`assets`) from the Holding Register and send an XCM message beginning with [`ReceiveTeleportedAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L406) to a `destination` location.
 
 NOTE: The `destination` location *MUST* respect this origin as a valid teleportation origin for all `assets`. If it does not, then the assets may be lost.
 
@@ -590,7 +590,7 @@ Operands:
 
 - `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
 - `destination: MultiLocation`: A valid location that respects teleports coming from this location.
-- `xcm`: The instructions to execute *on the destination location* following the `ReceiveTeleportedAsset` instruction.
+- `xcm`: The instructions to execute *on the destination location* following the [`ReceiveTeleportedAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L406) instruction.
 
 Kind: *Instruction*
 
@@ -604,9 +604,9 @@ Errors: *Fallible*.
 - `Transport`
 
 
-### `ReportHolding`
+### [`ReportHolding`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L659)
 
-Report to a given destination the contents of the Holding Register. A `QueryResponse` message of type `Assets` is sent to the described destination.
+Report to a given destination the contents of the Holding Register. A [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message of type `Assets` is sent to the described destination.
 
 Operands:
 - `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
@@ -622,7 +622,7 @@ Errors: *Fallible*.
 - `ExceedsMaxMessageSize`
 - `Transport`
 
-### `BuyExecution`
+### [`BuyExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L672)
 
 Pay for the execution of some XCM `xcm` and `orders` with up to `weight` picoseconds of execution time, paying for this with up to `fees` from the Holding Register.
 
@@ -640,15 +640,15 @@ Errors: *Fallible*.
 - `HoldingWouldOverflow`
 
 
-### `RefundSurplus`
+### [`RefundSurplus`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L679)
 
-Refund any surplus weight previously bought with `BuyExecution`.
+Refund any surplus weight previously bought with [`BuyExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L672).
 
 Kind: *Instruction*
 
 Errors: *Infallible*.
 
-### `SetErrorHandler`
+### [`SetErrorHandler`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L695)
 
 Set the Error Handler Register. This is code that should be called in the case of an error happening.
 
@@ -665,7 +665,7 @@ Kind: *Instruction*
 Errors: *fallible*.
 - `WeightNotComputable`
 
-### `SetAppendix`
+### [`SetAppendix`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L711)
 
 Set the Appendix Register. This is code that should be called after code execution (including the error handler if any) is finished. This will be called regardless of whether an error occurred.
 
@@ -682,7 +682,7 @@ Kind: *Instruction*
 Errors: *fallible*.
 - `WeightNotComputable`
 
-### `ClearError`
+### [`ClearError`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L718)
 
 Clear the Error Register.
 
@@ -690,7 +690,7 @@ Kind: *Instruction*
 
 Errors: *Infallible*.
 
-### `ClaimAsset`
+### [`ClaimAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L730)
 
 Create some assets which are being held on behalf of the origin.
 
@@ -706,9 +706,9 @@ Errors: *Fallible*.
 - `UnknownClaim`
 - `HoldingWouldOverflow`
 
-### `Trap`
+### [`Trap`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L738)
 
-Always throws an error of type `Trap`.
+Always throws an error of type [`Trap`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L738).
 
 Operands:
 
@@ -717,16 +717,16 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Always*.
-- `Trap`: All circumstances, whose inner value is the same as this item's inner value.
+- [`Trap`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L738): All circumstances, whose inner value is the same as this item's inner value.
 
-### `SubscribeVersion`
+### [`SubscribeVersion`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L752)
 
-Ask the destination system to respond with the most recent version of XCM that they support in a `QueryResponse` instruction. Any changes to this should also elicit similar responses when they happen.
+Ask the destination system to respond with the most recent version of XCM that they support in a [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) instruction. Any changes to this should also elicit similar responses when they happen.
 
 Operands:
 
 - `query_id: Compact<QueryId>`: An identifier that will be replicated into the returned XCM message.
-- `max_response_weight: Weight`: The maximum amount of weight that the `QueryResponse` item which is sent as a reply may take to execute. 
+- `max_response_weight: Weight`: The maximum amount of weight that the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) item which is sent as a reply may take to execute. 
 NOTE: If this is unexpectedly large then the response may not execute at all.
 
 Kind: *Instruction*
@@ -738,20 +738,20 @@ Errors: *Fallible*
 - `ExceedsMaxMessageSize`
 - `Transport`
 
-### `UnsubscribeVersion`
+### [`UnsubscribeVersion`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L763)
 
-Cancel the effect of a previous `SubscribeVersion` instruction.
+Cancel the effect of a previous [`SubscribeVersion`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L752) instruction.
 
 Kind: *Instruction*
 
 Errors: *Fallible*
 - `BadOrigin`
 
-### `BurnAsset`
+### [`BurnAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L774)
 
 Reduce Holding by up to the given assets.
 
-Holding is reduced by as much as possible up to the assets in the parameter. It is not an error if the Holding does not contain the assets (to make this an error, use `ExpectAsset` prior).
+Holding is reduced by as much as possible up to the assets in the parameter. It is not an error if the Holding does not contain the assets (to make this an error, use [`ExpectAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L782) prior).
 
 Operands:
 
@@ -761,7 +761,7 @@ Kind: *Instruction*
 
 Errors: *Infallible*
 
-### `ExpectAsset`
+### [`ExpectAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L782)
 
 Throw an error if Holding does not contain at least the given assets.
 
@@ -774,7 +774,7 @@ Kind: *Instruction*
 Errors:
 - `ExpectationFalse`: If Holding does not contain the assets in the parameter.
 
-### `ExpectOrigin`
+### [`ExpectOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L790)
 
 Ensure that the Origin Register equals some given value and throw an error if not.
 
@@ -787,7 +787,7 @@ Kind: *Instruction*
 Errors:
 - `ExpectationFalse`: If Origin is not some value, or if that value is not equal to the parameter.
 
-### `ExpectError`
+### [`ExpectError`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L798)
 
 Ensure that the Error Register equals some given value and throw an error if not.
 
@@ -800,7 +800,7 @@ Kind: *Instruction*
 Errors:
 - `ExpectationFalse`: If the value of the Error Register is not equal to the parameter.
 
-### `ExpectTransactStatus`
+### [`ExpectTransactStatus`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L807)
 
 Ensure that the Transact Status Register equals some given value and throw an error if not.
 
@@ -812,7 +812,7 @@ Kind: *Instruction*
 Errors:
 - `ExpectationFalse`: If the value of the Transact Status Register is not equal to the parameter.
 
-### `QueryPallet`
+### [`QueryPallet`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L823)
 
 Queries the existence of a particular pallet type.
 
@@ -820,7 +820,7 @@ Operands:
  - `module_name: Vec<u8>`: The module name of the pallet to query.
  - `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
 
-Sends a `QueryResponse` to Origin whose data field `PalletsInfo` containing the information of all pallets on the local chain whose name is equal to `name`. This is empty in the case that the local chain is not based on Substrate Frame.
+Sends a [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) to Origin whose data field `PalletsInfo` containing the information of all pallets on the local chain whose name is equal to `name`. This is empty in the case that the local chain is not based on Substrate Frame.
 
 Kind: *Instruction*
 
@@ -833,7 +833,7 @@ Errors: *Fallible*
 - `ExceedsMaxMessageSize`
 - `Transport`
 
-### `ExpectPallet`
+### [`ExpectPallet`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L839)
 
 Ensure that a particular pallet with a particular version exists.
 Safety
@@ -851,12 +851,12 @@ Errors:
 - `NameMismatch`
 - `VersionIncompatible`
 
-### `ReportTransactStatus`
+### [`ReportTransactStatus`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L861)
 
-Send a `QueryResponse` message containing the value of the Transact Status Register to some destination.
+Send a [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message containing the value of the Transact Status Register to some destination.
 
 Operands:
-- `query_response_info: QueryResponseInfo`: The [information](#QueryResponseInfo)  needed for constructing and sending the  `QueryResponse` message.
+- `query_response_info: QueryResponseInfo`: The [information](#QueryResponseInfo)  needed for constructing and sending the  [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message.
 
 Kind: *Instruction*
 
@@ -868,7 +868,7 @@ Errors: *Fallible*.
 - `ExceedsMaxMessageSize`
 - `Transport`
 
-### `ClearTransactStatus`
+### [`ClearTransactStatus`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L870)
 
 Set the Transact Status Register to its default, cleared, value.
 
@@ -876,7 +876,7 @@ Kind: *Instruction*
 
 Errors: *Infallible*.
 
-### `UniversalOrigin`
+### [`UniversalOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L885)
 
 Set the Origin Register to be some child of the Universal Ancestor.
 
@@ -891,7 +891,7 @@ Error: *Fallible*
 - `BadOrigin`
 - `InvalidLocation`
 
-### `ExportMessage`
+### [`ExportMessage`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L906)
 
 Send a message on to Non-Local Consensus system.
 
@@ -917,17 +917,17 @@ Errors: *Fallible*.
 - `AssetNotFound`
 - `FailedToTransactAsset`
 
-### `LockAsset`
+### [`LockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L922)
 
 Lock the locally held asset and prevent further transfer or withdrawal.
 
-This restriction may be removed by the `UnlockAsset` instruction being called with an Origin of `unlocker` and a `target` equal to the current `Origin`.
+This restriction may be removed by the [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) instruction being called with an Origin of `unlocker` and a `target` equal to the current `Origin`.
 
-If the locking is successful, then a `NoteUnlockable` instruction is sent to `unlocker`.
+If the locking is successful, then a [`NoteUnlockable`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L950) instruction is sent to `unlocker`.
 
 Operands:
 - `asset: MultiAsset`: The asset(s) which should be locked.
-- `unlocker: MultiLocation`: The value which the Origin must be for a corresponding `UnlockAsset` instruction to work.
+- `unlocker: MultiLocation`: The value which the Origin must be for a corresponding [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) instruction to work.
 
 Kind: *Instruction*
 
@@ -942,7 +942,7 @@ Errors: *Fallible*.
 - `NotHoldingFees`
 - `FailedToTransactAsset`
 
-### `UnlockAsset`
+### [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935)
 
 Remove the lock over `asset` on this chain and (if nothing else is preventing it) allow the asset to be transferred.
 
@@ -956,9 +956,9 @@ Errors: *Fallible*.
 - `BadOrigin`
 - `AssetNotFound`
 
-### `NoteUnlockable`
+### [`NoteUnlockable`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L950)
 
-Asset (`asset`) has been locked on the `origin` system and may not be transferred. It may only be unlocked with the receipt of the `UnlockAsset` instruction from this chain.
+Asset (`asset`) has been locked on the `origin` system and may not be transferred. It may only be unlocked with the receipt of the [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) instruction from this chain.
 
 Operands:
 
@@ -973,13 +973,13 @@ Errors: *Fallible*.
 - `BadOrigin`
 - `AssetNotFound`
 
-### `RequestUnlock`
+### [`RequestUnlock`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L964)
 
-Send an `UnlockAsset` instruction to the `locker` for the given `asset`. This may fail if the local system is making use of the fact that the asset is locked or, of course, if there is no record that the asset actually is locked.
+Send an [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) instruction to the `locker` for the given `asset`. This may fail if the local system is making use of the fact that the asset is locked or, of course, if there is no record that the asset actually is locked.
 
 Operands:
 - `asset`: The asset(s) to be unlocked.
-- `locker`: The location from which a previous `NoteUnlockable` was sent and to which an `UnlockAsset` should be sent.
+- `locker`: The location from which a previous [`NoteUnlockable`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L950) was sent and to which an [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) should be sent.
 
 Kind: *Instruction*
 
@@ -994,7 +994,7 @@ Errors: *Fallible*.
 - `NotHoldingFees`
 - `FailedToTransactAsset`
 
-### `SetFeesMode`
+### [`SetFeesMode`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L974)
 
 Sets the Fees Mode Register.
 	
@@ -1004,7 +1004,7 @@ Kind: *Instruction*.
 
 Errors: *Infallible*
 
-### `SetTopic`
+### [`SetTopic`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L983)
 
 Set the Topic Register
 
@@ -1012,7 +1012,7 @@ Kind: *Instruction*
 
 Errors: *Infallible*
 
-### `ClearTopic`
+### [`ClearTopic`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L990)
 
 Clear the Topic Register
 
@@ -1020,7 +1020,7 @@ Kind: *Instruction*
 
 Errors: *Infallible*
 
-### `AliasOrigin`
+### [`AliasOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L997)
 
 Alter the current Origin to another given origin
 
@@ -1282,13 +1282,13 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `DestinationUnsupported = 13`: The given message cannot be translated into a format supported by the destination.
 - `Transport = 14`: Destination is routable, but there is some issue with the transport mechanism.
 - `Unroutable = 15`: Destination is known to be unroutable.
-- `UnknownClaim = 16`: Used by `ClaimAsset` when the given claim could not be recognized/found.
-- `FailedToDecode = 17`: Used by `Transact` when the functor cannot be decoded.
-- `MaxWeightInvalid = 18`: Used by `Transact` to indicate that the given weight limit could be breached by the functor.
-- `NotHoldingFees = 19`: Used by `BuyExecution` when the Holding Register does not contain payable fees.
-- `TooExpensive = 20`: Used by `BuyExecution` when the fees declared to purchase weight are insufficient.
-- `Trap(u64) = 21`: Used by the `Trap` instruction to force an error intentionally. Its code is included.
-- `ExpectationFalse = 22`: Used by `ExpectAsset`, `ExpectError` and `ExpectOrigin` when the expectation was not true.
+- `UnknownClaim = 16`: Used by [`ClaimAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L730) when the given claim could not be recognized/found.
+- `FailedToDecode = 17`: Used by [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482) when the functor cannot be decoded.
+- `MaxWeightInvalid = 18`: Used by [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482) to indicate that the given weight limit could be breached by the functor.
+- `NotHoldingFees = 19`: Used by [`BuyExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L672) when the Holding Register does not contain payable fees.
+- `TooExpensive = 20`: Used by [`BuyExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L672) when the fees declared to purchase weight are insufficient.
+- `Trap(u64) = 21`: Used by the [`Trap`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L738) instruction to force an error intentionally. Its code is included.
+- `ExpectationFalse = 22`: Used by [`ExpectAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L782), [`ExpectError`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L798) and [`ExpectOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L790) when the expectation was not true.
 - `PalletNotFound = 23`: The provided pallet index was not found.
 - `NameMismatch = 24`:  The given pallet's name is different to that expected.
 - `VersionIncompatible = 25`:  The given pallet's version has an incompatible version to that expected.
