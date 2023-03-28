@@ -274,6 +274,10 @@ Operands:
 Kind: *Instruction*.
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `AssetNotFound`
+- `FailedToTransactAsset`
+- `HoldingWouldOverflow`
 
 ### `ReserveAssetDeposited`
 
@@ -288,6 +292,9 @@ Kind: *Trusted Indication*.
 Safety: `origin` must be trusted to have received and be storing `assets` such that they may later be withdrawn should this system send a corresponding message.
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `UntrustedReserveLocation`
+- `HoldingWouldOverflow`
 
 ### `ReceiveTeleportedAsset`
 
@@ -303,6 +310,11 @@ Safety:`origin` must be trusted to have irrevocably destroyed the corresponding 
 prior as a consequence of sending this message.
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `UntrustedTeleportLocation`
+- `AssetNotFound`
+- `NotWithdrawable`
+- `HoldingWouldOverflow`
 
 ### `QueryResponse`
 
@@ -322,6 +334,7 @@ Kind: *Information*.
 Safety: Since this is information only, there are no immediate concerns. However, it should be remembered that even if the Origin behaves reasonably, it can always be asked to make a response to a third-party chain who may or may not be expecting the response. Therefore the `querier` should be checked to match the expected value.
 
 Errors: *Fallible*.
+- `BadOrigin`
 
 #### `Response`
 
@@ -346,6 +359,9 @@ Operands:
 Kind: *Instruction*.
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `AssetNotFound`
+- `FailedToTransactAsset`
 
 ### `TransferReserveAsset`
 
@@ -362,6 +378,16 @@ Operands:
 Kind: *Instruction*.
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `AssetNotFound`
+- `FailedToTransactAsset`
+- `LocationFull`
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
+
 
 ### `Transact`
 
@@ -378,6 +404,11 @@ Operands:
 Kind: *Instruction*.
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `FailedToDecode`
+- `NoPermission`
+- `MaxWeightInvalid`
+
 
 Weight: Weight estimation may utilise `max_weight` which may lead to an increase in Surplus Weight Register at run-time.
 
@@ -446,6 +477,8 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `LocationFull`
 
 ### `ReportError`
 
@@ -461,6 +494,12 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `ReanchorFailed`
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
 
 #### `QueryResponseInfo`
 Information regarding the composition of a query response.
@@ -481,6 +520,8 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `AssetNotFound`
+- `FailedToTransactAsset`
 
 ### `DepositReserveAsset`
 
@@ -497,6 +538,13 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `AssetNotFound`
+- `FailedToTransactAsset`
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
 
 ### `ExchangeAsset`
 
@@ -511,6 +559,7 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `NoDeal`
 
 ### `InitiateReserveWithdraw`
 
@@ -525,6 +574,11 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
 
 ### `InitiateTeleport`
 
@@ -541,6 +595,14 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `AssetNotHandled`
+- `NotWithdrawable`
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
+
 
 ### `ReportHolding`
 
@@ -553,6 +615,12 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `ReanchorFailed`
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
 
 ### `BuyExecution`
 
@@ -566,6 +634,11 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `NotHoldingFees`
+- `Overflow`
+- `TooExpensive`
+- `HoldingWouldOverflow`
+
 
 ### `RefundSurplus`
 
@@ -589,7 +662,8 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Infallible*.
+Errors: *fallible*.
+- `WeightNotComputable`
 
 ### `SetAppendix`
 
@@ -605,7 +679,8 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Infallible*.
+Errors: *fallible*.
+- `WeightNotComputable`
 
 ### `ClearError`
 
@@ -627,6 +702,9 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `UnknownClaim`
+- `HoldingWouldOverflow`
 
 ### `Trap`
 
@@ -654,6 +732,11 @@ NOTE: If this is unexpectedly large then the response may not execute at all.
 Kind: *Instruction*
 
 Errors: *Fallible*
+- `BadOrigin`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
 
 ### `UnsubscribeVersion`
 
@@ -662,6 +745,7 @@ Cancel the effect of a previous `SubscribeVersion` instruction.
 Kind: *Instruction*
 
 Errors: *Fallible*
+- `BadOrigin`
 
 ### `BurnAsset`
 
@@ -688,7 +772,6 @@ Operands:
 Kind: *Instruction*
 
 Errors:
-
 - `ExpectationFalse`: If Holding does not contain the assets in the parameter.
 
 ### `ExpectOrigin`
@@ -702,7 +785,6 @@ Operands:
 Kind: *Instruction*
 
 Errors:
-
 - `ExpectationFalse`: If Origin is not some value, or if that value is not equal to the parameter.
 
 ### `ExpectError`
@@ -716,7 +798,6 @@ Operands:
 Kind: *Instruction*
 
 Errors:
-
 - `ExpectationFalse`: If the value of the Error Register is not equal to the parameter.
 
 ### `ExpectTransactStatus`
@@ -744,6 +825,13 @@ Sends a `QueryResponse` to Origin whose data field `PalletsInfo` containing the 
 Kind: *Instruction*
 
 Errors: *Fallible*
+- `Overflow`
+- `ReanchorFailed`
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
 
 ### `ExpectPallet`
 
@@ -759,7 +847,9 @@ Operands:
 Kind: *Instruction*
 
 Errors:
-- `ExpectationFalse`: In case any of the expectations are broken.
+- `PalletNotFound`
+- `NameMismatch`
+- `VersionIncompatible`
 
 ### `ReportTransactStatus`
 
@@ -771,6 +861,12 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `ReanchorFailed`
+- `NotHoldingFees`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
 
 ### `ClearTransactStatus`
 
@@ -792,6 +888,8 @@ Operands:
 Kind: *Instruction*
 
 Error: *Fallible*
+- `BadOrigin`
+- `InvalidLocation`
 
 ### `ExportMessage`
 
@@ -812,6 +910,12 @@ Polkadot, you would call with `network: NetworkId:: Polkadot` and `destination: 
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `Unanchored`
+- `Unroutable`
+- `NotHoldingFees`
+- `AssetNotFound`
+- `FailedToTransactAsset`
 
 ### `LockAsset`
 
@@ -828,6 +932,15 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `ReanchorFailed`
+- `AssetNotFound`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
+- `NotHoldingFees`
+- `FailedToTransactAsset`
 
 ### `UnlockAsset`
 
@@ -839,7 +952,9 @@ Operands:
 
 Kind: *Instruction*
 
-Errors:
+Errors: *Fallible*.
+- `BadOrigin`
+- `AssetNotFound`
 
 ### `NoteUnlockable`
 
@@ -855,6 +970,8 @@ Safety: `origin` must be trusted to have locked the corresponding `asset` prior 
 Kind: *Trusted Indication*
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `AssetNotFound`
 
 ### `RequestUnlock`
 
@@ -867,6 +984,15 @@ Operands:
 Kind: *Instruction*
 
 Errors: *Fallible*.
+- `BadOrigin`
+- `ReanchorFailed`
+- `AssetNotFound`
+- `Unroutable`
+- `DestinationUnsupported`
+- `ExceedsMaxMessageSize`
+- `Transport`
+- `NotHoldingFees`
+- `FailedToTransactAsset`
 
 ### `SetFeesMode`
 
@@ -876,7 +1002,7 @@ Sets the Fees Mode Register.
 
 Kind: *Instruction*.
 
-Errors:
+Errors: *Infallible*
 
 ### `SetTopic`
 
@@ -884,7 +1010,7 @@ Set the Topic Register
 
 Kind: *Instruction*
 
-Errors:
+Errors: *Infallible*
 
 ### `ClearTopic`
 
@@ -901,7 +1027,8 @@ Alter the current Origin to another given origin
 Operands:
 - `origin: MultiLocation`
 
-Errors: If the existing state would not allow such a change.
+Errors: *Fallible*
+- `NoPermission`
 
 ### `UnpaidExecution`
 
@@ -915,7 +1042,8 @@ Operands:
 
 Kind: *Indication*
 
-Errors: If the given origin is `Some` and not equal to the current Origin register.
+Errors: *Fallible*
+- `BadOrigin`
 
 
 ## **6** Universal Asset Identifiers
