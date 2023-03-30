@@ -273,7 +273,7 @@ Operands:
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors:
 - `BadOrigin`
 - `AssetNotFound`
 - `FailedToTransactAsset`
@@ -291,7 +291,7 @@ Kind: *Trusted Indication*.
 
 Safety: `origin` must be trusted to have received and be storing `assets` such that they may later be withdrawn should this system send a corresponding message.
 
-Errors: *Fallible*.
+Errors:
 - `BadOrigin`
 - `UntrustedReserveLocation`
 - `HoldingWouldOverflow`
@@ -309,7 +309,7 @@ Kind: *Trusted Indication*.
 Safety:`origin` must be trusted to have irrevocably destroyed the corresponding `assets`
 prior as a consequence of sending this message.
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `UntrustedTeleportLocation`
 - `AssetNotFound`
@@ -333,7 +333,7 @@ Kind: *Information*.
 
 Safety: Since this is information only, there are no immediate concerns. However, it should be remembered that even if the Origin behaves reasonably, it can always be asked to make a response to a third-party chain who may or may not be expecting the response. Therefore the `querier` should be checked to match the expected value.
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 
 #### `Response`
@@ -358,7 +358,7 @@ Operands:
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `AssetNotFound`
 - `FailedToTransactAsset`
@@ -377,7 +377,7 @@ Operands:
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `AssetNotFound`
 - `FailedToTransactAsset`
@@ -403,7 +403,7 @@ Operands:
 
 Kind: *Instruction*.
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `FailedToDecode`
 - `NoPermission`
@@ -438,7 +438,7 @@ Safety: The message should originate directly from the Relay-chain.
 
 Kind: *System Notification*
 
-Errors: *Fallible*.
+Errors: 
 
 ### [`HrmpChannelClosing`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L529)
 
@@ -454,7 +454,7 @@ Safety: The message should originate directly from the Relay-chain.
 
 Kind: *System Notification*
 
-Errors: *Fallible*.
+Errors: 
 
 ### [`ClearOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L549)
 
@@ -476,7 +476,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `LocationFull`
 
@@ -493,7 +493,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `ReanchorFailed`
 - `NotHoldingFees`
 - `Unroutable`
@@ -519,7 +519,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `AssetNotFound`
 - `FailedToTransactAsset`
 
@@ -537,7 +537,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `AssetNotFound`
 - `FailedToTransactAsset`
 - `NotHoldingFees`
@@ -558,7 +558,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `NoDeal`
 
 ### [`InitiateReserveWithdraw`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L629)
@@ -573,7 +573,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `NotHoldingFees`
 - `Unroutable`
 - `DestinationUnsupported`
@@ -594,7 +594,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `AssetNotHandled`
 - `NotWithdrawable`
 - `NotHoldingFees`
@@ -614,7 +614,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `ReanchorFailed`
 - `NotHoldingFees`
 - `Unroutable`
@@ -633,7 +633,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `NotHoldingFees`
 - `Overflow`
 - `TooExpensive`
@@ -662,7 +662,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *fallible*.
+Errors: 
 - `WeightNotComputable`
 
 ### [`SetAppendix`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L711)
@@ -679,7 +679,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *fallible*.
+Errors: 
 - `WeightNotComputable`
 
 ### [`ClearError`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L718)
@@ -701,7 +701,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `UnknownClaim`
 - `HoldingWouldOverflow`
@@ -731,12 +731,13 @@ NOTE: If this is unexpectedly large then the response may not execute at all.
 
 Kind: *Instruction*
 
-Errors: *Fallible*
+Errors: 
 - `BadOrigin`
 - `Unroutable`
 - `DestinationUnsupported`
 - `ExceedsMaxMessageSize`
 - `Transport`
+- `InvalidLocation`
 
 ### [`UnsubscribeVersion`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L763)
 
@@ -744,7 +745,7 @@ Cancel the effect of a previous [`SubscribeVersion`](https://github.com/parityte
 
 Kind: *Instruction*
 
-Errors: *Fallible*
+Errors: 
 - `BadOrigin`
 
 ### [`BurnAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L774)
@@ -824,7 +825,7 @@ Sends a [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352
 
 Kind: *Instruction*
 
-Errors: *Fallible*
+Errors: 
 - `Overflow`
 - `ReanchorFailed`
 - `NotHoldingFees`
@@ -860,7 +861,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `ReanchorFailed`
 - `NotHoldingFees`
 - `Unroutable`
@@ -887,7 +888,7 @@ Operands:
 
 Kind: *Instruction*
 
-Error: *Fallible*
+Error: 
 - `BadOrigin`
 - `InvalidLocation`
 
@@ -909,7 +910,7 @@ Polkadot, you would call with `network: NetworkId:: Polkadot` and `destination: 
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `Unanchored`
 - `Unroutable`
@@ -931,7 +932,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `ReanchorFailed`
 - `AssetNotFound`
@@ -941,6 +942,7 @@ Errors: *Fallible*.
 - `Transport`
 - `NotHoldingFees`
 - `FailedToTransactAsset`
+- `LockError`
 
 ### [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935)
 
@@ -952,9 +954,10 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `AssetNotFound`
+- `LockError`
 
 ### [`NoteUnlockable`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L950)
 
@@ -969,9 +972,10 @@ Safety: `origin` must be trusted to have locked the corresponding `asset` prior 
 
 Kind: *Trusted Indication*
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `AssetNotFound`
+- `LockError`
 
 ### [`RequestUnlock`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L964)
 
@@ -983,7 +987,7 @@ Operands:
 
 Kind: *Instruction*
 
-Errors: *Fallible*.
+Errors: 
 - `BadOrigin`
 - `ReanchorFailed`
 - `AssetNotFound`
@@ -993,6 +997,7 @@ Errors: *Fallible*.
 - `Transport`
 - `NotHoldingFees`
 - `FailedToTransactAsset`
+- `LockError`
 
 ### [`SetFeesMode`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L974)
 
@@ -1027,7 +1032,7 @@ Alter the current Origin to another given origin
 Operands:
 - `origin: MultiLocation`
 
-Errors: *Fallible*
+Errors: 
 - `NoPermission`
 
 ### `UnpaidExecution`
@@ -1042,7 +1047,7 @@ Operands:
 
 Kind: *Indication*
 
-Errors: *Fallible*
+Errors: 
 - `BadOrigin`
 
 
