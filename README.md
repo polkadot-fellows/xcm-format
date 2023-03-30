@@ -1214,7 +1214,7 @@ An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junct
 
 - `Plurality = 8 { id: BodyId, part: BodyPart }` A pluralistic body existing within consensus. Typical to be used to represent a governance origin of a chain, but could in principle be used to represent things such as multisigs also.
 
-- `GlobalConsensus = 9 (NetworkId)` A global network capable of externalizing its own consensus. This is not generally meaningful outside of the universal level.
+- `GlobalConsensus = 9 (NetworkId)` A global network capable of externalizing its own consensus, i.e., a relay chain who wishes to make its existence known to other global consensus systems (such as another relay chain). This is not generally meaningful outside of the universal level.  
 
 #### NetworkId
 
