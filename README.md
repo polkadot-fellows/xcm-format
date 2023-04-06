@@ -1003,7 +1003,7 @@ Errors:
 
 Sets the Fees Mode Register.
 	
-- `jit_withdraw: bool`: The fees mode item; if set to `true` then fees for any instructions are withdrawn as needed using the same mechanism as `WithdrawAssets`.
+- `jit_withdraw: bool`: The fees mode item; If true, then the fee assets are taken directly from the origin's on-chain account, otherwise the fee assets are taken from the holding register.
 
 Kind: *Instruction*.
 
@@ -1039,7 +1039,7 @@ Errors:
 
 A directive to indicate that the origin expects free execution of the message.
 
-At execution time, this instruction just does a check on the Origin register. However, at the barrier stage messages starting with this instruction can be disregarded if the origin is not acceptable for free execution or the `weight_limit` is `Limited` and insufficient.
+At execution time, this instruction just does a check on the Origin register. However, at the barrier stage, messages starting with this instruction can be disregarded if the origin is not acceptable for free execution, or the `weight_limit` is `Limited` and insufficient.
 
 Operands:
 - `weight_limit: WeightLimit`
@@ -1212,7 +1212,7 @@ An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junct
 
 - `OnlyChild = 7`: The unambiguous child.
 
-- `Plurality = 8 { id: BodyId, part: BodyPart }` A pluralistic body existing within consensus. Typical to be used to represent a governance origin of a chain, but could in principle be used to represent things such as multisigs also.
+- `Plurality = 8 { id: BodyId, part: BodyPart }` A pluralistic body existing within consensus. Typical to be used to represent a governance origin of a chain, but can, in principle, also be used to represent things such as multisigs.
 
 - `GlobalConsensus = 9 (NetworkId)` A global network capable of externalizing its own consensus, i.e., a relay chain who wishes to make its existence known to other global consensus systems (such as another relay chain). This is not generally meaningful outside of the universal level.  
 
@@ -1289,20 +1289,20 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `Unroutable = 15`: Destination is known to be unroutable.
 - `UnknownClaim = 16`: Used by [`ClaimAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L730) when the given claim could not be recognized/found.
 - `FailedToDecode = 17`: Used by [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482) when the functor cannot be decoded.
-- `MaxWeightInvalid = 18`: Used by [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482) to indicate that the given weight limit could be breached by the functor.
+- `MaxWeightInvalid = 18`: Used by [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482) to indicate that the given weight limit could be reached by the functor.
 - `NotHoldingFees = 19`: Used by [`BuyExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L672) when the Holding Register does not contain payable fees.
 - `TooExpensive = 20`: Used by [`BuyExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L672) when the fees declared to purchase weight are insufficient.
 - `Trap(u64) = 21`: Used by the [`Trap`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L738) instruction to force an error intentionally. Its code is included.
 - `ExpectationFalse = 22`: Used by [`ExpectAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L782), [`ExpectError`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L798) and [`ExpectOrigin`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L790) when the expectation was not true.
-- `PalletNotFound = 23`: The provided pallet index was not found.
-- `NameMismatch = 24`:  The given pallet's name is different to that expected.
-- `VersionIncompatible = 25`:  The given pallet's version has an incompatible version to that expected.
+- `PalletNotFound = 23`: Used by ['ExpectPallet'](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L839) when the provided pallet index was not found.
+- `NameMismatch = 24`:  Used by ['ExpectPallet'](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L839) when the given pallet's name is different to that expected.
+- `VersionIncompatible = 25`:  Used by ['ExpectPallet'](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L839) when the given pallet's version has an incompatible version to that expected.
 - `HoldingWouldOverflow = 26`: The given operation would lead to an overflow of the Holding Register.
 - `ExportError = 27`: The message was unable to be exported.
 - `ReanchorFailed = 28`: `MultiLocation` value failed to be reanchored.
-- `NoDeal = 29`: No deal is possible under the given constraints.
+- `NoDeal = 29`: Used by ['ExchangeAsset'](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L613) when no deal is possible under the given constraints.
 - `FeesNotMet = 30`: Fees were required which the origin could not pay.
 - `LockError = 31`: Some other error with locking.
-- `NoPermission = 32`: The state was not in a condition where the operation was valid to make.
-- `Unanchored = 33`: The universal location of the local consensus is improper.
+- `NoPermission = 32`:  Used by [`Transact`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L482) when the state was not in a condition where the operation was valid to make.
+- `Unanchored = 33`: Used by [`ExportMessage`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L906) when the universal location of the local consensus is improper.
 - `NotDepositable = 34`: An asset cannot be deposited, probably because (too much of) it already exists.
