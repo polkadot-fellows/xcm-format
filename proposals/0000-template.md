@@ -6,7 +6,7 @@ Version: 0
 Authors:
  - Your Name
 Created: YYYY-MM-DD
-Category: Template
+Impact: Trivial
 Requires:
 Replaces:
 ---
@@ -37,6 +37,11 @@ Provide some examples of how it will be used.
 The purpose of this section is both to encourage authors to consider security in their designs and to inform the reader of relevant security issues.
 
 Discuss here security implications/considerations relevant to the proposed change. Go through detected threats and risks and how they affected security-relevant design decisions. Add any kind of security concerns that are worth discussing during the process of this RFC.
+
+## Impact
+
+- What impact does this have on the rest of the spec? Does it result in a lot of changes to other parts of it?
+- Does this introduce breaking changes? How would they be handled?
 
 ## Alternatives
 
