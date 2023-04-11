@@ -1035,7 +1035,7 @@ Operands:
 Errors: 
 - `NoPermission`
 
-### `UnpaidExecution`
+### [`UnpaidExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L1009)
 
 A directive to indicate that the origin expects free execution of the message.
 
