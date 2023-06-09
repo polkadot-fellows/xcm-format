@@ -37,7 +37,7 @@ All XCM versions can be found by tags on the corresponding commits in the master
 ### RFC process
 
 - Fork this repo.
-- Create your proposal as proposed-rfc/0000-my-feature.md (where "my-feature" is descriptive. Don't assign an RFC number yet).
+- Create your proposal as proposals/0000-my-feature.md (where "my-feature" is descriptive. Don't assign an RFC number yet).
 - Make sure to get the discussion going on and your RFC enters the review phase.
 - An RFC can be modified based upon feedback from the maintainers and community.
 - The review phase ends when a maintainer proposes to start a Final Comment Period (FCP). FCPs last for 10 days, after that, a decision is made about the RFC (approve, decline, postpone).
