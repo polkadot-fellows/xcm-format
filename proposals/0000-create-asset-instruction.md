@@ -18,7 +18,7 @@ The proposed change is to introduce a new Instruction called `CreateAsset`. The 
 
 ## Motivation
 
-Currently the `Transact` instruction is used to create derivatives. The `Transact` instruction requires knowledge of the foreign system to determine which call to make. The call can differ per system, and in FRAME-based systems can depend on different instances of a pallet. The CreateAsset instruction abstracts the need to know this call away. Sending consensus systems can send this instruction to any chain without having to know the structure of the destination chain. 
+Currently the `Transact` instruction is used to create derivatives. The `Transact` instruction requires knowledge of the foreign system to determine which call to make. The call can differ per system, and in FRAME-based systems can depend on different instances of a pallet. The CreateAsset instruction abstracts away the need to know this call. Sending consensus systems can send this instruction to any chain without having to know the structure of the destination chain. 
 
 ## Specification
 
@@ -28,10 +28,12 @@ The instruction would have the following specification:
 CreateAsset {asset: MultiAsset, owner: MultiLocation}
 ```
 
-The `CreateAsset` instruction allows for the creation of a single asset. This can be a fungible or non fungible asset.
+The `CreateAsset` instruction allows for the creation of a single asset. This can be a fungible or non-fungible asset based on the specification of the `asset` field. 
+
+The `owner` field is a MultiLocation representation of the owner of the to be created asset. 
 
 ## Security considerations
-
+The XCVM implementation has to check if the origin is allowed to create this asset. 
 
 ## Impact
 The impact of this proposal is Low. It introduces a new instruction, so XCVM implementations have to be updated. 
