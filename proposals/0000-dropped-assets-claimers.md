@@ -51,7 +51,7 @@ The information about the claimers should be a part of the XCM Context so that A
 
 ### Examples
 
-###### Usage together with a reserve-based transfer
+#### Usage together with a reserve-based transfer
 ```rust
 WithdrawAsset(/* <assets-to-transfer> */),
 InitiateReserveWithdraw {
