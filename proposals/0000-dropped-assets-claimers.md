@@ -105,7 +105,7 @@ AddDropedAssetsClaimer {
 
 In the example above, both `<FIRST_CLAIMER_MULTILOCATION>` and `<SECOND_CLAIMER_MULTILOCATION>` can claim the dropped assets. However, the claim can be used only once; the first to claim takes the assets.
 
-###### More specific asset filters
+#### More specific asset filters
 ```rust
 AddDropedAssetsClaimer {
     claimer: /* <FIRST_CLAIMER_MULTILOCATION> */,
