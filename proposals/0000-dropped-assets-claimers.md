@@ -49,7 +49,7 @@ It means:
 
 The information about the claimers should be a part of the XCM Context so that Asset Transactors could also know to whom to provide a claim in case of an error. 
 
-##### Examples
+### Examples
 
 ###### Usage together with a reserve-based transfer
 ```rust
