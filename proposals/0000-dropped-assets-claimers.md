@@ -90,7 +90,7 @@ InitiateReserveWithdraw {
 }
 ```
 
-###### Setting multiple claimants
+#### Setting multiple claimants
 
 ```rust
 AddDropedAssetsClaimer {
