@@ -22,8 +22,7 @@ The goal is to give developers more flexibility and a better experience when han
 
 ## Motivation
 
-Right now, XCM has three instructions for modifying the origin: `AliasOrigin`, `ClearOrigin` and `DescendOrigin`.
-These work for manipulating the origins in safe ways.
+Right now, XCM has some good instructions for manipulating the origin during execution in same ways, like `ClearOrigin` and `DescendOrigin`.
 However, these instructions are final, once you use them, there's no standard way of going back to the original origin.
 This results in a complicated developer experience, where the order of operations needs to be highly taken into account to perform the operations needed, with the correct origins for each.
 
