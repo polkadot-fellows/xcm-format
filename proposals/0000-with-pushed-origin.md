@@ -22,7 +22,7 @@ The goal is to give developers more flexibility and a better experience when han
 
 ## Motivation
 
-Right now, XCM has two instructions for modifying the origin: `ClearOrigin` and `DescendOrigin`.
+Right now, XCM has three instructions for modifying the origin: `AliasOrigin`, `ClearOrigin` and `DescendOrigin`.
 These work for manipulating the origins in safe ways.
 However, these instructions are final, once you use them, there's no standard way of going back to the original origin.
 This results in a complicated developer experience, where the order of operations needs to be highly taken into account to perform the operations needed, with the correct origins for each.
@@ -53,7 +53,7 @@ The previous origin will be restored once the inner `xcm` has finished executing
 ```rust
 // Withdraw assets from the origin
 WithdrawAsset(/* ...snip... */);
-WithClearOrigin {
+WithPushedOrigin {
  origin: None,
  xcm: Xcm(vec![
   // Deposit assets without an origin
@@ -67,7 +67,7 @@ WithClearOrigin {
 ```rust
 /* Origin: ../Parachain(1000) */
 
-WithClearOrigin {
+WithPushedOrigin {
  origin: Some(AccountId32 { /* ...snip... */ }),
  xcm: Xcm(vec![
   BuyExecution { /* ...snip... */ },
@@ -78,6 +78,28 @@ Transact {
  origin_kind: OriginKind::SovereignAccount,
  /* ...snip... */
 }
+```
+
+#### Acting on behalf of two sibling accounts
+
+Here we withdraw some assets from two different accounts and then deposit them into another account.
+
+```rust
+/* Origin: ../Parachain(1000) */
+
+WithPushedOrigin {
+ origin: Some(AccountId32 { /* First account */ }),
+ xcm: Xcm(vec![
+  WithdrawAsset(/* ...snip... */),
+ ].into()),
+}
+WithPushedOrigin {
+ origin: Some(AccountId32 { /* Second account */ }),
+ xcm: Xcm(vec![
+  WithdrawAsset(/* ...snip... */),
+ ].into()),
+}
+DepositAsset { /* Third account */ }
 ```
 
 ## Security considerations
