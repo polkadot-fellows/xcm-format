@@ -25,14 +25,14 @@ Currently, determining a claimer of dropped assets is implementation-specific, a
 
 The latter case includes reserve-based transfers. Given that parachains mostly rely on reserve-based transfers, a way to define a custom claimer for the dropped assets makes rescuing more convenient since it provides more ways to do so compared to an arbitrary claimer setting defined by a specific implementation.
 
- <!-- (though, if no claimer was set, the implementation could define the default one). -->
-
 Having this could become especially important when transferring multiple currencies or NFTs:
  * When transferring multiple currencies, one must choose a currency to pay execution fees.
    If there are insufficient funds in the chosen currency, **all** the assets will be dropped. And the dropped amount could be significant, so we need a convenient way to recover it.
  * When transferring NFTs, we must transfer some fungibles alongside them to pay fees. This is precisely the same situation as with multiple currencies. Also, an NFT representing a unique object could be subjectively very valuable to a user, so its dropping can be compared to dropping a large number of fungibles.
 
 This RFC proposes adding a new instruction `SetAssetClaimer`. The new instruction sets a custom claimer to the dropped assets.
+
+Note: If there is a need for complex claiming logic, a smart contract could be set as a claimer.
 
 ## Specification
 
