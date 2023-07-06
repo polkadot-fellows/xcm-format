@@ -1,5 +1,5 @@
 ---
-Title: Dropped Assets Claimers
+Title: Custom Asset Claimer
 Number: 0
 Status: Draft
 Version: 0
