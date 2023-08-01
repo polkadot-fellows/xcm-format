@@ -13,7 +13,7 @@ Replaces:
 
 ## Summary
 
-This RFC proposes renaming several XCM instructions to align with changes in Substrate naming.
+This RFC proposes renaming several XCM instructions to align with changes in FRAME naming.
 The following instructions and error are affected:
 
 Instructions:
@@ -28,7 +28,7 @@ Error:
 
 ## Motivation
 
-The renaming of these instructions is intended to eliminate potential confusion caused by naming mismatches between XCM and Substrate. By ensuring consistency in naming conventions across both platforms, we can enhance clarity and maintain a unified language.
+The renaming of these instructions is intended to eliminate potential confusion caused by naming mismatches between XCM and FRAME. By ensuring consistency in naming conventions across both platforms, we can enhance clarity and maintain a unified language.
 
 ## Specification
 
@@ -92,8 +92,7 @@ This change will impact all XCM code that uses the lock instructions, constituti
 
 ## Alternatives
 
-An alternative to this change would be to keep the naming the same. However, this would result in a naming mismatch between XCM and Substrate, which could lead to confusion among developers and users.
+An alternative to this change would be to keep the naming the same. However, this would result in a naming mismatch between XCM and FRAME, which could lead to confusion among developers and users.
 
 ## Questions and open Discussions (optional)
-
-- Is `NoteThawable` the most suitable replacement for `NoteUnlockable`, or are there better alternatives?
+No open questions.
