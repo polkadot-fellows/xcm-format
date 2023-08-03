@@ -2,7 +2,7 @@
 Title: RFC process
 Number: 32
 Status: Enacted
-Version: 1
+Version: N/A
 Authors:
  - Francisco Aguirre
 Created: 2023-03-28
