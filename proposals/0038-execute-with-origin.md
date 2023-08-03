@@ -1,8 +1,8 @@
 ---
-Title: WithPushedOrigin instruction
-Number: 0
+Title: ExecuteWithOrigin instruction
+Number: 38
 Status: Draft
-Version: 0
+Version: 1
 Authors:
  - Francisco Aguirre
 Created: 2023-06-21
@@ -13,10 +13,10 @@ Replaces:
 
 ## Summary
 
-The proposed change is the introduction of a `WithPushedOrigin` instruction.
-The instruction allows the XCVM to "push" a new origin for just a few instructions and then return to the original origin when those instructions are done.
+The proposed change is the introduction of an `ExecuteWithOrigin` instruction.
+The instruction allows the XCVM to execute a few instructions with a particular origin and then return to the original origin when those instructions are done.
 It can be seen as pushing a new origin on a stack for the execution of a block of instructions and then popping it back when the block is done.
-The new origin can only be empty (clear the origin) or a child of the current origin.
+The new origin can either be empty (clear the origin) or a child of the current origin.
 
 The goal is to give developers more flexibility and a better experience when handling origins in their messages.
 
@@ -26,7 +26,7 @@ Right now, XCM has some good instructions for manipulating the origin during exe
 However, these instructions are final, once you use them, there's no standard way of going back to the original origin.
 This results in a complicated developer experience, where the order of operations needs to be highly taken into account to perform the operations needed, with the correct origins for each.
 
-This new instruction, `WithPushedOrigin`, provides a way of pushing an origin and popping to return to the original one.
+This new instruction, `ExecuteWithOrigin`, provides a way of executing a set of instructions with a particular origin.
 It makes scenarios where multiple operations need to be performed by multiple origins much easier to do.
 It gives a standard way of doing things like buying execution from a user's account and then returning to the previous origin to perform other operations that require the priviledges associated with it.
 It also allows for previously impossible scenarios like acting on behalf of many sibling origins.
@@ -36,13 +36,13 @@ It also allows for previously impossible scenarios like acting on behalf of many
 The instruction looks like this:
 
 ```rust
-WithPushedOrigin { origin: Option<InteriorMultiLocation>, xcm: Xcm }
+ExecuteWithOrigin { origin: Option<InteriorMultiLocation>, xcm: Xcm }
 ```
 
-If the `pushed_origin` is `None`, then `ClearOrigin` will be called before executing the inner `xcm`.
+If the `origin` parameter is `None`, then `ClearOrigin` will be called before executing the inner `xcm`.
 The previous origin will be restored once the inner `xcm` has finished executing.
 
-If the `pushed_origin` is `Some(interior_location)`, then `DescendOrigin(interior_location)` will be called before executing the inner `xcm`.
+If the `origin` parameter is `Some(interior_location)`, then `DescendOrigin(interior_location)` will be called before executing the inner `xcm`.
 The previous origin will be restored once the inner `xcm` has finished executing.
 
 ### Examples
@@ -52,7 +52,7 @@ The previous origin will be restored once the inner `xcm` has finished executing
 ```rust
 // Withdraw assets from the origin
 WithdrawAsset(/* ...snip... */);
-WithPushedOrigin {
+ExecuteWithOrigin {
  origin: None,
  xcm: Xcm(vec![
   // Deposit assets without an origin
@@ -66,7 +66,7 @@ WithPushedOrigin {
 ```rust
 /* Origin: ../Parachain(1000) */
 
-WithPushedOrigin {
+ExecuteWithOrigin {
  origin: Some(AccountId32 { /* ...snip... */ }),
  xcm: Xcm(vec![
   BuyExecution { /* ...snip... */ },
@@ -86,13 +86,13 @@ Here we withdraw some assets from two different accounts and then deposit them i
 ```rust
 /* Origin: ../Parachain(1000) */
 
-WithPushedOrigin {
+ExecuteWithOrigin {
  origin: Some(AccountId32 { /* First account */ }),
  xcm: Xcm(vec![
   WithdrawAsset(/* ...snip... */),
  ].into()),
 }
-WithPushedOrigin {
+ExecuteWithOrigin {
  origin: Some(AccountId32 { /* Second account */ }),
  xcm: Xcm(vec![
   WithdrawAsset(/* ...snip... */),
