@@ -2,7 +2,7 @@
 Title: RFC process
 Number: 1
 Status: Enacted
-Version: 0
+Version: 1
 Authors:
  - Francisco Aguirre
 Created: 2023-03-28
