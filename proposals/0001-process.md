@@ -36,13 +36,13 @@ All XCM versions can be found by tags on the corresponding commits in the master
 
 ### RFC process
 
-- Fork this repo.
-- Create your proposal as proposals/0000-my-feature.md (where "my-feature" is descriptive. Don't assign an RFC number yet).
+- Fork this repo and make a PR to master.
+- Create your proposal as proposals/<pr-number>-<my-feature>.md, where <my-feature> is a short description. The PR number is used as the RFC number.
 - Make sure to get the discussion going on and your RFC enters the review phase.
 - An RFC can be modified based upon feedback from the maintainers and community.
-- The review phase ends when a maintainer proposes to start a Final Comment Period (FCP). FCPs last for 10 days, after that, a decision is made about the RFC (approve, decline, postpone).
-- Once your RFC is accepted, a PR to master should be made with the RFC changes made to the `README.md` file.
-- Once all major implementations have integrated the proposed change into their codebase and the code was merged, the RFC should be updated to its final state, enacted. The PR to master should be merged.
+- The review phase ends when a maintainer proposes to start a Final Comment Period (FCP). FCPs last for 10 calendar days, after that, a decision is made about the RFC (approve, decline, postpone).
+- Once your RFC is accepted, the original PR is merged. Then, a PR to master should be made with the RFC changes made to the `README.md` file.
+- Once all major implementations have integrated the proposed change into their codebase and the code was merged, the RFC should be updated to its final state, enacted. The PR to master with `README.md` changes should be merged.
 - When all RFCs planned for an XCM version get merged, the final commit should be tagged with the version.
 
 ### RFC status
