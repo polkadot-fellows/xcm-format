@@ -1,8 +1,8 @@
 ---
 Title: Custom Asset Claimer
-Number: 0
-Status: Draft
-Version: 0
+Number: 37
+Status: Accepted
+Version: 4
 Authors:
  - Daniel Shiposha
 Created: 2023-06-21
