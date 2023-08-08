@@ -14,8 +14,9 @@ Replaces:
 ## Summary
 
 The RFC introduces the addition of agent instructions into XCM, specifically introducing three
-new instructions: SetAgent, RemoveAgent, and TransactAsAgent. These instructions empower a
-location to designate an agent to operate on its behalf, enabling the agent to dispatch calls on behalf of the origin. This is particularly beneficial for local accounts, which can act as
+new instructions: SetAgent, RemoveAgent, and TransactAsAgent. These instructions allow a
+location to designate an agent to operate on its behalf, enabling the agent to dispatch calls
+on behalf of the origin. This is particularly beneficial for local accounts, which can act as
 agents for remote locations. This reduces the number of Transact instructions the remote
 location needs to send. An agent is also able to dispatch calls via XCM using the
 TransactAsAgent instruction. 
@@ -38,7 +39,8 @@ reduces the load on the transport layer and potentially leads to cost savings.
 
 ## Specification
 
-The proposed change introduces three new XCM instructions to facilitate the setting of an agent. These instructions are as follows:
+The proposed change introduces three new XCM instructions to facilitate the setting of an
+agent. These instructions are as follows:
 
 ```rust
 /// Set an agent for the `origin` of the instruction. 
@@ -66,26 +68,29 @@ TransactAsAgent(origin: MultiLocation, origin_kind: OriginKind, require_weight_a
 
 ### Implementation details
 These three instruction allow for different implementations of proxying transactions via an
-agent. 
-Based on the specifics of the underlying system, the XCVM implementation can choose among the
-following approaches:
+agent. Based on the specifics of the underlying system, the XCVM implementation can choose
+among the following approaches:
 
 #### Option 1: Local Agent Execution Only
 
-In this approach, the XCVM implementation would focus on the local execution of transactions. Specifically, the system would:
+In this approach, the XCVM implementation would focus on the local execution of transactions.
+Specifically, the system would:
 
-- Implement the SetAgent and Remove Agent instructions. These instructions would be responsible for designating or removing an agent on the local system.
+- Implement the SetAgent and Remove Agent instructions. These instructions would be responsible
+  for designating or removing an agent on the local system.
 - Once an agent is set, it would be allowed to execute transactions, but only within the local
-  system and not via the XCVM. This means that the agent would not utilize the `TransactAsAgent` instruction for these
-  transactions.
+  system and not via the XCVM. This means that the agent would not utilize the
+  `TransactAsAgent` instruction for these transactions.
 
-A practical example of this approach can be the proxy pallet in FRAME. In this
-setup, the SetAgent instruction directly designates the agent within the pallet. Once set, this agent has the
-capability to process transactions on the local system using the `proxy` function within the `proxy` pallet.
+A practical example of this approach can be the proxy pallet in FRAME. In this setup, the
+SetAgent instruction directly designates the agent within the pallet. Once set, this agent has
+the capability to process transactions on the local system using the `proxy` function within
+the `proxy` pallet.
 
 #### Option 2: Local Propagation with All Instructions
 
-This approach is a bit more expansive, allowing for a broader range of transaction executions. Here, the system would:
+This approach is a bit more expansive, allowing for a broader range of transaction executions.
+Here, the system would:
 
 - Implement all three instructions: `SetAgent`, `RemoveAgent`, and `TransactAsAgent`.
 
@@ -94,23 +99,27 @@ This approach is a bit more expansive, allowing for a broader range of transacti
   manage proxy validation and the actual execution of the call.
 
 A setup of this method can again be the proxy pallet of FRAME. In this scenario the
-`TransactAsAgent` instruction forwards the call to the `proxy` function within the `proxy` pallet for execution.
+`TransactAsAgent` instruction forwards the call to the `proxy` function within the `proxy`
+pallet for execution.
 
 #### Option 3: XCM-only Transaction Application
 
-This approach is more restrictive in terms of where transactions can be executed. In this setup, the system would:
+This approach is more restrictive in terms of where transactions can be executed. In this
+setup, the system would:
 
 - Implement all three aforementioned instructions.
 
 - However, the agent would be restricted to executing transactions exclusively through XCM.
-  This means that all transactions processed by the agent would utilize the `TransactAsAgent` instruction.
+  This means that all transactions processed by the agent would utilize the `TransactAsAgent`
+  instruction.
 
 The TransactAsAgent would be responsible for both the validation of the agent and the
 dispatching of the transaction.
 
 
 ### Errors
-The following errors are implementation-dependent and may occur when executing the new XCM instructions:
+The following errors are implementation-dependent and may occur when executing the new XCM
+instructions:
 
 ```rust
 /// This error can be thrown for several reasons, for example:
@@ -129,9 +138,9 @@ NoPermission
 ## Security considerations
 
 ### Privilege Escalation through misuse of OriginKind
-A vulnerability could arise from the potential misuse of the `TransactAsAgent` instruction.
-If the conversion from the `origin` to the dispatch origin within the `TransactAsAgent` instruction
-is not correctly managed and validated, it could allow a privilege escalation
+A vulnerability could arise from the potential misuse of the `TransactAsAgent` instruction. If
+the conversion from the `origin` to the dispatch origin within the `TransactAsAgent`
+instruction is not correctly managed and validated, it could allow a privilege escalation
 attack. If the conversion is misconfigured, a user might specify `OriginKind: superuser` and
 could gain super user privileges within the system. The same vulnerability exists for the
 `Transact` instruction, and the configuration should be handled with the same care. 
