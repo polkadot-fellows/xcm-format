@@ -1056,6 +1056,9 @@ Set a claimer to the dropped assets.
 
 The dropped assets are the assets that are still located in the `Holding Register` after a program finishes its execution.
 
+Operands:
+- `origin: MultiLocation`: a `MultiLocation` identifying the claimer of the dropped assets.
+
 Kind: *Instruction*
 
 Errors: *Infallible*
