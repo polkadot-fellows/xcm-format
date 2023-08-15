@@ -51,7 +51,7 @@ The XCVM is a register-based machine, none of whose registers are general purpos
 - *XCVM* The Cross-Consensus Virtual Machine, for which the definition of XCM messages in large part relies upon.
 - *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve *Consensus System* is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
 - *Origin* The *Consensus System* from which a given message has been (directly and immediately) delivered. Specified as a `MultiLocation`.
-- *XcmContext* Contextual data pertaining to a specific list of XCM instructions.  It includes the `origin`, specified by a `MultiLocation`, `message_hash`, the hash of the XCM, an arbitrary `topic`, as well as an optional `MultiLocation` of a claimer to the dropped assets.
+- *XcmContext* Contextual data pertaining to a specific list of XCM instructions.  It includes the `origin`, specified by a `MultiLocation`, `message_hash`, the hash of the XCM, an arbitrary `topic`, as well as an optional `MultiLocation` of a claimer to the assets still located in the `Holding Register` after execution finishes.
 - *Recipient* The *Consensus System* to which a given message has been delivered. Specified as a `MultiLocation`.
 - *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship both of the STF and the validity/finality/availability between them.
 - *Transfer* The movement of funds from one controlling authority to another. This is within the same chain or overall asset-ownership environment and at the same abstraction level.
@@ -1052,12 +1052,11 @@ Errors:
 
 ### `SetAssetClaimer`
 
-Set a claimer to the dropped assets.
-
-The dropped assets are the assets that are still located in the `Holding Register` after a program finishes its execution.
+Set a claimer to the assets still located in the `Holding Register` after execution finishes.
+A claimer is a `MultiLocation` that will have a right to claim the said assets via the `ClaimAsset` instruction.
 
 Operands:
-- `origin: MultiLocation`: a `MultiLocation` identifying the claimer of the dropped assets.
+- `origin: MultiLocation`: a `MultiLocation` identifying the claimer to the assets still located in the `Holding Register` after execution finishes.
 
 Kind: *Instruction*
 
