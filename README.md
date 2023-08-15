@@ -271,7 +271,7 @@ Operands:
 
 - `assets: MultiAssets`: The asset(s) to be withdrawn into holding.
 
-Kind: *Instruction*.
+Kind: *Command*.
 
 Errors:
 - `BadOrigin`
@@ -356,7 +356,7 @@ Operands:
 - `assets: MultiAssets`: The asset(s) to be withdrawn.
 - `beneficiary: MultiLocation`: The new owner for the assets.
 
-Kind: *Instruction*.
+Kind: *Command*.
 
 Errors: 
 - `BadOrigin`
@@ -375,7 +375,7 @@ Operands:
 - `destination: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
 - `xcm: Xcm`: The instructions that should follow the [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) instruction, which is sent onwards to `destination`.
 
-Kind: *Instruction*.
+Kind: *Command*.
 
 Errors: 
 - `BadOrigin`
@@ -401,7 +401,7 @@ Operands:
 - `require_weight_at_most: Weight`: The weight of `call`; this should be at least the chain's calculated weight and will be used in the weight determination arithmetic.
 - `call: DoubleEncoded<Call>`: The encoded transaction to be applied.
 
-Kind: *Instruction*.
+Kind: *Command*.
 
 Errors: 
 - `BadOrigin`
@@ -462,7 +462,7 @@ Clear the Origin Register.
 
 This may be used by the XCM author to ensure that later instructions cannot command the authority of the Original Origin (e.g. if they are being relayed from an untrusted source, as often the case with [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393)).
 
-Kind: *Instruction*.
+Kind: *Command*.
 
 Errors: *Infallible*.
 
@@ -474,7 +474,7 @@ Operands:
 
 - `interior: InteriorMultiLocation`: The location, interpreted from the context of Origin, to place in the Origin Register.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -491,7 +491,7 @@ Operands:
 
 - `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `ReanchorFailed`
@@ -517,7 +517,7 @@ Operands:
 - `assets: MultiAssetFilter`: The asset(s) to remove from holding.
 - `beneficiary: MultiLocation`: The new owner for the assets.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `AssetNotFound`
@@ -535,7 +535,7 @@ Operands:
 - `dest: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
 - `xcm: Xcm`: The orders that should follow the [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) instruction which is sent onwards to `dest`.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `AssetNotFound`
@@ -556,7 +556,7 @@ Operands:
 - `want: MultiAssets`: The minimum amount of assets which `give` should be exchanged for.
 - `maximal: bool`: If `true`, then prefer to give as much as possible up to the limit of `give` and receive accordingly more. If `false`, then prefer to give as little as possible in order to receive as little as possible while receiving at least `want`.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `NoDeal`
@@ -571,7 +571,7 @@ Operands:
 - `reserve: MultiLocation`: A valid location that acts as a reserve for all asset(s) in `assets`. The sovereign account of this consensus system *on the reserve location* will have appropriate assets withdrawn and `effects` will be executed on them. There will typically be only one valid location on any given asset/chain combination.
 - `xcm: Xcm`: The instructions to execute on the assets once withdrawn *on the reserve location*.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `NotHoldingFees`
@@ -592,7 +592,7 @@ Operands:
 - `destination: MultiLocation`: A valid location that respects teleports coming from this location.
 - `xcm`: The instructions to execute *on the destination location* following the [`ReceiveTeleportedAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L406) instruction.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `AssetNotHandled`
@@ -612,7 +612,7 @@ Operands:
 - `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
  `assets: MultiAssetFilter`: A filter for the assets that should be reported back. The assets reported back will be, asset-wise, *the lesser of this value and the holding register*. No wildcards will be used when reporting assets back.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `ReanchorFailed`
@@ -631,7 +631,7 @@ Operands:
 - `fees: MultiAsset`: The asset(s) to remove from the Holding Register to pay for fees.
 - `weight_limit: WeightLimit`: The maximum amount of weight to purchase; this must be at least the expected maximum weight of the total XCM to be executed for the `AllowTopLevelPaidExecutionFrom` barrier to allow the XCM be executed.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `NotHoldingFees`
@@ -644,7 +644,7 @@ Errors:
 
 Refund any surplus weight previously bought with [`BuyExecution`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L672).
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Infallible*.
 
@@ -660,7 +660,7 @@ Operands:
 
 - `error_handler: Xcm`: The value to which to set the Error Handler Register.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `WeightNotComputable`
@@ -677,7 +677,7 @@ Operands:
 
 - `appendix: Xcm`: The value to which to set the Appendix Register.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `WeightNotComputable`
@@ -686,7 +686,7 @@ Errors:
 
 Clear the Error Register.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Infallible*.
 
@@ -699,7 +699,7 @@ Operands:
 - `assets: MultiAssets`: The assets which are to be claimed. This must match exactly with the assets claimable by the origin of the ticket.
 - `ticket: MultiLocation`: The ticket of the asset; this is an abstract identifier to help locate the asset.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -714,7 +714,7 @@ Operands:
 
 - `id: Compact`: The value to be used for the parameter of the thrown error.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Always*.
 - [`Trap`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L738): All circumstances, whose inner value is the same as this item's inner value.
@@ -729,7 +729,7 @@ Operands:
 - `max_response_weight: Weight`: The maximum amount of weight that the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) item which is sent as a reply may take to execute. 
 NOTE: If this is unexpectedly large then the response may not execute at all.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -743,7 +743,7 @@ Errors:
 
 Cancel the effect of a previous [`SubscribeVersion`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L752) instruction.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -758,7 +758,7 @@ Operands:
 
 - `assets: MultiAssets`: The assets by which to reduce Holding.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Infallible*
 
@@ -770,7 +770,7 @@ Operands:
 
 - `assets: MultiAssets`: The minimum assets expected to be in Holding.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors:
 - `ExpectationFalse`: If Holding does not contain the assets in the parameter.
@@ -783,7 +783,7 @@ Operands:
 
 - `origin: Option<MultiLocation>`: The value expected of the Origin Register.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors:
 - `ExpectationFalse`: If Origin is not some value, or if that value is not equal to the parameter.
@@ -796,7 +796,7 @@ Operands:
 
 - `error: Option<(u32, Error)>`: The value expected of the Error Register.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors:
 - `ExpectationFalse`: If the value of the Error Register is not equal to the parameter.
@@ -808,7 +808,7 @@ Ensure that the Transact Status Register equals some given value and throw an er
 Operands:
 - `maybe_error_code: MaybeErrorCode`: Expected status of the Transact Status Register.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors:
 - `ExpectationFalse`: If the value of the Transact Status Register is not equal to the parameter.
@@ -823,7 +823,7 @@ Operands:
 
 Sends a [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) to Origin whose data field `PalletsInfo` containing the information of all pallets on the local chain whose name is equal to `name`. This is empty in the case that the local chain is not based on Substrate Frame.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `Overflow`
@@ -845,7 +845,7 @@ Operands:
  - `crate_major: Compact`: Version number which must be equal to the major version of the crate which implements the pallet.
  - `min_crate_minor: Compact`: Version number which must be at most the minor version of the crate which implements the pallet.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors:
 - `PalletNotFound`
@@ -859,7 +859,7 @@ Send a [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f
 Operands:
 - `query_response_info: QueryResponseInfo`: The [information](#QueryResponseInfo)  needed for constructing and sending the  [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `ReanchorFailed`
@@ -873,7 +873,7 @@ Errors:
 
 Set the Transact Status Register to its default, cleared, value.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Infallible*.
 
@@ -886,7 +886,7 @@ Safety: Should only be usable if the Origin is trusted to represent the Universa
 Operands:
 - `junction: Junction`: The `Junction` parameter should generally be a `GlobalConsensus` variant since it is only these which are children of the Universal Ancestor.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Error: 
 - `BadOrigin`
@@ -908,7 +908,7 @@ Kusama network), you would call with `network: NetworkId::Kusama` and
 `destination: X1(Parachain(1000))`. Alternatively, to export a message for execution on
 Polkadot, you would call with `network: NetworkId:: Polkadot` and `destination: Here`.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -930,7 +930,7 @@ Operands:
 - `asset: MultiAsset`: The asset(s) which should be locked.
 - `unlocker: MultiLocation`: The value which the Origin must be for a corresponding [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) instruction to work.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -952,7 +952,7 @@ Operands:
 - `asset: MultiAsset`: The asset to be unlocked.
 - `target: MultiLocation`: The owner of the asset on the local chain.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -985,7 +985,7 @@ Operands:
 - `asset`: The asset(s) to be unlocked.
 - `locker`: The location from which a previous [`NoteUnlockable`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L950) was sent and to which an [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) should be sent.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: 
 - `BadOrigin`
@@ -1005,7 +1005,7 @@ Sets the Fees Mode Register.
 	
 - `jit_withdraw: bool`: The fees mode item; If true, then the fee assets are taken directly from the origin's on-chain account, otherwise the fee assets are taken from the holding register.
 
-Kind: *Instruction*.
+Kind: *Command*.
 
 Errors: *Infallible*
 
@@ -1013,7 +1013,7 @@ Errors: *Infallible*
 
 Set the Topic Register
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Infallible*
 
@@ -1021,7 +1021,7 @@ Errors: *Infallible*
 
 Clear the Topic Register
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Infallible*
 
