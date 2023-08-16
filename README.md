@@ -1058,7 +1058,7 @@ A claimer is a `MultiLocation` that will have a right to claim the said assets v
 Operands:
 - `origin: MultiLocation`: a `MultiLocation` identifying the claimer to the assets still located in the `Holding Register` after execution finishes.
 
-Kind: *Instruction*
+Kind: *Command*
 
 Errors: *Infallible*
 
