@@ -15,7 +15,7 @@ Replaces:
 
 The "Multi" prefix on "MultiLocation" and "MultiAsset" was originally designed to mean "Versioned".
 However, the versioned types already use the "Versioned" prefix, making things like "VersionedMultiLocation" unnecessary naming.
-This RFC proposes to remove the "Multi" prefix, to simplify the naming.
+This RFC proposes to remove the "Multi" prefix on various types, to simplify the naming.
 
 ## Motivation
 
