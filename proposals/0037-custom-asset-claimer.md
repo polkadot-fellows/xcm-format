@@ -2,7 +2,7 @@
 Title: Custom Asset Claimer
 Number: 37
 Status: Accepted
-Version: 4
+Version: 5
 Authors:
  - Daniel Shiposha
 Created: 2023-06-21
