@@ -19,10 +19,6 @@ This RFC proposed a set of new instructions to be used in the context of cross-c
 
 ## Motivation
 
-> In this section you should describe why this is a valuable problem to solve. What use cases does
-> it support and who will benefit from this change? Why is this solution the best in the space of
-> possible solutions?
-
 These instruction would be useful to achieve the following goals:
 
 ### Remote Stake
@@ -51,15 +47,7 @@ interacts with it instead of using these instructions.
 
 ## Specification
 
-> Explain the change or feature as you would to another builder in the ecosystem.
-> Describe the syntax and semantics of any new feature. Any new terminology or new named concepts should be defined in
-> this section.
-> Explain the design in sufficient detail for somebody familiar blockchain to understand. Consider:
-> - Its interaction with other features
-> - Corner cases are dissected by example
-    > Provide some examples of how it will be used.
-
-### `StakeAsset(MultiAssets, Multilocation, Multilocation)`
+#### `StakeAsset(MultiAssets, MultiLocation, MultiLocation)` 
 
 Stake assets and nominate a specific multilocation.
 
@@ -67,7 +55,7 @@ Operands:
 
 - `assets: MultiAssets`: The assets to stake.
 - `staker: MultiLocation`: The staker multilocation account where the stake will be locked.
-- `nominated: MultiLocation`: The multilocation where the stake should be allocated to.
+- `target: MultiLocation`: The target multilocation that the staked asset should be backing.
 
 Kind: *Instruction*
 
@@ -76,7 +64,11 @@ Errors: *Fallible*:
 - `AssetNotFound`
 - `NotEnoughFunds`
 
-#### Examples
+#### `UnstakeAsset(MultiAssets, MultiLocation, MultiLocation)`
+
+Unstake an asset from a target.
+
+##### Examples
 
 > TODO
 
@@ -88,14 +80,43 @@ Operands:
 
 - `assets: MultiAssets`: The assets to unstake.
 - `staker: MultiLocation`: The staker multilocation account where the stake will be unstaked.
-- `nominated: MultiLocation`: The multilocation where the stake unstaked from.
+- `nominated: MultiLocation`: The target multilocation from where the stake will be unstaked.
 
 Kind: *Instruction*
 
 Errors: *Fallible*:
 
 - `AssetNotFound`
-- `NotEnoughFunds`
+- `TargetNotStaked`
+
+#### `LockTransfer(MultiAssets, MultiLocation, MultiLocation, MultiLocation)`
+
+Transfers a locked asset from one multilocation to another.
+
+- `assets: MultiAssets`: The locked assets to transfer.
+
+##### Examples
+
+> TODO
+
+### `UnstakeAsset(MultiAsset, Multilocation, Multilocation)`
+
+Unstake assets from a specific nomination.
+
+Operands:
+
+- `assets: MultiAssets`: The assets to unstake.
+- `staker: MultiLocation`: The staker multilocation account where the stake will be unstaked.
+- `nominated: MultiLocation`: The target multilocation from where the stake will be unstaked.
+
+Kind: *Instruction*
+
+Errors: *Fallible*:
+
+- `AssetNotFound`
+- `TargetNotStaked`
+
+
 
 #### Examples
 
