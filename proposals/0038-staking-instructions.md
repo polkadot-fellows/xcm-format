@@ -18,14 +18,14 @@ This RFC proposed a set of new instructions to be used in the context of cross-c
 
 ## Motivation
 
-In this section you should describe why this is a valuable problem to solve. What use cases does
-it support and who will benefit from this change? Why is this solution the best in the space of
-possible solutions?
+> In this section you should describe why this is a valuable problem to solve. What use cases does
+> it support and who will benefit from this change? Why is this solution the best in the space of
+> possible solutions?
 
-The proposed staking instructions are meant to define a general interface to perform staking that
-requires work across multiple consensus systems. The goal is to standarize a minimal interface for
-staking through XCM that can be used in the context of relay-chain staking, system parachain
-staking and across the whole ecosystem.
+The staking instructions are meant to define a general interface to perform staking that requires
+work across multiple consensus systems. The goal is to standarize a minimal interface for staking
+through XCM that can be used in the context of relay-chain staking, system parachain staking and
+across the whole ecosystem.
 
 ## Specification
 
@@ -82,20 +82,16 @@ Errors: *Fallible*:
 > How to use in moonbeam
 
 ## Security considerations
-> The purpose of this section is both to encourage authors to consider security in their designs and to inform the reader of relevant security issues.
-> Discuss here security implications/considerations relevant to the proposed change. Go through detected threats and risks and how they affected security-relevant design decisions. Add any kind of security concerns that are worth discussing during the process of this RFC.
 
--  
+- The cross-chain systems that rely on the staking instructions assume their conterparties respect 
+ that fund locks/unlocks are processed correctly in the destination chain.
 
 ## Impact
 
-- What impact does this have on the rest of the spec? Does it result in a lot of changes to other parts of it?
-- Does this introduce breaking changes? How would they be handled?
+- No breaking changes; it requires a bump in the XCM versioning.
 
 ## Alternatives
 
-> TODO: why the current instructions are not expressive enough.
-
-## Questions and open Discussions (optional)
-
+- It is not possible to express the proposed staking instructions with the current XCM messages
+ without overreylying on the `Transact` instruction.
 
