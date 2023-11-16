@@ -22,22 +22,22 @@ As a convention, assets in foreign consensus systems are generally identified us
 ```
 Location {
     parents: 0
-    interior: (GlobalConsensus(NetworkId), ...)
+    interior: [GlobalConsensus(NetworkId), ...]
 }
 ```
 
-For example, in the relative context of the Polkadot network, a smart contract on Ethereum can be identified using this location:
+For example, in the context of a the Polkadot network, a smart contract on Ethereum can be identified using this location:
 
 ```
 Location {
     parents: 0
-    interior: (GlobalConsensus(NetworkId), AccountKey20(0xf1d2d2f924e986ac86fdf7b36c94bcdf32beec15))
+    interior: [GlobalConsensus(Ethereum), AccountKey20("0xf1d2d2f924e986ac86fdf7b36c94bcdf32beec15")]
 }
 ```
 
-At first glance, this seems reasonable. However there is missing information. Foreign networks at the global level always have their consensus exported to Polkadot through the use of bridging technology.
+At first glance, this seems reasonable. However there is missing information. Foreign networks always have their consensus exported to Polkadot through the use of bridging technology.
 
-Assets exported through different bridges are not fungible with one another, for many reasons. So there must be a means to discriminate foreign assets based on the bridge that provided them.
+Assets exported through different bridges are not fungible with one another, for many reasons. So there must be a means to discriminate foreign assets based on the bridge they came through.
 
 ## Specification
 
