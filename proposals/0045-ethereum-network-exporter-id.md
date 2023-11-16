@@ -57,8 +57,8 @@ pub struct ExporterId([u8; 32])
 		/// The EIP-155 chain ID.
 		#[codec(compact)]
 		chain_id: u64,
-        exporter_id: Some(ExporterId)
-    }
+		exporter_id: Some(ExporterId)
+	}
 ```
 
 The `ExporterId` type wraps an uninterpreted 32-byte identifier for a bridge. The XCM format, as an abstract specification, does not bless any concrete bridging implementations. Therefore, an uninterpreted ID is more appropriate.
