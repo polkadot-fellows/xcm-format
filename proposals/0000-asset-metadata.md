@@ -223,7 +223,7 @@ ApproveMetadataModification {
     /// Otherwise, is is about metadata of the collection.
     instance: Option<AssetInstance>,
 
-    /// The the `MetadataModificationApproval` type.
+    /// See the `MetadataModificationApproval` type.
     approval: MetadataModificationApproval
 }
 ```
