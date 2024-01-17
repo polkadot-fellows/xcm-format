@@ -195,7 +195,7 @@ Such checks could be anything, so we can't express them all in the XCM format.
 However, it seems that a basic authorization check could be typical.
 Examples:
 1. Only an NFT owner can change specific metadata keys
-2. The NFT owner could approve other parties to change a subset of the keys
+2. The NFT owner could approve other parties to change the values of a subset of the keys
 3. Only the collection owner can change the values of specific metadata keys of NFTs within the collection
 4. The NFT collection owner approves a Smart Contract to change specific attributes of an NFT. The Smart Contract could serve as an additional check logic, so if a user wants to write a value under a key, the user asks the Smart Contract to write it. The SC will verify that the value is correct. And only then will it write it to the NFT's metadata.
 
