@@ -74,7 +74,7 @@ This instruction allows querying the metadata of:
 * a collection (fungible or nonfungible)
 * an NFT
 
-If an asset (or an asset instance) for which the query is made doesn't exist, an error should be reported via the `QueryResponse`.
+If an asset (or an asset instance) for which the query is made doesn't exist, an error should be reported via the existing `QueryResponse` instruction.
 
 The `ReportMetadata` can be used without origin (i.e., following the `ClearOrigin` instruction) since it only reads state. In particular, it means one can transfer a currency to pay for the execution of this instruction using a reserve-based transfer.
 
