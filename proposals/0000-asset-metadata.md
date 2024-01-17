@@ -40,10 +40,10 @@ The ability to query and modify the metadata is useful for two kinds of entities
 ## Specification
 
 The Asset Metadata is information bound to an asset class (fungible or NFT collection) or an asset instance (an NFT).
-The Asset Metadata could be represented differently on each chain (or in other consensus entities).
+The Asset Metadata could be represented differently on different chains (or in other consensus entities).
 However, to communicate metadata between consensus entities via XCM, we need a general format so that *any* consensus entity can make sense of such information.
 
-Let's call such a format as XCM Asset Metadata.
+Let's call such a format "XCM Asset Metadata".
 
 This RFC proposes:
 1. Using key-value pairs as XCM Asset Metadata since it is a general concept useful for both structured and unstructured data. Both key and value can be raw bytes with interpretation up to the communicating entities.
@@ -293,4 +293,5 @@ However, without the proposed instructions, there is no standard communication l
 3. Are the proposed metadata format and operations general enough?
 4. Could the proposed instruction set be reduced without losing both generality and convenience?
 5. How one could easily pay for the execution of the `ModifyMetadata`, `ApproveMetadataModification`, and `NoteMetadataModificationApproval`?
-6. Are there any additional security considerations?
+6. What is the maximum size of the `MetadataMap` and the `MetadataKeys`?
+7. Are there any additional security considerations?
