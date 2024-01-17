@@ -196,7 +196,7 @@ However, it seems that a basic authorization check could be typical.
 Examples:
 1. Only an NFT owner can change specific metadata keys
 2. The NFT owner could approve other parties to change a subset of the keys
-3. Only the collection owner can change specific metadata keys of NFTs from the collection
+3. Only the collection owner can change the values of specific metadata keys of NFTs within the collection
 4. The NFT collection owner approves a Smart Contract to change specific attributes of an NFT. The Smart Contract could serve as an additional check logic, so if a user wants to write a value under a key, the user asks the Smart Contract to write it. The SC will verify that the value is correct. And only then will it write it to the NFT's metadata.
 
     **Note** that the mentioned Smart Contract (or other similar thing) may be located on a different chain.
