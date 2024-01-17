@@ -125,7 +125,7 @@ The `QueryMetadata` works in conjunction with the existing `QueryResponse` instr
 ```rust
 /// The struct used in the existing `QueryResponse` instruction.
 pub enum Response {
-    // ... snip, existing variant ...
+    // ... snip, existing variants ...
 
     /// The metadata info.
     AssetMetadata {
