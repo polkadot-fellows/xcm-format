@@ -261,7 +261,7 @@ Where the `MetadataModificationApproval` is:
 /// The metadata modification approval description.
 struct MetadataModificationApproval {
     /// The origin that is approved to make modifications to the specified keys.
-    /// The list of the keys approved to be modified by the origin is specified in the `approve_keys` field.
+    /// The list of the keys approved to be modified by the origin is specified in the `approved_keys` field.
     approved_origin: MultiLocation,
 
     /// The keys allowed to be modified by the `approved_origin`.
