@@ -204,7 +204,7 @@ A consensus entity could be notified about the fact that it is approved to modif
 
 ##### `ApproveMetadataModification`
 
-`ApproveMetadataModification` gives an approval (see the `MetadataModificationApproval` type) to a specified origin. The origin will be notified about that with the `NoteMetadataModificationApproval` message.
+The `ApproveMetadataModification` gives an approval (see the `MetadataModificationApproval` type) to a specified origin. The origin will be notified about that with the `NoteMetadataModificationApproval` message.
 
 Similar to the `ModifyMetadata` instruction, to be executed, the `ApproveMetadataModification` requires an origin. The consequences and questions are the same as for the `ModifyMetadata`.
 
