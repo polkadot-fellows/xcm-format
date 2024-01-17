@@ -293,5 +293,5 @@ However, without the proposed instructions, there is no standard communication l
 3. Are the proposed metadata format and operations general enough?
 4. Could the proposed instruction set be reduced without losing both generality and convenience?
 5. How one could easily pay for the execution of the `ModifyMetadata`, `ApproveMetadataModification`, and `NoteMetadataModificationApproval`?
-6. What is the maximum size of the `MetadataMap` and the `MetadataKeys`?
+6. How to make the `MetadataMap` bounded? The same question for `MetadataKeys`.
 7. Are there any additional security considerations?
