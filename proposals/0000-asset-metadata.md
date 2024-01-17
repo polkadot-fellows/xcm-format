@@ -32,10 +32,9 @@ The ability to query and modify the metadata is useful for two kinds of entities
 
     The metadata is the crucial aspect of any nonfungible object since metadata assigns meaning to such an object. The metadata for NFTs is just as important as the notion of "amount" for fungibles (there is no sense in fungibles if they have no amount).
 
-    An NFT is always a representation of some object. The metadata describes the object NFT represents.
+    An NFT is always a representation of some object. The metadata describes the object represented by the NFT.
 
-    An on-chain logic can interpret the NFT metadata, so NFTs can represent cross-consensus shared data objects (i.e., the metadata could have not only the media meaning but also a utility function within a consensus system). Currently, such metadata communication is possible only within one consensus system. This RFC proposes making it possible between different systems via XCM.
-
+    An on-chain logic can interpret the NFT metadata, so NFTs can represent cross-consensus shared data objects (i.e., the metadata could have not only the media meaning but also a utility function within a consensus system). Currently, such communication of metadata is possible only within one consensus system. This RFC proposes making it possible between different systems via XCM.
 
 ## Specification
 
@@ -43,7 +42,7 @@ The Asset Metadata is information bound to an asset class (fungible or NFT colle
 The Asset Metadata could be represented differently on different chains (or in other consensus entities).
 However, to communicate metadata between consensus entities via XCM, we need a general format so that *any* consensus entity can make sense of such information.
 
-Let's call such a format "XCM Asset Metadata".
+Let's name this format "XCM Asset Metadata".
 
 This RFC proposes:
 1. Using key-value pairs as XCM Asset Metadata since it is a general concept useful for both structured and unstructured data. Both key and value can be raw bytes with interpretation up to the communicating entities.
