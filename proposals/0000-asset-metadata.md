@@ -294,4 +294,5 @@ However, without the proposed instructions, there is no standard communication l
 4. Could the proposed instruction set be reduced without losing both generality and convenience?
 5. How one could easily pay for the execution of the `ModifyMetadata`, `ApproveMetadataModification`, and `NoteMetadataModificationApproval`?
 6. How to make the `MetadataMap` bounded? The same question for `MetadataKeys`.
-7. Are there any additional security considerations?
+7. Can the metadata operations be meaningful for fungible **tokens** (not only for fungible collections)?
+8. Are there any additional security considerations?
