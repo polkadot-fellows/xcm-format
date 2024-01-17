@@ -247,7 +247,7 @@ NoteMetadataModificationApproval {
     /// Otherwise, is is about metadata of the collection.
     instance: Option<AssetInstance>,
 
-    /// The the `MetadataModificationApproval` type.
+    /// See the `MetadataModificationApproval` type.
     ///
     /// The approved origin is included in this instruction
     /// since it could be an interior consensus entity on the receiver chain.
