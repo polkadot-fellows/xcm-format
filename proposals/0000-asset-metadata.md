@@ -271,7 +271,7 @@ struct MetadataModificationApproval {
 
 ## Security considerations
 
-Some of the security considerations were highlighted in the description of the instruction.
+Some of the security considerations were highlighted in the description of the instructions.
 Yet, more could be considered during the discussion of the RFC.
 
 ## Impact
