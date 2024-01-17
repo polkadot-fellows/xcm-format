@@ -1,6 +1,6 @@
 ---
 Title: XCM Asset Metadata
-Number: 00
+Number: 50
 Status: Draft
 Version: 5
 Authors:
