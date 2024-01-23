@@ -1134,10 +1134,7 @@ XCM Standard Ordering is based on the Rust-language ordering and is defined:
 
 #### `AssetId`
 
-A general identifier for an asset class. This is a SCALE-encoded tagged union (`enum` in Rust terms) with two variants:
-
-- `Concrete = 0 { location: Location }`: A concrete asset-class identifier, given by a `Location` value.
-- `Abstract = 1 { name: Vec<u8> }`: A abstract asset-class identifier, given by a `Vec<u8>` value.
+A general identifier for an asset class. This is given by a `Location`.
 
 #### `AssetInstance`
 
