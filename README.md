@@ -1,6 +1,6 @@
 # Polkadot Cross-Consensus Message (XCM) Format
 
-**Version 3, in-progress.**
+**Version 4.**
 **Authors: Gavin Wood.**
 
 This document details the message format for Polkadot-based message passing between chains. It describes the formal data format, any environmental data which may be additionally required and the corresponding meaning of the datagrams.
@@ -11,7 +11,7 @@ There are several kinds of *Consensus Systems* for which it would be advantageou
 
 XCM aims to abstract the typical message intentions across these systems and provide a basic framework for forward-compatible, extensible and practical communication datagrams facilitating typical interactions between disparate datasystems within the world of global consensus.
 
-Concepts from the IPFS project, particularly the idea of self-describing formats, are used throughout and two new self-describing formats are introduced for specifying assets (based around `MultiAsset`) and consensus-system locations (based around `MultiLocation`).
+Concepts from the IPFS project, particularly the idea of self-describing formats, are used throughout and two new self-describing formats are introduced for specifying assets (based around `Asset`) and consensus-system locations (based around `Location`).
 
 Polkadot has three main transport systems for passing messages between chains all of which will use this format: XCMP (sometimes known as HRMP) together with the two kinds of VMP: UMP and DMP.
 
@@ -45,20 +45,20 @@ The XCVM is a register-based machine, none of whose registers are general purpos
 
 ### **1.3** Vocabulary
 
-- *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams. May be specified by a `MultiLocation` value (though not all such values identify a *Consensus System*). Examples include *The Polkadot Relay chain*, *The XDAI Ethereum PoA chain*, *The Ethereum Tether smart contract*.
-- *Location* A *Consensus System*, or an addressable account or data structure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `MultiLocation`.
+- *Consensus System* A chain, contract or other global, encapsulated, state machine singleton. It can be any programmatic state-transition system that exists within consensus which can send/receive datagrams. May be specified by a `Location` value (though not all such values identify a *Consensus System*). Examples include *The Polkadot Relay chain*, *The XDAI Ethereum PoA chain*, *The Ethereum Tether smart contract*.
+- *Location* A *Consensus System*, or an addressable account or data structure that exists therein. Examples include the Treasury account on the Polkadot Relay-chain, the primary Web3 Foundation account on the Edgeware parachain, the Edgeware parachain itself, the Web3 Foundation's Ethereum multisig wallet account. Specified by a `Location`.
 - *Sovereign Account* An account controlled by a particular *Consensus System*, within some other *Consensus System*. There may be many such accounts or just one. If many, then this assumes and identifies a unique *primary* account.
 - *XCVM* The Cross-Consensus Virtual Machine, for which the definition of XCM messages in large part relies upon.
 - *Reserve Location* The *Consensus System* which acts as the reserve for a particular assets on a particular (derivative) *Consensus System*. The reserve *Consensus System* is always known by the derivative. It will have a *Sovereign Account* for the derivative which contains full collateral for the derivative assets.
-- *Origin* The *Consensus System* from which a given message has been (directly and immediately) delivered. Specified as a `MultiLocation`.
-- *XcmContext* Contextual data pertaining to a specific list of XCM instructions.  It includes the `origin`, specified by a `MultiLocation`, `message_hash`, the hash of the XCM, an arbitrary `topic`, as well as an optional `MultiLocation` of a claimer to the assets still located in the `Holding Register` after execution finishes.
-- *Recipient* The *Consensus System* to which a given message has been delivered. Specified as a `MultiLocation`.
+- *Origin* The *Consensus System* from which a given message has been (directly and immediately) delivered. Specified as a `Location`.
+- *XcmContext* Contextual data pertaining to a specific list of XCM instructions.  It includes the `origin`, specified by a `Location`, `message_hash`, the hash of the XCM, an arbitrary `topic`, as well as an optional `Location` of a claimer to the assets still located in the `Holding Register` after execution finishes.
+- *Recipient* The *Consensus System* to which a given message has been delivered. Specified as a `Location`.
 - *Teleport* Destroying an asset (or amount of funds/token/currency) in one place and minting a corresponding amount in a second place. Imagine the teleporter from *Star Trek*. The two places need not be equivalent in nature (e.g. could be a UTXO chain that destroys assets and an account-based chain that mints them). Neither place acts as a reserve or derivative for the other. Though the nature of the tokens may be different, neither place is more canonical than the other. This is only possible if there is a bilateral trust relationship both of the STF and the validity/finality/availability between them.
 - *Transfer* The movement of funds from one controlling authority to another. This is within the same chain or overall asset-ownership environment and at the same abstraction level.
 
 ### **1.4** Document Structure
 
-The format is defined in five main parts. The top-level datagram formats are specified in section 2. The XCVM is defined in sections 3, 4 and 5. The `MultiLocation` and `MultiAsset` formats are defined in sections 6 and 7. Example messages are specified in section 8.
+The format is defined in five main parts. The top-level datagram formats are specified in section 2. The XCVM is defined in sections 3, 4 and 5. The `Location` and `Asset` formats are defined in sections 6 and 7. Example messages are specified in section 8.
 
 ### **1.5** Encoding
 
@@ -140,13 +140,13 @@ Expresses any code which should run following the current programme. When a prog
 
 ### **3.6** Origin
 
-Of type `Option<MultiLocation>`, initialized so its inner value is the Original Origin.
+Of type `Option<Location>`, initialized so its inner value is the Original Origin.
 
 Expresses the location with whose authority the current programme is running. May be reset to `None` at will (implying no authority), and may also be set to a strictly interior location at will (implying a strict subset of authority).
 
 ### **3.7** Holding Register
 
-Of type `MultiAssets`, initialized to the empty set (i.e. no assets).
+Of type `Assets`, initialized to the empty set (i.e. no assets).
 
 Expresses a number of assets that exist under the control of the programme but have no on-chain representation. Can be thought of as a non-persistent register for "unspent" assets.
 
@@ -206,37 +206,37 @@ The XCVM instruction type (`Instruction`) is represented as a tagged union (`enu
 
 The instructions, in order, are:
 
-- `WithdrawAsset = 0 (MultiAssets)`
-- `ReserveAssetDeposited = 1 (MultiAssets)`
-- `ReceiveTeleportedAsset = 2 (MultiAssets)`
-- `QueryResponse = 3 {query_id: Compact<QueryId>, response: Response, max_weight: Weight, querier: Option<MultiLocation> }`
-- `TransferAsset = 4 { assets: MultiAssets, beneficiary: MultiLocation }`
-- `TransferReserveAsset = 5 { assets: MultiAssets, dest: MultiLocation, xcm: Xcm<()> }`
+- `WithdrawAsset = 0 (Assets)`
+- `ReserveAssetDeposited = 1 (Assets)`
+- `ReceiveTeleportedAsset = 2 (Assets)`
+- `QueryResponse = 3 {query_id: Compact<QueryId>, response: Response, max_weight: Weight, querier: Option<Location> }`
+- `TransferAsset = 4 { assets: Assets, beneficiary: Location }`
+- `TransferReserveAsset = 5 { assets: Assets, dest: Location, xcm: Xcm<()> }`
 - `Transact = 6 { origin_kind: OriginKind, require_weight_at_most: Weight, call: DoubleEncoded<Call> }`
 - `HrmpNewChannelOpenRequest = 7 { sender: Compact<u32>, max_message_size: Compact<u32>, max_capacity: Compact<u32> }`
 - `HrmpChannelAccepted = 8 { recipient: Compact<u32> }`
 - `HrmpChannelClosing = 9 { initiator: Compact<u32>, sender: Compact<u32>, recipient: Compact<u32> }`
 - `ClearOrigin = 10`
-- `DescendOrigin = 11 (InteriorMultiLocation)`
+- `DescendOrigin = 11 (InteriorLocation)`
 - `ReportError = 12 (QueryResponseInfo)`
-- `DepositAsset = 13 { assets: MultiAssetFilter, beneficiary: MultiLocation }`
-- `DepositReserveAsset = 14 { assets: MultiAssetFilter, dest: MultiLocation, xcm: Xcm<()> }`
-- `ExchangeAsset = 15 { give: MultiAssetFilter, want: MultiAssets, maximal: bool }`
-- `InitiateReserveWithdraw = 16 { assets: MultiAssetFilter, reserve: MultiLocation, xcm: Xcm<()> }`
-- `InitiateTeleport = 17 { assets: MultiAssetFilter, dest: MultiLocation, xcm: Xcm<()> }`
-- `ReportHolding = 18 { response_info: QueryResponseInfo, assets: MultiAssetFilter }`
-- `BuyExecution = 19 { fees: MultiAsset, weight_limit: WeightLimit }`
+- `DepositAsset = 13 { assets: AssetFilter, beneficiary: Location }`
+- `DepositReserveAsset = 14 { assets: AssetFilter, dest: Location, xcm: Xcm<()> }`
+- `ExchangeAsset = 15 { give: AssetFilter, want: Assets, maximal: bool }`
+- `InitiateReserveWithdraw = 16 { assets: AssetFilter, reserve: Location, xcm: Xcm<()> }`
+- `InitiateTeleport = 17 { assets: AssetFilter, dest: Location, xcm: Xcm<()> }`
+- `ReportHolding = 18 { response_info: QueryResponseInfo, assets: AssetFilter }`
+- `BuyExecution = 19 { fees: Asset, weight_limit: WeightLimit }`
 - `RefundSurplus = 20`
 - `SetErrorHandler = 21 (Xcm<Call>)`
 - `SetAppendix = 22 (Xcm<Call>)`
 - `ClearError = 23`
-- `ClaimAsset = 24 { assets: MultiAssets, ticket: MultiLocation }`
+- `ClaimAsset = 24 { assets: Assets, ticket: Location }`
 - `Trap = 25 (Compact<u64>)`
 - `SubscribeVersion = 26 {query_id: Compact<QueryId>, max_response_weight: Weight}`
 - `UnsubscribeVersion = 27`
-- `BurnAsset = 28 (MultiAssets)`
-- `ExpectAsset = 29 (MultiAssets)`
-- `ExpectOrigin = 30 (Option<MultiLocation>)`
+- `BurnAsset = 28 (Assets)`
+- `ExpectAsset = 29 (Assets)`
+- `ExpectOrigin = 30 (Option<Location>)`
 - `ExpectError = 31 (Option<(u32, Error)>)`
 - `ExpectTransactStatus = 32 (MaybeErrorCode)`
 - `QueryPallet = 33 { module_name: Vec<u8>, response_info: QueryResponseInfo }`
@@ -244,16 +244,16 @@ The instructions, in order, are:
 - `ReportTransactStatus = 35 (QueryResponseInfo)`
 - `ClearTransactStatus = 36`
 - `UniversalOrigin = 37 (Junction)`
-- `ExportMessage = 38 { network: NetworkId, destination: InteriorMultiLocation, xcm: Xcm<()> }`
-- `LockAsset = 39 { asset: MultiAsset, unlocker: MultiLocation }`
-- `UnlockAsset = 40 { asset: MultiAsset, target: MultiLocation }`
-- `NoteUnlockable = 41 { asset: MultiAsset, owner: MultiLocation }`
-- `RequestUnlock = 42 { asset: MultiAsset, locker: MultiLocation }`
+- `ExportMessage = 38 { network: NetworkId, destination: InteriorLocation, xcm: Xcm<()> }`
+- `LockAsset = 39 { asset: Asset, unlocker: Location }`
+- `UnlockAsset = 40 { asset: Asset, target: Location }`
+- `NoteUnlockable = 41 { asset: Asset, owner: Location }`
+- `RequestUnlock = 42 { asset: Asset, locker: Location }`
 - `SetFeesMode = 43 { jit_withdraw: bool }`
 - `SetTopic = 44 ([u8; 32])`
 - `ClearTopic = 45`
-- `AliasOrigin = 46 (MultiLocation)`
-- `UnpaidExecution = 47 { weight_limit: WeightLimit, check_origin: Option<MultiLocation> }`
+- `AliasOrigin = 46 (Location)`
+- `UnpaidExecution = 47 { weight_limit: WeightLimit, check_origin: Option<Location> }`
 
 ### Notes on terminology
 
@@ -269,7 +269,7 @@ Withdraw asset(s) (`assets`) from the ownership of `origin` and place them into 
 
 Operands:
 
-- `assets: MultiAssets`: The asset(s) to be withdrawn into holding.
+- `assets: Assets`: The asset(s) to be withdrawn into holding.
 
 Kind: *Command*.
 
@@ -285,7 +285,7 @@ Asset(s) (`assets`) have been received into the ownership of this system on the 
 
 Operands:
 
-- `assets: MultiAssets`: The asset(s) that are minted into holding.
+- `assets: Assets`: The asset(s) that are minted into holding.
 
 Kind: *Trusted Indication*.
 
@@ -302,7 +302,7 @@ Asset(s) (`assets`) have been destroyed on the `origin` system and equivalent as
 
 Operands:
 
-- `assets: MultiAssets`: The asset(s) that are minted into the Holding Register.
+- `assets: Assets`: The asset(s) that are minted into the Holding Register.
 
 Kind: *Trusted Indication*.
 
@@ -341,7 +341,7 @@ Errors:
 The `Response` type is used to express information content in the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) XCM instruction. It can represent one of several different data types and it therefore encoded as the SCALE-encoded tagged union:
 
 - `Null = 0`:  No response. Serves as a neutral default.
-- `Assets = 1 (MultiAssets)`: Some assets.
+- `Assets = 1 (Assets)`: Some assets.
 - `ExecutionResult = 2 (Option<(u32, Error)>)`: The outcome of an XCM instruction.
 - `Version = 3 (u32)`: An XCM version.
 - `PalletsInfo = 4 (BoundedVec<PalletInfo, MaxPalletsInfo>)`: The index, instance name, pallet name and version of some pallets.
@@ -353,8 +353,8 @@ Withdraw asset(s) (`assets`) from the ownership of `origin` and place equivalent
 
 Operands:
 
-- `assets: MultiAssets`: The asset(s) to be withdrawn.
-- `beneficiary: MultiLocation`: The new owner for the assets.
+- `assets: Assets`: The asset(s) to be withdrawn.
+- `beneficiary: Location`: The new owner for the assets.
 
 Kind: *Command*.
 
@@ -371,8 +371,8 @@ Send an onward XCM message to `destination` of [`ReserveAssetDeposited `](https:
 
 Operands:
 
-- `assets: MultiAsset`: The asset(s) to be withdrawn.
-- `destination: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
+- `assets: Asset`: The asset(s) to be withdrawn.
+- `destination: Location`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
 - `xcm: Xcm`: The instructions that should follow the [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) instruction, which is sent onwards to `destination`.
 
 Kind: *Command*.
@@ -472,7 +472,7 @@ Mutate the origin to some interior location.
 
 Operands:
 
-- `interior: InteriorMultiLocation`: The location, interpreted from the context of Origin, to place in the Origin Register.
+- `interior: InteriorLocation`: The location, interpreted from the context of Origin, to place in the Origin Register.
 
 Kind: *Command*
 
@@ -504,7 +504,7 @@ Errors:
 #### `QueryResponseInfo`
 Information regarding the composition of a query response.
 QueryResponseInfo:
-- `destination: MultiLocation`: The destination to which the query response message should be send.
+- `destination: Location`: The destination to which the query response message should be send.
 - `query_id: Compact<QueryId>`: The `query_id` field of the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message.
 - `max_weight: Weight`: The `max_weight` field of the [`QueryResponse`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L426) message.
 
@@ -514,8 +514,8 @@ Remove the asset(s) (`assets`) from the Holding Register and place equivalent as
 
 Operands:
 
-- `assets: MultiAssetFilter`: The asset(s) to remove from holding.
-- `beneficiary: MultiLocation`: The new owner for the assets.
+- `assets: AssetFilter`: The asset(s) to remove from holding.
+- `beneficiary: Location`: The new owner for the assets.
 
 Kind: *Command*
 
@@ -531,8 +531,8 @@ Send an onward XCM message to `dest` of [`ReserveAssetDeposited `](https://githu
 
 Operands:
 
-- `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `dest: MultiLocation`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
+- `assets: AssetFilter`: The asset(s) to remove from the Holding Register.
+- `dest: Location`: The location whose sovereign account will own the assets and thus the effective beneficiary for the assets and the notification target for the reserve asset deposit message.
 - `xcm: Xcm`: The orders that should follow the [`ReserveAssetDeposited `](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L393) instruction which is sent onwards to `dest`.
 
 Kind: *Command*
@@ -552,8 +552,8 @@ Remove the asset(s) (`want`) from the Holding Register and replace them with alt
 
 Operands:
 
-- `give: MultiAssetFilter`: The maximum amount of assets to remove from holding.
-- `want: MultiAssets`: The minimum amount of assets which `give` should be exchanged for.
+- `give: AssetFilter`: The maximum amount of assets to remove from holding.
+- `want: Assets`: The minimum amount of assets which `give` should be exchanged for.
 - `maximal: bool`: If `true`, then prefer to give as much as possible up to the limit of `give` and receive accordingly more. If `false`, then prefer to give as little as possible in order to receive as little as possible while receiving at least `want`.
 
 Kind: *Command*
@@ -567,8 +567,8 @@ Remove the asset(s) (`assets`) from holding and send a [`WithdrawAsset`](https:/
 
 Operands:
 
-- `assets: MultiAssetFilter`: The asset(s) to remove from the holding.
-- `reserve: MultiLocation`: A valid location that acts as a reserve for all asset(s) in `assets`. The sovereign account of this consensus system *on the reserve location* will have appropriate assets withdrawn and `effects` will be executed on them. There will typically be only one valid location on any given asset/chain combination.
+- `assets: AssetFilter`: The asset(s) to remove from the holding.
+- `reserve: Location`: A valid location that acts as a reserve for all asset(s) in `assets`. The sovereign account of this consensus system *on the reserve location* will have appropriate assets withdrawn and `effects` will be executed on them. There will typically be only one valid location on any given asset/chain combination.
 - `xcm: Xcm`: The instructions to execute on the assets once withdrawn *on the reserve location*.
 
 Kind: *Command*
@@ -588,8 +588,8 @@ NOTE: The `destination` location *MUST* respect this origin as a valid teleporta
 
 Operands:
 
-- `assets: MultiAssetFilter`: The asset(s) to remove from the Holding Register.
-- `destination: MultiLocation`: A valid location that respects teleports coming from this location.
+- `assets: AssetFilter`: The asset(s) to remove from the Holding Register.
+- `destination: Location`: A valid location that respects teleports coming from this location.
 - `xcm`: The instructions to execute *on the destination location* following the [`ReceiveTeleportedAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L406) instruction.
 
 Kind: *Command*
@@ -610,7 +610,7 @@ Report to a given destination the contents of the Holding Register. A [`QueryRes
 
 Operands:
 - `response_info: QueryResponseInfo`: [Information](#QueryResponseInfo)  for making the response.
- `assets: MultiAssetFilter`: A filter for the assets that should be reported back. The assets reported back will be, asset-wise, *the lesser of this value and the holding register*. No wildcards will be used when reporting assets back.
+ `assets: AssetFilter`: A filter for the assets that should be reported back. The assets reported back will be, asset-wise, *the lesser of this value and the holding register*. No wildcards will be used when reporting assets back.
 
 Kind: *Command*
 
@@ -628,7 +628,7 @@ Pay for the execution of some XCM `xcm` and `orders` with up to `weight` picosec
 
 Operands:
 
-- `fees: MultiAsset`: The asset(s) to remove from the Holding Register to pay for fees.
+- `fees: Asset`: The asset(s) to remove from the Holding Register to pay for fees.
 - `weight_limit: WeightLimit`: The maximum amount of weight to purchase; this must be at least the expected maximum weight of the total XCM to be executed for the `AllowTopLevelPaidExecutionFrom` barrier to allow the XCM be executed.
 
 Kind: *Command*
@@ -696,8 +696,8 @@ Create some assets which are being held on behalf of the origin.
 
 Operands:
 
-- `assets: MultiAssets`: The assets which are to be claimed. This must match exactly with the assets claimable by the origin of the ticket.
-- `ticket: MultiLocation`: The ticket of the asset; this is an abstract identifier to help locate the asset.
+- `assets: Assets`: The assets which are to be claimed. This must match exactly with the assets claimable by the origin of the ticket.
+- `ticket: Location`: The ticket of the asset; this is an abstract identifier to help locate the asset.
 
 Kind: *Command*
 
@@ -756,7 +756,7 @@ Holding is reduced by as much as possible up to the assets in the parameter. It 
 
 Operands:
 
-- `assets: MultiAssets`: The assets by which to reduce Holding.
+- `assets: Assets`: The assets by which to reduce Holding.
 
 Kind: *Command*
 
@@ -768,7 +768,7 @@ Throw an error if Holding does not contain at least the given assets.
 
 Operands:
 
-- `assets: MultiAssets`: The minimum assets expected to be in Holding.
+- `assets: Assets`: The minimum assets expected to be in Holding.
 
 Kind: *Command*
 
@@ -781,7 +781,7 @@ Ensure that the Origin Register equals some given value and throw an error if no
 
 Operands:
 
-- `origin: Option<MultiLocation>`: The value expected of the Origin Register.
+- `origin: Option<Location>`: The value expected of the Origin Register.
 
 Kind: *Command*
 
@@ -900,7 +900,7 @@ This will tend to utilize some extra-consensus mechanism, the obvious one being 
 
 Operands: 
 - `network: NetworkId`: The remote consensus system to which the message should be exported.
-- `destination: InteriorMultiLocation`: The location relative to the remote consensus system to which the message should be sent on arrival.
+- `destination: InteriorLocation`: The location relative to the remote consensus system to which the message should be sent on arrival.
 - `xcm: Xcm`: The message to be exported.
 
 As an example, to export a message for execution on Statemine (parachain #1000 in the
@@ -927,8 +927,8 @@ This restriction may be removed by the [`UnlockAsset`](https://github.com/parity
 If the locking is successful, then a [`NoteUnlockable`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L950) instruction is sent to `unlocker`.
 
 Operands:
-- `asset: MultiAsset`: The asset(s) which should be locked.
-- `unlocker: MultiLocation`: The value which the Origin must be for a corresponding [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) instruction to work.
+- `asset: Asset`: The asset(s) which should be locked.
+- `unlocker: Location`: The value which the Origin must be for a corresponding [`UnlockAsset`](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L935) instruction to work.
 
 Kind: *Command*
 
@@ -949,8 +949,8 @@ Errors:
 Remove the lock over `asset` on this chain and (if nothing else is preventing it) allow the asset to be transferred.
 
 Operands:
-- `asset: MultiAsset`: The asset to be unlocked.
-- `target: MultiLocation`: The owner of the asset on the local chain.
+- `asset: Asset`: The asset to be unlocked.
+- `target: Location`: The owner of the asset on the local chain.
 
 Kind: *Command*
 
@@ -965,8 +965,8 @@ Asset (`asset`) has been locked on the `origin` system and may not be transferre
 
 Operands:
 
-- `asset: MultiAsset`: The asset(s) which are now unlockable from this origin.
-- `owner: MultiLocation`: The owner of the asset on the chain in which it was locked. This may be a location specific to the origin network.
+- `asset: Asset`: The asset(s) which are now unlockable from this origin.
+- `owner: Location`: The owner of the asset on the chain in which it was locked. This may be a location specific to the origin network.
 
 Safety: `origin` must be trusted to have locked the corresponding `asset` prior as a consequence of sending this message.
 
@@ -1030,7 +1030,7 @@ Errors: *Infallible*
 Alter the current Origin to another given origin
 
 Operands:
-- `origin: MultiLocation`
+- `origin: Location`
 
 Errors: 
 - `NoPermission`
@@ -1043,34 +1043,22 @@ At execution time, this instruction just does a check on the Origin register. Ho
 
 Operands:
 - `weight_limit: WeightLimit`
-- `check_origin: Option<MultiLocation>`
+- `check_origin: Option<Location>`
 
 Kind: *Indication*
 
 Errors: 
 - `BadOrigin`
 
-### `SetAssetClaimer`
-
-Set a claimer to the assets still located in the `Holding Register` after execution finishes.
-A claimer is a `MultiLocation` that will have a right to claim the said assets via the `ClaimAsset` instruction.
-
-Operands:
-- `origin: MultiLocation`: a `MultiLocation` identifying the claimer to the assets still located in the `Holding Register` after execution finishes.
-
-Kind: *Command*
-
-Errors: *Infallible*
-
 ## **6** Universal Asset Identifiers
 
-*Note on versioning:* This describes the `MultiAsset` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiAsset` value that is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
+*Note on versioning:* This describes the `Asset` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `Asset` value that is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedAsset` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
 
 ### Description
 
-A `MultiAsset` is a general identifier for an asset. It may represent both fungible and non-fungible assets, and in the case of a fungible asset, it represents some defined amount of the asset.
+A `Asset` is a general identifier for an asset. It may represent both fungible and non-fungible assets, and in the case of a fungible asset, it represents some defined amount of the asset.
 
-Since a `MultiAsset` value may only be used to represent a single asset, there is a `MultiAssets` type which represents a set of different assets. Sometimes it is needed to express a pattern over the universe of assets; for this purpose there is `WildMultiAsset`, which allows for "wildcard" matching. Finally, there is often occasion to provide a "selector", which might be a general pattern or a set of concrete assets, and for this there is `MultiAssetFilter`.
+Since a `Asset` value may only be used to represent a single asset, there is a `Assets` type which represents a set of different assets. Sometimes it is needed to express a pattern over the universe of assets; for this purpose there is `WildAsset`, which allows for "wildcard" matching. Finally, there is often occasion to provide a "selector", which might be a general pattern or a set of concrete assets, and for this there is `AssetFilter`.
 
 Fungible assets are identified by a _class_ together with an amount of the asset, the number of units of the asset class that the asset value represents. Non-fungible assets are necessarily unique, so need no _amount_, but this is replaced with an identifier for the asset instance, allowing for multiple unique assets within the same overall class.
 
@@ -1088,15 +1076,15 @@ An abstract identifier is represented as a simple variable-size byte string. As 
 
 #### Concrete identifiers
 
-Concrete identifiers are *relative identifiers* that specifically identify a single asset through its location in a consensus system relative to the context interpreting. Use of a `MultiLocation` ensures that similar but non-fungible variants of the same underlying asset can be properly distinguished, and obviates the need for any kind of central registry.
+Concrete identifiers are *relative identifiers* that specifically identify a single asset through its location in a consensus system relative to the context interpreting. Use of a `Location` ensures that similar but non-fungible variants of the same underlying asset can be properly distinguished, and obviates the need for any kind of central registry.
 
-The limitation is that the asset identifier cannot be trivially copied between consensus systems and must instead be "re-anchored" whenever being moved to a new consensus system, using the two systems' relative paths. This is specifically because `MultiLocation` values are fundamentally relative identifiers.
+The limitation is that the asset identifier cannot be trivially copied between consensus systems and must instead be "re-anchored" whenever being moved to a new consensus system, using the two systems' relative paths. This is specifically because `Location` values are fundamentally relative identifiers.
 
 Throughout XCM, messages are authored such that *when interpreted from the receiver's point of view* they will have the desired meaning/effect. This means that relative paths should always by constructed to be read from the point of view of the receiving system, *which may be have a completely different meaning in the authoring system*.
 
 Concrete identifiers are the generally preferred way of identifying an asset since they are entirely unambiguous.
 
-A concrete identifier is represented by a `MultiLocation`. If a system has an unambiguous primary asset (such as Bitcoin with BTC or Ethereum with ETH), then it will conventionally be identified as the chain itself. Alternative and more specific ways of referring to an asset within a system include:
+A concrete identifier is represented by a `Location`. If a system has an unambiguous primary asset (such as Bitcoin with BTC or Ethereum with ETH), then it will conventionally be identified as the chain itself. Alternative and more specific ways of referring to an asset within a system include:
 
 - `<chain>/PalletInstance(<id>)` for a Frame chain with a single-asset pallet instance (such as an instance of the Balances pallet).
 - `<chain>/PalletInstance(<id>)/GeneralIndex(<index>)` for a Frame chain with an indexed multi-asset pallet instance (such as an instance of the Assets pallet).
@@ -1105,14 +1093,14 @@ A concrete identifier is represented by a `MultiLocation`. If a system has an un
 
 ### Format
 
-A `MultiAsset` value is represented by the SCALE-encoded pair of fields:
+A `Asset` value is represented by the SCALE-encoded pair of fields:
 
 - `id: AssetId`: The asset id.
 - `fun`: The fungibility of the asset, this is a tagged union with two possible variants:
   - `Fungible = 0 { amount: Compact<128> }`: In which case this is a fungible asset and the `amount` is expected to follow the `0` byte to identify this variant.
   - `NonFungible = 1 { instance: AssetInstance }`: In which case this is a non-fungible asset and the `instance` is expected to follow the `1` byte to identify this variant.
 
-If multiple ids need to be expressed in a value, then the `MultiAssets` type should be used. This is encoded exactly as a `Vec<MultiAsset>`, but with some additional requirements:
+If multiple ids need to be expressed in a value, then the `Assets` type should be used. This is encoded exactly as a `Vec<Asset>`, but with some additional requirements:
 
 - All fungible assets must be placed in the encoding before non-fungible assets.
 - Fungible assets must be ordered by id in Standard Ordering (see next).
@@ -1122,7 +1110,7 @@ If multiple ids need to be expressed in a value, then the `MultiAssets` type sho
 
 (The ordering provides an efficient means of guaranteeing that each asset is indeed unique within the set.)
 
-A `WildMultiAsset` value is represented by the SCALE-encoded tagged union with four variants:
+A `WildAsset` value is represented by the SCALE-encoded tagged union with four variants:
 
 - `All = 0`: Matches for all assets.
 - `AllOf = 1 { id: AssetId, fun: WildFungibility }`: Matches for any assets which match the given `id` and fungibility (`fun`).
@@ -1131,10 +1119,10 @@ A `WildMultiAsset` value is represented by the SCALE-encoded tagged union with f
 
 _Note: different instances of non-fungibles are counted as individual assets_
 
-A `MultiAssetFilter` value is represented by the SCALE-encoded tagged union with two variants:
+A `AssetFilter` value is represented by the SCALE-encoded tagged union with two variants:
 
-- `Definite = 0 { assets: MultiAssets }`: Filters for all assets in `assets`.
-- `Wild = 1 { wildcard: WildMultiAsset }`: Filters for all assets which match `wildcard`.
+- `Definite = 0 { assets: Assets }`: Filters for all assets in `assets`.
+- `Wild = 1 { wildcard: WildAsset }`: Filters for all assets which match `wildcard`.
 
 #### Standard Ordering
 
@@ -1148,7 +1136,7 @@ XCM Standard Ordering is based on the Rust-language ordering and is defined:
 
 A general identifier for an asset class. This is a SCALE-encoded tagged union (`enum` in Rust terms) with two variants:
 
-- `Concrete = 0 { location: MultiLocation }`: A concrete asset-class identifier, given by a `MultiLocation` value.
+- `Concrete = 0 { location: Location }`: A concrete asset-class identifier, given by a `Location` value.
 - `Abstract = 1 { name: Vec<u8> }`: A abstract asset-class identifier, given by a `Vec<u8>` value.
 
 #### `AssetInstance`
@@ -1174,13 +1162,13 @@ A general identifier for an asset class. This is a SCALE-encoded tagged union (`
 
 ## **7** Universal Consensus Location Identifiers
 
-This describes the `MultiLocation` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `MultiLocation` value that is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedMultiLocation` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
+This describes the `Location` (and associates) as used in XCM version of this document, and its version is strictly implied by the XCM it is used within. If it is necessary to form a `Location` value that is used _outside_ of an XCM (where its version cannot be inferred) then the version-aware `VersionedLocation` should be used instead, exactly analogous to how `Xcm` relates to `VersionedXcm`.
 
 ### **7.1** Description
 
 A relative path between state-bearing consensus systems.
 
-`MultiLocation` aims to be sufficiently abstract in meaning and general in nature that it is able to identify arbitrary logical "locations" within the universe of consensus.
+`Location` aims to be sufficiently abstract in meaning and general in nature that it is able to identify arbitrary logical "locations" within the universe of consensus.
 
 A location in a consensus system is defined as an *isolatable state machine* held within global consensus. The location in question need not have a sophisticated consensus algorithm of its own; a single account within Ethereum, for example, could be considered a location.
 
@@ -1192,20 +1180,20 @@ A very-much non-exhaustive list of types of location include:
 - A logical functional component of a chain, e.g. a single instance of a pallet on a Frame-based Substrate chain.
 - An account.
 
-A `MultiLocation` is a *relative identifier*, meaning that it can only be used to define the relative path between two locations, and cannot generally be used to refer to a location universally. Much like a relative file-system path will first begin with any "../" components used to ascend into to the containing directory, followed by the directory names into which to descend, a `MultiLocation` has two main parts to it: the number of times to ascend into the outer consensus from the local and then an interior location within that outer consensus.
+A `Location` is a *relative identifier*, meaning that it can only be used to define the relative path between two locations, and cannot generally be used to refer to a location universally. Much like a relative file-system path will first begin with any "../" components used to ascend into to the containing directory, followed by the directory names into which to descend, a `Location` has two main parts to it: the number of times to ascend into the outer consensus from the local and then an interior location within that outer consensus.
 
-A `MultiLocation` is thus encoded as the pair of values:
+A `Location` is thus encoded as the pair of values:
 
 - `parents: u8`: The levels of consensus to ascend before interpreting the `interior` parameter.
-- `interior: InteriorMultiLocation`: A location interior to the outer consensus system found by ascending from the local system `parents` times.
+- `interior: InteriorLocation`: A location interior to the outer consensus system found by ascending from the local system `parents` times.
 
 ### Interior Locations & Junctions
 
-There is a second type `InteriorMultiLocation` which always identifies a consensus system *interior* to the local consensus system. Being strictly interior implies a relationship of subordination: for a consensus system A to be interior to that of B would mean that a state change of A implies a state change in B. As an example, a smart contract location within the Ethereum blockchain would be considered an interior location of the Ethereum blockchain itself.
+There is a second type `InteriorLocation` which always identifies a consensus system *interior* to the local consensus system. Being strictly interior implies a relationship of subordination: for a consensus system A to be interior to that of B would mean that a state change of A implies a state change in B. As an example, a smart contract location within the Ethereum blockchain would be considered an interior location of the Ethereum blockchain itself.
 
-An `InteriorMultiLocation` is comprised of a number of *junctions*, in order, each specifying a location further internal to the previous. An `InteriorMultiLocation` value with no junctions simply refers to the local consensus system.
+An `InteriorLocation` is comprised of a number of *junctions*, in order, each specifying a location further internal to the previous. An `InteriorLocation` value with no junctions simply refers to the local consensus system.
 
-An `InteriorMultiLocation` is thus encoded simply as a `Vec<Junction>`. A `Junction` meanwhile is encoded as the tagged union of:
+An `InteriorLocation` is thus encoded simply as a `Vec<Junction>`. A `Junction` meanwhile is encoded as the tagged union of:
 
 - `Parachain = 0 { index: Compact<u32> }`: An indexed parachain belonging to and operated by the context. Generally used when the context is a Polkadot Relay-chain.
 
@@ -1276,7 +1264,7 @@ Encoded as the tagged union of:
 
 ### Written format
 
-Note: `MultiLocation`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and file systems. E.g. a `MultiLocation` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `MultiLocation` with one parent and two `Junction`s: `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
+Note: `Location`s will tend to be written using junction names delimited by slashes, evoking the syntax of other logical path systems such as URIs and file systems. E.g. a `Location` value expressed as `../PalletInstance(3)/GeneralIndex(42)` would be a `Location` with one parent and two `Junction`s: `PalletInstance{index: 3}` and `GeneralIndex{index: 42}`.
 
 ## **8** The types of error in XCM
 
@@ -1286,8 +1274,8 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `Unimplemented = 1`: The instruction is intentionally unsupported.
 - `UntrustedReserveLocation = 2`: Origin Register does not contain a value value for a reserve transfer notification.
 - `UntrustedTeleportLocation = 3`: Origin Register does not contain a value value for a teleport notification.
-- `LocationFull = 4`: `MultiLocation` value too large to descend further.
-- `LocationNotInvertible = 5`: `MultiLocation` value ascend more parents than known ancestors of local location.
+- `LocationFull = 4`: `Location` value too large to descend further.
+- `LocationNotInvertible = 5`: `Location` value ascend more parents than known ancestors of local location.
 - `BadOrigin = 6`: The Origin Register does not contain a valid value for instruction.
 - `InvalidLocation = 7`: The location parameter is not a valid value for the instruction.
 - `AssetNotFound = 8`: The given asset is not handled.
@@ -1310,7 +1298,7 @@ Within XCM it is necessary to communicate some problem encountered while executi
 - `VersionIncompatible = 25`:  Used by ['ExpectPallet'](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L839) when the given pallet's version has an incompatible version to that expected.
 - `HoldingWouldOverflow = 26`: The given operation would lead to an overflow of the Holding Register.
 - `ExportError = 27`: The message was unable to be exported.
-- `ReanchorFailed = 28`: `MultiLocation` value failed to be reanchored.
+- `ReanchorFailed = 28`: `Location` value failed to be reanchored.
 - `NoDeal = 29`: Used by ['ExchangeAsset'](https://github.com/paritytech/polkadot/blob/962bc21352f5f80a580db5a28d05154ede4a9f86/xcm/src/v3/mod.rs#L613) when no deal is possible under the given constraints.
 - `FeesNotMet = 30`: Fees were required which the origin could not pay.
 - `LockError = 31`: Some other error with locking.
