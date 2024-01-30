@@ -4,7 +4,7 @@ Number: 0
 Status: Draft
 Version: 1.0
 Authors:
- - Ale
+ - [LAOS parachain core team](https://www.laosfoundation.io/)
 Created: 2024-01-29
 Impact: High
 Requires: NA
