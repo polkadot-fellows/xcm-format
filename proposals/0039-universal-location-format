@@ -13,7 +13,7 @@ Replaces: NA
 
 ## Summary
 
-The proposal aims to standardize a Universal Location Format (ULF) across different blockchain ecosystems. The goal is to facilitate a common method for decentralized applications (dApps) to reference assets (specifically NFTs) across various blockchains, including but not limited to Ethereum, Polkadot, Kusama, and others. The ULF will streamline the process of asset identification, retrieval, and interaction by providing a uniform, unambiguous string format for asset references.
+The proposal seeks to establish a standardized Universal Location Format (ULF) across varied blockchain ecosystems, leveraging the existing solution of identifying resources within consensus systems as utilized in Cross-Consensus Messaging (XCM). The ULF is essentially a stringified adaptation of the universal location concept employed in XCM, ensuring a consistent and unambiguous approach to asset referencing. This standardization aims to provide decentralized applications (dApps) with a common methodology to reference assets, particularly NFTs, across a wide range of blockchains such as Ethereum, Polkadot, Kusama, among others. By aligning the ULF closely with the well-established framework of XCM, the proposal intends to streamline the process of asset identification, retrieval, and interaction, thereby offering a uniform, clear, and efficient string format for referencing assets within and across different blockchain systems.
 
 ## Motivation
 
