@@ -39,7 +39,7 @@ This format is in line with the XCMv3 format and adheres to the hierarchical nat
 ### Examples
 
 - Ethereum NFT: `uloc://GlobalConsensus(7)/AccountKey20(0xabc....def)/GeneralKey(666)`
-- Parachain in Kusama: `uloc://GlobalConsensus(3)/Parachain(2023)/PalletInstance(51)/AccountKey20(0xabc....def)/GeneralKey(666)`
+- EVM Parachain NFT in Kusama: `uloc://GlobalConsensus(3)/Parachain(2023)/PalletInstance(51)/AccountKey20(0xabc....def)/GeneralKey(666)`
 
 ## Security Considerations
 
