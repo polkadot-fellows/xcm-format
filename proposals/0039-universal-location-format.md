@@ -2,11 +2,11 @@
 Title: Standardizing Universal Location Format (ULF) for Cross-Blockchain Asset Reference
 Number: 0
 Status: Draft
-Version: 1.0
+Version: 0.1
 Authors:
- - [LAOS parachain core team](https://www.laosfoundation.io/)
+ - LAOS parachain ( https://www.laosfoundation.io/ )
 Created: 2024-01-29
-Impact: High
+Impact: Low
 Requires: NA
 Replaces: NA
 ---
