@@ -92,8 +92,10 @@ This section invites the community's input, insights, and active engagement to r
 
 We welcome diverse perspectives and constructive discussions to ensure that the ULF not only meets the current demands of asset referencing across blockchains but also remains robust, flexible, and relevant in the face of future technological advancements.
 
-## Reference
+## References
 
-"Universal Location Format Across Blockchains Discussion", freeverseio/laos. Retrieved from [GitHub issue #177](https://github.com/freeverseio/laos/issues/177).
+"Universal Location Format Across Blockchains Discussion", freeverseio/laos, (2021). Retrieved from [GitHub issue #177](https://github.com/freeverseio/laos/issues/177).
 
-"Cross Consensus Messaging (XCM) - Data Structures and Interfaces", paritytech/xcm. Retrieved from [GitHub repository](https://github.com/paritytech/xcm).
+"Cross Consensus Messaging (XCM) - Data Structures and Interfaces", paritytech/xcm, (2021). Retrieved from [GitHub repository](https://github.com/paritytech/xcm).
+
+"Uniform Resource Identifier (URI): Generic Syntax", T. Berners-Lee, R. Fielding, L. Masinter, (2005). Retrieved from [RFC 3986](https://tools.ietf.org/html/rfc3986).
