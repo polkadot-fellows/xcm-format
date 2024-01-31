@@ -71,12 +71,29 @@ In conclusion, the ULF's integration, especially within the ERC721 `tokenURI` st
 
 Alternatives such as continuing with blockchain-specific addressing were considered. However, they lack the universality and interoperability that ULF offers. While ULF adoption requires initial effort, the lack of a universal standard perpetuates inefficiencies and hinders the blockchain ecosystem's growth.
 
-## Questions and Open Discussions (optional)
+## Questions and Open Discussions
 
-- Feedback on the ULF structure and its compatibility with various blockchain ecosystems.
-- Suggestions for the seamless integration of ULF into existing blockchain infrastructures.
-- Discussion on potential improvements or extensions to the ULF to cover more use cases and assets.
+This section invites the community's input, insights, and active engagement to refine and optimize the implementation of the Universal Location Format (ULF). We encourage contributors to consider the following questions and to propose discussions on any related topics:
+
+1. **Integration with Existing Systems:**
+   - How can the ULF be seamlessly integrated into existing blockchain ecosystems and smart contract standards, such as ERC721's `tokenURI`, without causing disruptions or requiring extensive overhauls?
+
+2. **Case Sensitivity and Standardization:**
+   - Given the importance of case sensitivity and strict formatting in the ULF, what are the best practices for ensuring consistency across different blockchain platforms? How can we enforce these standards effectively?
+
+3. **Handling Edge Cases:**
+   - Are there any edge cases or unique scenarios in cross-blockchain asset referencing that the ULF might need to address? How can the ULF be designed to accommodate these situations?
+
+4. **Community Feedback on Structure and Usability:**
+   - What feedback does the community have regarding the structure, usability, and practicality of the ULF in real-world applications? Are there any suggestions for improving its design or functionality?
+
+5. **Future-Proofing the ULF:**
+   - As blockchain technology continues to evolve, how can the ULF adapt to support new platforms, protocols, and consensus mechanisms that may emerge in the future?
+
+We welcome diverse perspectives and constructive discussions to ensure that the ULF not only meets the current demands of asset referencing across blockchains but also remains robust, flexible, and relevant in the face of future technological advancements.
 
 ## Reference
 
-Initial discussions and considerations regarding the Universal Location Format (ULF) can be found in the GitHub issue: [freeverseio/laos/issues/177](https://github.com/freeverseio/laos/issues/177). This issue laid the groundwork for the development and standardization of the ULF, addressing the need for a unified asset referencing system across different blockchain ecosystems.
+"Universal Location Format Across Blockchains Discussion", freeverseio/laos. Retrieved from [GitHub issue #177](https://github.com/freeverseio/laos/issues/177).
+
+"Cross Consensus Messaging (XCM) - Data Structures and Interfaces", paritytech/xcm. Retrieved from [GitHub repository](https://github.com/paritytech/xcm).
