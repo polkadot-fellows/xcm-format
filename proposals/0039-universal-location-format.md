@@ -13,7 +13,9 @@ Replaces: NA
 
 ## Summary
 
-The proposal seeks to establish a standardized Universal Location Format (ULF) across varied blockchain ecosystems, leveraging the existing solution of identifying resources within consensus systems as utilized in Cross-Consensus Messaging (XCM). The ULF is essentially a stringified adaptation of the universal location concept employed in XCM, ensuring a consistent and unambiguous approach to asset referencing. This standardization aims to provide decentralized applications (dApps) with a common methodology to reference assets, particularly NFTs, across a wide range of blockchains such as Ethereum, Polkadot, Kusama, among others. By aligning the ULF closely with the well-established framework of XCM, the proposal intends to streamline the process of asset identification, retrieval, and interaction, thereby offering a uniform, clear, and efficient string format for referencing assets within and across different blockchain systems.
+The proposal seeks to establish a standardized Universal Location Format (ULF) across varied blockchain ecosystems, leveraging the existing solution of identifying resources within consensus systems as utilized in Cross-Consensus Messaging (XCM). The ULF is essentially a stringified adaptation of the universal location concept employed in XCM, ensuring a consistent and unambiguous approach to asset referencing. This standardization aims to provide decentralized applications (dApps) with a common methodology to reference assets, particularly NFTs, across a wide range of blockchains such as Ethereum, Polkadot, Kusama, among others. 
+
+By aligning the ULF closely with the well-established framework of XCM, the proposal intends to streamline the process of asset identification, retrieval, and interaction, thereby offering a uniform, clear, and efficient string format for referencing assets within and across different blockchain systems.
 
 ## Motivation
 
@@ -38,16 +40,17 @@ This format is in line with the XCMv3 format and adheres to the hierarchical nat
 
 ### Examples
 
-- Ethereum NFT: `uloc://GlobalConsensus(7)/AccountKey20(0xabc....def)/GeneralKey(666)`
-- EVM Parachain NFT in Kusama: `uloc://GlobalConsensus(3)/Parachain(2023)/PalletInstance(51)/AccountKey20(0xabc....def)/GeneralKey(666)`
+- Ethereum NFT: `uloc://GlobalConsensus(7)/AccountKey20(0xabc....def)/GeneralKey(1234)`
+- EVM Parachain NFT in Kusama: `uloc://GlobalConsensus(3)/Parachain(2023)/PalletInstance(51)/AccountKey20(0xabc....def)/GeneralKey(4321)`
 
 ## Security Considerations
 
-Security is a paramount concern in the design of the ULF. The format is constructed to minimize ambiguity and prevent address collisions. However, it's essential to consider the following:
+When considering the security implications of the Universal Location Format (ULF), it is crucial to emphasize the importance of case sensitivity and strict formatting standards. These aspects are vitally important for maintaining consistency and ensuring security, especially in operations involving cryptographic functions like hashing.
 
-- The proper validation of ULF strings to prevent injection attacks or reference to malicious contracts.
-- Ensuring that the ULF adheres to the security protocols of the individual blockchains it references.
-- Regular audits and updates in response to newly discovered vulnerabilities in the blockchain space.
+1. **Case Sensitivity and String Strictness:**
+   - The ULF must be defined with clear rules regarding case sensitivity. Different blockchain platforms may have varying standards for address case sensitivity. However, for the ULF, a consistent approach must be established and adhered to across all platforms.
+   - When a ULF is stored on a blockchain, it may be hashed for various purposes, including integrity checks or as a part of cryptographic operations. Any inconsistency in case handling can lead to different hashes for the same ULF, leading to discrepancies and potential security vulnerabilities.
+   - A strict and well-defined format for the ULF ensures that all participants in the system interpret and use the format consistently, reducing the risk of errors or inconsistencies that could be exploited.
 
 ## Impact
 
