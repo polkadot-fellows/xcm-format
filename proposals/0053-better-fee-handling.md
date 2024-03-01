@@ -18,7 +18,7 @@ However, other types of fees are not handled as effectively -- for example, deli
 Fees exist that can't be measured using `Weight` -- as execution fees can -- so a new method should be thought up for those cases.
 This RFC proposes making the fee handling system simpler and more general, by doing two things:
 - Adding a `fees` register
-- Replacing `BuyExecution` with a new instruction `PayFees` with new semantics
+- Deprecating `BuyExecution` and adding a new instruction `PayFees` with new semantics to ultimately replace it.
 
 This new instruction only takes the amount of fees that the XCVM can use from the holding register.
 The XCVM implementation is free to use these fees to pay for execution fees, transport fees, or any other type of fee that might be necessary.
