@@ -33,18 +33,18 @@ The standard should have a way to correctly deal with these implementation speci
 ## Specification
 
 The new instruction that will replace `BuyExecution` is a much simpler and general version: `PayFees`.
-This instruction takes some `Assets` and takes them from the holding register, putting them into a new `fees` register.
-The XCVM implementation can now use these `Assets` to make sure every necessary fee is paid for, this includes execution fees, delivery fees, or any other fee.
+This instruction takes one `Asset`, takes it from the holding register, and puts it into a new `fees` register.
+The XCVM implementation can now use this `Asset` to make sure every necessary fee is paid for, this includes execution fees, delivery fees, or any other fee.
 
 ```rust
-PayFees { assets: Assets }
+PayFees { asset: Asset }
 ```
 
-This new instruction will reserve **the entirety** of `assets` for fee payment.
-The assets can't be used for anything else during the entirety of the program.
+This new instruction will reserve **the entirety** of `asset` for fee payment.
+The asset can't be used for anything else during the entirety of the program.
 This is different from the current semantics of `BuyExecution`.
 
-If not all `Assets` in the `fees` register are used when the execution ends, then we trap them.
+If not all `Asset` in the `fees` register is used when the execution ends, then we trap them alongside any possible leftover assets from the holding register.
 
 ### Examples
 
@@ -52,7 +52,7 @@ Most XCM programs that pay for execution are written like so:
 
 ```rust
 // Instruction that loads the holding register
-BuyExecution { assets, weight_limit }
+BuyExecution { asset, weight_limit }
 // ...rest
 ```
 
@@ -60,7 +60,7 @@ With this RFC, the structure would be the same, but using the new instruction, t
 
 ```rust
 // Instruction that loads the holding register
-PayFees { assets }
+PayFees { asset }
 // ...rest
 ```
 
