@@ -1,6 +1,6 @@
 ---
 Title: Cross-chain multi-type asset transfers
-Number: XX
+Number: 54
 Status: Draft
 Version: 1
 Authors:
