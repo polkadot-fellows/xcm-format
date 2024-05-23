@@ -1,5 +1,5 @@
 ---
-Title: Add SetExecutionHint instruction
+Title: Add SetExecutionHints instruction
 Number: 0
 Status: Draft
 Version: 5
@@ -15,7 +15,7 @@ Replaces:
 
 RFC#37 introduces a `SetAssetClaimer` instruction.
 This idea of instructing the XCVM to change some implementation-specific behavior is useful.
-In order to generalize this mechanism, this RFC introduces a new instruction `SetExecutionHint`
+In order to generalize this mechanism, this RFC introduces a new instruction `SetExecutionHints`
 and makes the `SetAssetClaimer` be just one of many possible execution hints.
 
 ## Motivation
@@ -25,7 +25,7 @@ Things like who can claim the assets or what can be done instead of trapping ass
 
 ## Specification
 
-A new instruction, `SetExecutionHint`, will be added.
+A new instruction, `SetExecutionHints`, will be added.
 This instruction will take a single parameter of type `ExecutionHint`, an enumeration.
 The first variant for this enum is `AssetClaimer`, which allows to specify a location that should be able to claim trapped assets,
 as specified in RFC#37.
@@ -36,7 +36,7 @@ In Rust, the new definitions would look as follows:
 ```rust
 enum Instruction {
   // ...snip...
-  SetExecutionHint(BoundedVec<ExecutionHint, NumVariants>),
+  SetExecutionHints(BoundedVec<ExecutionHint, NumVariants>),
   // ...snip...
 }
 
