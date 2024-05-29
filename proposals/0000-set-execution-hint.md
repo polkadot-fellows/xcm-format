@@ -53,7 +53,7 @@ type NumVariants = /* Number of variants of the `ExecutionHint` enum */;
 `ExecutionHint`s are specified on a per-message basis, so they have to be specified at the beginning of a message.
 If they were to be specified at the end, hints like `AssetClaimer` would be useless if an error occurs beforehand and assets get trapped before ever reaching the hint.
 
-The instruction takes a bounded vector of hints so as to not 
+The instruction takes a bounded vector of hints so as to not force barriers to allow an arbitrary number of `SetExecutionHint` instructions.
 
 ## Impact
 
