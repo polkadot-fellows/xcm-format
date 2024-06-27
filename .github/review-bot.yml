@@ -6,21 +6,14 @@ rules:
     type: fellows
     minRank: 3
     minTotalScore: 15
-  - name: Proposals
-    condition:
-      include:
-        - ^proposals\/.*
-    type: fellows
-    minRank: 2
-    minApprovals: 2
-    minTotalScore: 10
   - name: General Files
     condition:
       include:
         - '.*'
     type: fellows
     minRank: 1
-    minTotalScore: 4
+    minApprovals: 2
+    minTotalScore: 10
 scores:
   dan1: 1
   dan2: 2
