@@ -1,0 +1,33 @@
+rules:
+  - name: CI Files
+    condition:
+      include:
+        - ^\.github/.*
+    type: fellows
+    minRank: 3
+    minTotalScore: 15
+  - name: Proposals
+    condition:
+      include:
+        - ^proposals\/.*
+    type: fellows
+    minRank: 2
+    minApprovals: 2
+    minTotalScore: 10
+  - name: General Files
+    condition:
+      include:
+        - '.*'
+    type: fellows
+    minRank: 1
+    minTotalScore: 4
+scores:
+  dan1: 1
+  dan2: 2
+  dan3: 5
+  dan4: 9
+  dan5: 10
+  dan6: 15
+  dan7: 20
+  dan8: 25
+  dan9: 30

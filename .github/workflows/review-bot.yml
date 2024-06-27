@@ -1,0 +1,34 @@
+name: Review Bot
+
+on:
+  workflow_run:
+    workflows:
+      - Review-Trigger
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  review-approvals:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract content of artifact
+        id: number
+        uses: Bullrich/extract-text-from-artifact@v1.0.0
+        with:
+          artifact-name: pr_number
+      - name: Generate token
+        id: team_token
+        uses: actions/create-github-app-token@v1.9.3
+        with:
+          app-id: ${{ secrets.REVIEW_APP_ID }}
+          private-key: ${{ secrets.REVIEW_APP_KEY }}
+      - name: "Evaluates PR reviews and assigns reviewers"
+        uses: paritytech/review-bot@v2.5.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          team-token: ${{ steps.team_token.outputs.token }}
+          checks-token: ${{ steps.team_token.outputs.token }}
+          pr-number: ${{ steps.number.outputs.content }}
