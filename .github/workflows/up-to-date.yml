@@ -1,0 +1,23 @@
+name: Keep PR up to date
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  updatePullRequests:
+    name: Keep PRs up to date
+    runs-on: ubuntu-latest
+    environment: master
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.MERGE_APP_ID }}
+          private-key: ${{ secrets.MERGE_APP_KEY }}
+      - name: Update all the PRs
+        uses: paritytech/up-to-date-action@v0.2.1
+        with:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
