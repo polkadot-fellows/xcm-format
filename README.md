@@ -629,7 +629,7 @@ Pay for the execution of some XCM `xcm` and `orders` with up to `weight` picosec
 Operands:
 
 - `fees: Asset`: The asset(s) to remove from the Holding Register to pay for fees.
-- `weight_limit: WeightLimit`: The maximum amount of weight to purchase; this must be at least the expected maximum weight of the total XCM to be executed for the `AllowTopLevelPaidExecutionFrom` barrier to allow the XCM be executed.
+- `weight_limit: WeightLimit`: The maximum amount of weight to purchase; this must be at least the expected maximum weight of the total XCM to be executed for the `AllowTopLevelPaidExecutionFrom` barrier to allow the XCM be executed. `WeightLimit` is an enum that can specify either `Limited(Weight)` or `Unlimited` weight limits.
 
 Kind: *Command*
 
@@ -1039,7 +1039,7 @@ Errors:
 
 A directive to indicate that the origin expects free execution of the message.
 
-At execution time, this instruction just does a check on the Origin register. However, at the barrier stage, messages starting with this instruction can be disregarded if the origin is not acceptable for free execution, or the `weight_limit` is `Limited` and insufficient.
+At execution time, this instruction just does a check on the Origin register. However, at the barrier stage, messages starting with this instruction can be disregarded if the origin is not acceptable for free execution, or the `weight_limit` is `Limited(w)` and `w` is insufficient weight.
 
 Operands:
 - `weight_limit: WeightLimit`
