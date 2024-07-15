@@ -21,10 +21,11 @@ jobs:
           artifact-name: pr_number
       - name: Generate token
         id: team_token
-        uses: actions/create-github-app-token@v1.9.3
+        uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.REVIEW_APP_ID }}
           private-key: ${{ secrets.REVIEW_APP_KEY }}
+          owner: ${{ github.repository_owner }}
       - name: "Evaluates PR reviews and assigns reviewers"
         uses: paritytech/review-bot@v2.5.0
         with:
