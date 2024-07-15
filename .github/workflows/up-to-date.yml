@@ -9,7 +9,6 @@ jobs:
   updatePullRequests:
     name: Keep PRs up to date
     runs-on: ubuntu-latest
-    environment: master
     steps:
       - name: Generate token
         id: generate_token
@@ -17,6 +16,7 @@ jobs:
         with:
           app-id: ${{ secrets.MERGE_APP_ID }}
           private-key: ${{ secrets.MERGE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
       - name: Update all the PRs
         uses: paritytech/up-to-date-action@v0.2.1
         with:

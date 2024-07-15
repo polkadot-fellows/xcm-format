@@ -8,7 +8,6 @@ on:
 jobs:
   set-auto-merge:
     runs-on: ubuntu-latest
-    environment: master
     timeout-minutes: 10
     # Important! This forces the job to run only on comments on Pull Requests that starts with '/merge'
     if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/merge') }}
@@ -18,10 +17,11 @@ jobs:
         id: fellows
       - name: Generate a token
         id: merge_token
-        uses: actions/create-github-app-token@v1.8.1
+        uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.MERGE_APP_ID }}
           private-key: ${{ secrets.MERGE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
       - name: Set auto merge
         uses: paritytech/auto-merge-bot@v1.0.1
         with:
