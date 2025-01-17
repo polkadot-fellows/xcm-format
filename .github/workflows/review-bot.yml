@@ -27,7 +27,7 @@ jobs:
           private-key: ${{ secrets.REVIEW_APP_KEY }}
           owner: ${{ github.repository_owner }}
       - name: "Evaluates PR reviews and assigns reviewers"
-        uses: paritytech/review-bot@v2.5.0
+        uses: paritytech/review-bot@v2.7.0
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           team-token: ${{ steps.team_token.outputs.token }}
